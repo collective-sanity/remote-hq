@@ -23,9 +23,9 @@ const TestScreen = () => {
     : 
     (
       <div id="LoginPage-container">
-        <div id="LoginPage-login-button" onClick={() => loginUser()}>
+        <button id="LoginPage-login-button" onClick={() => loginUser()}>
           Login With Google
-        </div>
+        </button>
       </div>
     );
   }

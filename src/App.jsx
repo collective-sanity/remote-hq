@@ -5,8 +5,8 @@ import { provider, db } from 'shared/firebase';
 import firebase from "firebase/app";
 import ControlContext from "shared/control-context";
 import TestScreen from 'containers/TestScreen/TestScreen';
+import Splash from 'containers/Splash/Splash'
 
-import logo from './logo.svg';
 import './App.css';
 
 const App = () => {
@@ -32,6 +32,7 @@ const App = () => {
             */
             user,
             loginUser: () => {
+              console.log('hello')
               // Authenticate and get User Info
               firebase.auth().signInWithPopup(provider).then(function (result) {
                 let userRef = usersRef.doc(result.user.uid);
@@ -106,7 +107,7 @@ const App = () => {
                 .delete()
                 .then(() => {
                   usersRef.doc(user.id).update({
-                    roooms: user.rooms.filter(roomid => roomid != roomID)
+                    roooms: user.rooms.filter(roomid => roomid !== roomID)
                   });
                 }) // Document deleted
                 .catch((error) => console.error("Error deleting document", error));
@@ -151,8 +152,8 @@ const App = () => {
             Links are all the "files" in the system, they can be organized in folders and viewed in screens
             */
             createLink: ({name, linktype}) => {
-              if(linktype=="googleDoc"){ }
-              else if(linktype=="figma"){}
+              if(linktype==="googleDoc"){ }
+              else if(linktype==="figma"){}
               },
               addLink: ({name, linktype, url})=>{},
               deleteLink: () => {},
@@ -168,7 +169,7 @@ const App = () => {
                 <TestScreen />
               </Route>
               <Route path="/">
-                <TestScreen />
+                <Splash />
               </Route>
             </Switch>
           </div>
