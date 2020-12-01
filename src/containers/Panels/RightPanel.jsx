@@ -1,6 +1,11 @@
 import React, { useContext } from "react"
 import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
+
+import GoogleDocs from '../../assets/Landing/google-docs.png'
+import GoogleSheets from '../../assets/Landing/google-sheets.png'
+import GoogleSlides from '../../assets/Landing/google-slides.png'
+import FigmaIcon from '../../assets/Landing/figma.png'
 import Notification from '../../assets/Landing/bell.png'
 import Chat from '../../assets/Landing/chat.png'
 import MentalHealth from '../../assets/Landing/mental-health.png'
@@ -30,6 +35,13 @@ const Icon = styled.img`
   margin-top: 40px;
   cursor: pointer;
 `
+const TopIcon = styled.img`
+  width: auto;
+  height: 40px;
+  margin-top: 20px;
+  cursor: pointer;
+`
+
 const TopIconContainer = styled.div`
   position: absolute;
   top: 3vh;
@@ -67,6 +79,10 @@ function TopIconSection ({ leave }) {
           <></>
       )}
       <Add>+</Add>
+      <TopIcon src={GoogleDocs} />
+      <TopIcon src={GoogleSheets} />
+      <TopIcon src={GoogleSlides} />
+      <TopIcon src={FigmaIcon} />
     </TopIconContainer>
   )
 }
