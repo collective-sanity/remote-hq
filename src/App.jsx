@@ -48,7 +48,8 @@ const App = () => {
                         "photoUrl": result.user.photoURL,
                         "email": result.user.email,
                         "createdAt": firebase.firestore.FieldValue.serverTimestamp(),
-                        "rooms": []
+                        "rooms": [],
+                        "teams": result.user.teams,
                       };
                       userRef.set(data);
                     } else {

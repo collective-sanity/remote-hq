@@ -36,6 +36,34 @@ const LogoutBtn = styled.button`
   border-radius: 10px;
 `
 
+const TeamsSection = styled.div`
+  margin-top: 75px;
+  width: 80%;
+  margin-left: 10%;
+`
+
+const MyTeams = styled.p`
+  font-size: 16px;
+`
+
+const Team = styled.li`
+  list-style: none;
+  font-size: 12px;
+  margin-left: 15%;
+  margin-top: 10px;
+`
+
+function Teams ({ teams }) {
+  return (
+    <TeamsSection>
+      <MyTeams>My Teams:</MyTeams>
+      <ul>
+        {teams.map((team, i) => <Team key={i}>{team}</Team>)}
+      </ul>
+    </TeamsSection>
+  )
+}
+
 export default function LeftPanel () {
   const {
     user,
@@ -49,6 +77,7 @@ export default function LeftPanel () {
         {/* Only get user first name */}
         <Name>Hi, {user.displayName.split(' ')[0]}</Name>
       </section>
+      <Teams teams={user.teams} />
       <LogoutBtn className='logoutBtn' onClick={() => logoutUser()}>Log Out</LogoutBtn>
     </Panel>
   )

@@ -10,9 +10,11 @@ const Row = styled.div`
 `
 
 export default function Landing () {
-  // const {
-  //   user,
-  // } = useContext(ControlContext);
+  const {
+    user,
+  } = useContext(ControlContext);
+
+  console.log(user)
   
   return (
     <Row>
