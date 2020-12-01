@@ -30,12 +30,46 @@ const Icon = styled.img`
   margin-top: 40px;
   cursor: pointer;
 `
+const TopIconContainer = styled.div`
+  position: absolute;
+  top: 3vh;
+  width: 5vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
 
 const IconContainer = styled.div`
   position: absolute;
   bottom: 3vh;
   width: 40px;
 `
+
+const LeaveBtn = styled.button`
+  width: 90%;
+  height: 5%;
+  font-size: 14px;
+  display: block;
+  cursor: pointer;
+  background: #C4C4C4;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  margin: 0;
+`
+function TopIconSection ({ leave }) {
+  return (
+    <TopIconContainer>
+      {/* Add onClick={() => createRoom({users: [user.id]})} */}
+      {leave ? (
+          <LeaveBtn className='leaveBtn' onClick={() => leave()}>Leave</LeaveBtn>
+        ) : (
+          <></>
+      )}
+      <Add>+</Add>
+    </TopIconContainer>
+  )
+}
 
 function IconSection () {
   return (
@@ -47,7 +81,7 @@ function IconSection () {
   )
 }
 
-export default function RightPanel () {
+export default function RightPanel ({ leave }) {
   // const {
   //   user,
   //   createRoom,
@@ -55,10 +89,7 @@ export default function RightPanel () {
   
   return (
     <Panel>
-      <section>
-        {/* Add onClick={() => createRoom({users: [user.id]})} */}
-        <Add>+</Add>
-      </section>
+      <TopIconSection leave={leave} />
       <IconSection />
     </Panel>
   )
