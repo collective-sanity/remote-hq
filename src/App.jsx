@@ -6,8 +6,9 @@ import firebase from "firebase/app";
 import ControlContext from "shared/control-context";
 import TestScreen from 'containers/TestScreen/TestScreen';
 import Splash from 'containers/Splash/Splash'
+import Landing from 'containers/Landing/Landing'
 
-import './App.css';
+import './App.scss';
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -32,7 +33,6 @@ const App = () => {
             */
             user,
             loginUser: () => {
-              console.log('hello')
               // Authenticate and get User Info
               firebase.auth().signInWithPopup(provider).then(function (result) {
                 let userRef = usersRef.doc(result.user.uid);
@@ -61,7 +61,7 @@ const App = () => {
                     });
                     // Get Rooms and set them
                     // Add room listener
-                  });
+                  })
               });
             },
             logoutUser: () => {
@@ -73,6 +73,9 @@ const App = () => {
                 setCurrentScreen(null);
                 setCurrentFolder(null);
               }).catch(function (error) { });
+
+              // Force window refresh to display splash screen
+              window.location.reload();
             },
 
             /*
@@ -160,16 +163,10 @@ const App = () => {
           }}>
 
           <div className="App__container">
-            {/*Didn't actually set up routing yet*/}
             <Switch>
-              <Route path="/about">
-                <TestScreen />
-              </Route>
-              <Route path="/users">
-                <TestScreen />
-              </Route>
               <Route path="/">
-                <Splash />
+                {/*Conditional rendering based on whether user logged in*/}
+                {user ? <Landing /> : <Splash /> }
               </Route>
             </Switch>
           </div>

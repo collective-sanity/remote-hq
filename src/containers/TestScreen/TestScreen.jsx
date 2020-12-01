@@ -10,25 +10,6 @@ const TestScreen = () => {
     createRoom,
     deleteRoom,
   } = useContext(ControlContext);
-  // Current User, Login Log out and user info
-  const UserTest = () => {
-    return user !== null ? 
-    (
-      <div id="LoginPage-container">
-        <div id="LoginPage-login-button" onClick={() => logoutUser()}>
-          Log Out as {user.displayName}
-        </div>
-      </div>
-    )
-    : 
-    (
-      <div id="LoginPage-container">
-        <button id="LoginPage-login-button" onClick={() => loginUser()}>
-          Login With Google
-        </button>
-      </div>
-    );
-  }
 
   //User Rooms, Create New and Delete
   const UserRooms = () => {
@@ -58,7 +39,6 @@ const TestScreen = () => {
   
   return  (
     <div>
-      <UserTest />
       <UserRooms />
       <ActiveRoom />
     </div>
