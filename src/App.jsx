@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Switch, Route,} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, } from "react-router-dom";
 
 import { provider, db } from 'shared/firebase';
+import { dummydata } from 'shared/dummydata';
 import firebase from "firebase/app";
 import ControlContext from "shared/control-context";
 import TestScreen from 'containers/TestScreen/TestScreen';
@@ -10,11 +11,16 @@ import Landing from 'containers/Landing/Landing'
 
 import './App.scss';
 
+const LOCALMODE = true;
+
+
 const App = () => {
   const [user, setUser] = useState(null);
+  const [teams, setTeams] = useState(null);
+  const [currentTeam, setCurrentTeam] = useState(null);
+
   const [rooms, setRooms] = useState(null);
   const [currentRoom, setCurrentRoom] = useState(null);
-  const [currentScreen, setCurrentScreen] = useState(null);
   const [currentFolder, setCurrentFolder] = useState(null);
 
   const roomsRef = firebase.firestore().collection("rooms");
@@ -26,59 +32,77 @@ const App = () => {
       <React.Fragment>
         <ControlContext.Provider
           value={{
-            /*
-            USER Functions
-            loginUser - 
-            logoutUser - 
-            */
+        
             user,
+            teams,
             loginUser: () => {
-              // Authenticate and get User Info
-              firebase.auth().signInWithPopup(provider).then(function (result) {
-                let userRef = usersRef.doc(result.user.uid);
-                // Next . . . load user info
-                userRef.get()
-                  .then((doc) => {
-                    // Set Data
-                    let data;
-                    if (!doc.exists) {
-                      data = {
-                        "id": result.user.uid,
-                        "displayName": result.user.displayName,
-                        "photoUrl": result.user.photoURL,
-                        "email": result.user.email,
-                        "createdAt": firebase.firestore.FieldValue.serverTimestamp(),
-                        "rooms": [],
-                        "teams": result.user.teams,
-                      };
-                      userRef.set(data);
-                    } else {
-                      data = { id: doc.id, ...doc.data(), }
-                    }
-                    // Add listener to keep track of changes and update state
-                    userListener = userRef.onSnapshot(function (doc) {
-                      console.log("Current data: ", doc.data());
-                      setUser(data);
-                    });
-                    // Get Rooms and set them
-                    // Add room listener
-                  })
-              });
+              if (LOCALMODE) {
+                setUser(dummydata.users.uid1);
+                setTeams([dummydata.teams.MHCI, dummydata.teams.Work]);
+              }
+              else {
+                // Authenticate and get User Info
+                firebase.auth().signInWithPopup(provider).then(function (result) {
+                  let userRef = usersRef.doc(result.user.uid);
+                  // Next . . . load user info
+                  userRef.get()
+                    .then((doc) => {
+                      // Set Data
+                      let data;
+                      if (!doc.exists) {
+                        data = {
+                          "id": result.user.uid,
+                          "displayName": result.user.displayName,
+                          "photoUrl": result.user.photoURL,
+                          "email": result.user.email,
+                          "createdAt": firebase.firestore.FieldValue.serverTimestamp(),
+                          "rooms": [],
+                          "teams": result.user.teams,
+                        };
+                        userRef.set(data);
+                      } else {
+                        data = { id: doc.id, ...doc.data(), }
+                      }
+                      // Add listener to keep track of changes and update state
+                      userListener = userRef.onSnapshot(function (doc) {
+                        console.log("Current data: ", doc.data());
+                        setUser(data);
+                      });
+                      // Get Rooms and set them
+                      // Add room listener
+                    })
+                });
+              }
             },
             logoutUser: () => {
-              firebase.auth().signOut().then(function () {
-                userListener();
+              if (LOCALMODE) {
                 setUser(null);
+                setTeams(null);
                 setRooms(null);
                 setCurrentRoom(null);
-                setCurrentScreen(null);
                 setCurrentFolder(null);
-              }).catch(function (error) { });
-
+              }
+              else {
+                firebase.auth().signOut().then(function () {
+                  userListener();
+                  setUser(null);
+                  setTeams(null);
+                  setRooms(null);
+                  setCurrentRoom(null);
+                  setCurrentFolder(null);
+                }).catch(function (error) { });
+              }
               // Force window refresh to display splash screen
               window.location.reload();
-            },
 
+            },
+      
+           currentTeam,
+           setCurrentTeam: (teamID) => {
+             setCurrentTeam(dummydata["teams"][teamID]);
+             setCurrentRoom(null);
+           },
+        
             /*
             ROOM Functions
             createRoom -
@@ -86,7 +110,10 @@ const App = () => {
             setCurrentRoom -  
             */
             rooms,
-            createRoom: ({name="RandomTest", users = []}) => {
+            currentRoom,
+            createRoom: ({ name = "RandomTest", users = [] }) => {
+              if (LOCALMODE) {}
+              else{
               const roomData = {
                 "name": name,
                 "host": user.id,
@@ -104,8 +131,11 @@ const App = () => {
                 });
                 console.log("Added doc with ID: ", ref.id);
               });
-            },
+            }
+          },
             deleteRoom: (roomID) => {
+              if (LOCALMODE) {}
+              else{
               roomsRef
                 .doc(roomID)
                 .delete()
@@ -115,18 +145,16 @@ const App = () => {
                   });
                 }) // Document deleted
                 .catch((error) => console.error("Error deleting document", error));
-            },
-            currentRoom,
+              }},
             setCurrentRoom: (room) => {
               setCurrentRoom(room);
             },
-
-              /*
-            FOLDER Functions
-            setCurrentFolder - 
-            Create -
-            Delete -
-            */
+            /*
+          FOLDER Functions
+          setCurrentFolder - 
+          Create -
+          Delete -
+          */
             currentFolder,
             setCurrentFolder: (folder, { share = false }) => {
               setCurrentFolder(folder);
@@ -136,42 +164,26 @@ const App = () => {
             },
             createFolder: () => { },
             deleteFolder: () => { },
-            
-            /*
-            The screens are where you actually view the links and collaborate with others
-            setCurrentScreen
-            */
-            currentScreen,
-            setCurrentScreen: () => {
-
-            },
-            createScreen: () => {
-
-            },
-            updateScreen: () => {
-
-            },
-
             /*
             Links are all the "files" in the system, they can be organized in folders and viewed in screens
             */
-            createLink: ({name, linktype}) => {
-              if(linktype==="googleDoc"){ }
-              else if(linktype==="figma"){}
-              },
-              addLink: ({name, linktype, url})=>{},
-              deleteLink: () => {},
+            createLink: ({ name, linktype }) => {
+              if (linktype === "googleDoc") { }
+              else if (linktype === "figma") { }
+            },
+            addLink: ({ name, linktype, url }) => { },
+            deleteLink: () => { },
           }}>
 
           <div className="App__container">
             <Switch>
               <Route path="/">
                 {/*Conditional rendering based on whether user logged in*/}
-                {user ? <Landing /> : <Splash /> }
+                {user ? <Landing /> : <Splash />}
               </Route>
             </Switch>
           </div>
-         </ControlContext.Provider>
+        </ControlContext.Provider>
       </React.Fragment>
     </Router>
   );
