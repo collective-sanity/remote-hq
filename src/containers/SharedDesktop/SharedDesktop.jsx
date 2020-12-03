@@ -5,6 +5,7 @@ import ControlContext from '../../shared/control-context'
 import LeftPanel from "containers/Panels/LeftPanel"
 import RightPanel from "containers/Panels/RightPanel"
 
+// TODO: list of docs in folder
 const Row = styled.div`
   display: flex;
   justify-content: space-between;
@@ -23,8 +24,30 @@ const Docs = styled.div`
     height: 100vh;
     overflow: auto;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f0f0;
 `
+
+const DocsTitle = styled.div`
+  font-size: 36px;
+  margin-top: 30px;
+`
+const DocsList = styled.div`
+  margin-top: 30px;
+  margin-left: 20px;
+  width: 70%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+`
+
+const Doc = styled.div`
+  width: 69px;
+  height: 91px;
+  margin-bottom: 20px;
+  margin-right: 20px;
+  background-color: #c4c4c4;`
 
 export default function SharedDesktop () {
     return (
@@ -40,7 +63,14 @@ export default function SharedDesktop () {
         </Desktop> 
 
         <Docs>
-            Chatbot
+            <DocsTitle>Chatbot</DocsTitle>
+            <DocsList>
+              <Doc />
+              <Doc />
+              <Doc />
+              <Doc />
+              <Doc />
+            </DocsList>
         </Docs>       
 
         <RightPanel leave={true} />
