@@ -5,9 +5,11 @@ import { provider, db } from 'shared/firebase';
 import dummydata from 'shared/dummydata';
 import firebase from "firebase/app";
 import ControlContext from "shared/control-context";
-import TestScreen from 'containers/TestScreen/TestScreen';
 import Splash from 'containers/Splash/Splash'
 import Landing from 'containers/Landing/Landing'
+import LeftPanel from 'containers/Panels/LeftPanel'
+import RightPanel from 'containers/Panels/RightPanel'
+import Room from 'containers/Room/Room'
 
 import './App.scss';
 
@@ -176,12 +178,15 @@ const App = () => {
           }}>
 
           <div className="App__container">
+            {user ? <LeftPanel /> : null}
             <Switch>
-              <Route path="/">
+              <Route path="/room" component={Room}/>
+              <Route exact path="/">
                 {/*Conditional rendering based on whether user logged in*/}
                 {user ? <Landing /> : <Splash />}
               </Route>
             </Switch>
+            {user ? <RightPanel /> : null}
           </div>
         </ControlContext.Provider>
       </React.Fragment>
