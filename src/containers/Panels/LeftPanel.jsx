@@ -2,6 +2,37 @@ import React, { useContext } from "react"
 import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
 
+function Teams ({ teams }) {
+  return (
+    <TeamsSection>
+      <MyTeams>My Teams:</MyTeams>
+      <ul>
+        {teams.map((team, i) => <Team key={i}>{team.name}</Team>)}
+      </ul>
+    </TeamsSection>
+  )
+}
+
+export default function LeftPanel () {
+  const {
+    user,
+    teams,
+    logoutUser,
+  } = useContext(ControlContext);
+  
+  return (
+    <Panel>
+      <section>
+        <PhotoUrl src={user.photoUrl} alt='Profile' />
+        {/* Only get user first name */}
+        <Name>Hi, {user.displayName.split(' ')[0]}</Name>
+      </section>
+      <Teams teams={teams} />
+      <LogoutBtn className='logoutBtn' onClick={() => logoutUser()}>Log Out</LogoutBtn>
+    </Panel>
+  )
+}
+
 const Panel = styled.div`
   height: 100vh;
   width: 10%;
@@ -23,8 +54,8 @@ const Name = styled.p`
 `
 
 const LogoutBtn = styled.button`
-  width: 8%;
-  font-size: 18px;
+  width:6%;
+  font-size: 14px;
   display: block;
   margin-left: 1%;
   position: absolute;
@@ -52,33 +83,3 @@ const Team = styled.li`
   margin-left: 15%;
   margin-top: 10px;
 `
-
-function Teams ({ teams }) {
-  return (
-    <TeamsSection>
-      <MyTeams>My Teams:</MyTeams>
-      <ul>
-        {teams.map((team, i) => <Team key={i}>{team}</Team>)}
-      </ul>
-    </TeamsSection>
-  )
-}
-
-export default function LeftPanel () {
-  const {
-    user,
-    logoutUser,
-  } = useContext(ControlContext);
-  
-  return (
-    <Panel>
-      <section>
-        <PhotoUrl src={user.photoUrl} alt='Profile' />
-        {/* Only get user first name */}
-        <Name>Hi, {user.displayName.split(' ')[0]}</Name>
-      </section>
-      <Teams teams={user.teams} />
-      <LogoutBtn className='logoutBtn' onClick={() => logoutUser()}>Log Out</LogoutBtn>
-    </Panel>
-  )
-}

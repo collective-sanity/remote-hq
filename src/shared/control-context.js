@@ -6,6 +6,7 @@ const ControlContext = createContext({
   loginUser: () => {},
   logoutUser: () => {},
   rooms:[],
+  teams:[],
   createRoom:()=>{},
   deleteRoom:()=>{},
   currentRoom:null,

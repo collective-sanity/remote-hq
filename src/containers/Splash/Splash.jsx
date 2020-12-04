@@ -36,19 +36,23 @@ const Img = styled.img`
   margin-right: 10px;
 `
 
+const LoginContainer = styled.div`
+  width: 100%;
+`
+
 export default function Splash () {
   const {
     loginUser,
   } = useContext(ControlContext);
   
   return (
-    <div id="LoginPage-container">
+    <LoginContainer>
       <Title>Remote<b>HQ</b></Title>
       <Subtitle>Virtual Collaboration Made Easy</Subtitle>
       <Button id="LoginPage-login-button" onClick={() => loginUser()}>
         <Img src={GoogleLogo} />
         Sign In with Google
       </Button>
-    </div>
+    </LoginContainer>
   )
 }

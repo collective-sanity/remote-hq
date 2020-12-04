@@ -1,10 +1,53 @@
 import React, { useContext } from "react"
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components"
-import ControlContext from '../../shared/control-context'
 
-import LeftPanel from "containers/Panels/LeftPanel"
-import RightPanel from "containers/Panels/RightPanel"
+export default function FolderView () {
+  return (
+    <Row>
+      <Links>
+        <Breadcrumbs>{`MHCI > SSUI > Chatbot`}</Breadcrumbs>
+        <LinkListContainer>
+          <LinkListContainerTitle>Pinned Files</LinkListContainerTitle>
+          <LinksList>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+          </LinksList>
+        </LinkListContainer>
+
+        <LinkListContainer>
+          <HeaderContainerWithDropdown>
+            <LinkListContainerTitle>All Files</LinkListContainerTitle>
+            <FilesDropdown>
+              <option value="Recently Viewed">Recently Viewed</option>
+            </FilesDropdown>
+          </HeaderContainerWithDropdown>
+          <LinksList>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+            <NavLink to='/shared-desktop'><Link /></NavLink>
+          </LinksList>
+        </LinkListContainer>
+      </Links>
+    </Row>
+  )
+}
+
 
 // TODO: dynamic lists
 // TODO: icon based on type
@@ -66,7 +109,7 @@ export default function FolderView () {
 `
 
 const Links = styled.div`
-    width: 85%;
+    width: 100%;
     height: 100vh;
     overflow: auto;
     display: flex;
