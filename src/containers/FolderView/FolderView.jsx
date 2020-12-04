@@ -2,10 +2,11 @@ import React, { useContext } from "react"
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
-// TODO: dynamic lists
-// TODO: icon based on type
-// TODO: filename
-// TODO: iframe + pointer-events: none;
+import doc from '../../assets/Landing/google-docs.png';
+import sheet from '../../assets/Landing/google-sheets.png';
+import slides from '../../assets/Landing/google-slides.png';
+import figma from '../../assets/Landing/figma.png';
+
 // TODO: breadcrumbs
 
 const links = [
@@ -14,7 +15,29 @@ const links = [
     link: "https://docs.google.com/document/d/19R4d_-EHnhiGkq2x9iUOYZttT3aflE8fzbZB4J7ZOh4/",
     type: "doc"
   },
+  {
+    title: "beep",
+    link: "https://docs.google.com/spreadsheets/d/1QgJwm8rLpO70HNxzvzGGRhmskoYSe7MQhhsWrYiICgQ/",
+    type: "sheet"
+  },
+  {
+    title: "meow",
+    link: "https://docs.google.com/presentation/d/1u1dJoPthkIsEa_IAIrLYTvQRk6MYtzw6YCvRL1cL3xk/",
+    type: "slides"
+  },
+  {
+    title: "test",
+    link: "https://www.figma.com/file/jSPgLf0DbOKa9bdztdMngs/Mobile?node-id=0%3A1",
+    type: "figma"
+  },
 ];
+
+const getIconType = type => {
+  if (type === "doc") return doc;
+  if (type === "sheet") return sheet;
+  if (type === "slides") return slides;
+  if (type === "figma") return figma;
+}
 
 export default function FolderView () {
     return (
@@ -31,7 +54,10 @@ export default function FolderView () {
                     link: link.link,
                     type: link.type
                   }
-                }} />
+                }}>
+                  <LinkContainerType src={getIconType(link.type)}></LinkContainerType>
+                  <LinkContainerTitle>{link.title}</LinkContainerTitle>
+                </LinkContainer>
               )}
             </LinksList>
           </LinkListContainer>
@@ -44,7 +70,18 @@ export default function FolderView () {
               </FilesDropdown>
             </HeaderContainerWithDropdown>
             <LinksList>
-
+              {links.map((link) => <LinkContainer 
+                to={{
+                  pathname: '/shared-desktop',
+                  state: {
+                    link: link.link,
+                    type: link.type
+                  }
+                }}>
+                  <LinkContainerType src={getIconType(link.type)}></LinkContainerType>
+                  <LinkContainerTitle>{link.title}</LinkContainerTitle>
+                </LinkContainer>
+              )}
             </LinksList>
           </LinkListContainer>
         </Links>
@@ -54,7 +91,7 @@ export default function FolderView () {
 
 const Row = styled.div`
   display: flex;
-  justify-content: space-between;
+  width: 100%;
 `
 
 const Links = styled.div`
@@ -94,6 +131,17 @@ const LinkContainer = styled(Link)`
   background-color: #c4c4c4;
   margin-right: 40px;
   margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`
+const LinkContainerType = styled.img`
+  height: 50%;
+`
+
+const LinkContainerTitle = styled.div`
+  font-size: 18px;
 `
 
 const HeaderContainerWithDropdown = styled.div`

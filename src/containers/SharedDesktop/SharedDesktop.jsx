@@ -2,8 +2,16 @@ import React, { useContext } from "react"
 import styled from "styled-components"
 
 // TODO: leave button
+// TODO: dynamic docs list
 export default function SharedDesktop ({ location }) {
   let { link, type } = location.state;
+
+  const getLink = type => {
+    if (type === "figma") {
+      return `https://www.figma.com/embed?embed_host=astra&url=${link}`
+    }
+    return link;
+  }
 
     return (
       <Row>
@@ -11,7 +19,7 @@ export default function SharedDesktop ({ location }) {
             <iframe 
                 width="100%"
                 height="100%"
-                src={link}
+                src={getLink(type)}
             ></iframe>
         </Desktop> 
 
