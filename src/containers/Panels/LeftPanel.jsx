@@ -58,7 +58,7 @@ function Teams ({ teams }) {
     <TeamsSection>
       <MyTeams>My Teams:</MyTeams>
       <ul>
-        {teams.map((team, i) => <Team key={i}>{team}</Team>)}
+        {teams.map((team, i) => <Team key={i}>{team.name}</Team>)}
       </ul>
     </TeamsSection>
   )
@@ -67,6 +67,7 @@ function Teams ({ teams }) {
 export default function LeftPanel () {
   const {
     user,
+    teams,
     logoutUser,
   } = useContext(ControlContext);
   
@@ -77,7 +78,7 @@ export default function LeftPanel () {
         {/* Only get user first name */}
         <Name>Hi, {user.displayName.split(' ')[0]}</Name>
       </section>
-      <Teams teams={user.teams} />
+      <Teams teams={teams} />
       <LogoutBtn className='logoutBtn' onClick={() => logoutUser()}>Log Out</LogoutBtn>
     </Panel>
   )
