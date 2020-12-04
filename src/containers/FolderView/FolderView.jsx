@@ -1,53 +1,6 @@
 import React, { useContext } from "react"
-import { Link, NavLink } from "react-router-dom";
-import styled from "styled-components"
-
-export default function FolderView () {
-  return (
-    <Row>
-      <Links>
-        <Breadcrumbs>{`MHCI > SSUI > Chatbot`}</Breadcrumbs>
-        <LinkListContainer>
-          <LinkListContainerTitle>Pinned Files</LinkListContainerTitle>
-          <LinksList>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-          </LinksList>
-        </LinkListContainer>
-
-        <LinkListContainer>
-          <HeaderContainerWithDropdown>
-            <LinkListContainerTitle>All Files</LinkListContainerTitle>
-            <FilesDropdown>
-              <option value="Recently Viewed">Recently Viewed</option>
-            </FilesDropdown>
-          </HeaderContainerWithDropdown>
-          <LinksList>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-            <NavLink to='/shared-desktop'><Link /></NavLink>
-          </LinksList>
-        </LinkListContainer>
-      </Links>
-    </Row>
-  )
-}
-
+import { Link } from "react-router-dom";
+import styled from "styled-components";
 
 // TODO: dynamic lists
 // TODO: icon based on type
@@ -66,8 +19,6 @@ const links = [
 export default function FolderView () {
     return (
       <Row>
-        <LeftPanel />
-
         <Links>
           <Breadcrumbs>MHCI > SSUI > Chatbot</Breadcrumbs>
           <LinkListContainer>
@@ -97,13 +48,11 @@ export default function FolderView () {
             </LinksList>
           </LinkListContainer>
         </Links>
-
-        <RightPanel />
       </Row>
     )
   }
 
-  const Row = styled.div`
+const Row = styled.div`
   display: flex;
   justify-content: space-between;
 `

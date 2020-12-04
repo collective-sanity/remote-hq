@@ -1,39 +1,12 @@
 import React, { useContext } from "react"
 import styled from "styled-components"
 
-export default function SharedDesktop () {
-  return (
-    <Row>
-      <Desktop>
-          <iframe 
-              width="100%"
-              height="100%"
-              src="https://docs.google.com/spreadsheets/d/1QgJwm8rLpO70HNxzvzGGRhmskoYSe7MQhhsWrYiICgQ"
-          ></iframe>
-      </Desktop> 
-
-      <Docs>
-          <DocsTitle>Chatbot</DocsTitle>
-          <DocsList>
-            <Doc />
-            <Doc />
-            <Doc />
-            <Doc />
-            <Doc />
-          </DocsList>
-      </Docs>       
-    </Row>
-  )
-}
-
 // TODO: leave button
 export default function SharedDesktop ({ location }) {
   let { link, type } = location.state;
 
     return (
       <Row>
-        <LeftPanel />
-
         <Desktop>
             <iframe 
                 width="100%"
@@ -52,8 +25,6 @@ export default function SharedDesktop ({ location }) {
               <Doc />
             </DocsList>
         </Docs>       
-
-        <RightPanel leave={true} />
       </Row>
     )
   }
