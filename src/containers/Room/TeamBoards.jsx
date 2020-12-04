@@ -1,5 +1,6 @@
 import React from "react"
 import styled from "styled-components"
+import { Link } from 'react-router-dom'
 
 export default function TeamBoards () {
 
@@ -7,8 +8,12 @@ export default function TeamBoards () {
     <TeamContainer>
       <Title>Team Boards</Title>
       <BoardContainer>
-        <Board></Board>
-        <Board></Board>
+        <NavLink to='/folder'>
+          <Board></Board>
+        </NavLink>
+        <NavLink to='/folder'>
+          <Board></Board>
+        </NavLink>
       </BoardContainer>
     </TeamContainer>
   )
@@ -27,9 +32,14 @@ const Title = styled.h1`
   font-size: 36px;
 `
 
-const Board = styled.div`
+const NavLink = styled(Link)`
   width: 46%;
   height: 375px;
+` 
+
+const Board = styled.div`
+  width: 100%;
+  height: 100%;
   background: #F0F0F0;
   border-radius: 5px;
   margin-top: 30px;

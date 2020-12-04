@@ -10,6 +10,8 @@ import Landing from 'containers/Landing/Landing'
 import LeftPanel from 'containers/Panels/LeftPanel'
 import RightPanel from 'containers/Panels/RightPanel'
 import Room from 'containers/Room/Room'
+import FolderView from 'containers/FolderView/FolderView'
+import SharedDesktop from 'containers/SharedDesktop/SharedDesktop'
 
 import './App.scss';
 
@@ -181,6 +183,8 @@ const App = () => {
             {user ? <LeftPanel /> : null}
             <Switch>
               <Route path="/room" component={Room}/>
+              <Route path="/folder" component={FolderView}/>
+              <Route path="/shared-desktop" component={SharedDesktop} />
               <Route exact path="/">
                 {/*Conditional rendering based on whether user logged in*/}
                 {user ? <Landing /> : <Splash />}

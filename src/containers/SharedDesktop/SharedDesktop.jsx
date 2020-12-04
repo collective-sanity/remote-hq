@@ -1,79 +1,72 @@
 import React, { useContext } from "react"
 import styled from "styled-components"
-import ControlContext from '../../shared/control-context'
 
-import LeftPanel from "containers/Panels/LeftPanel"
-import RightPanel from "containers/Panels/RightPanel"
+export default function SharedDesktop () {
+  return (
+    <Row>
+      <Desktop>
+          <iframe 
+              width="100%"
+              height="100%"
+              src="https://docs.google.com/spreadsheets/d/1QgJwm8rLpO70HNxzvzGGRhmskoYSe7MQhhsWrYiICgQ"
+          ></iframe>
+      </Desktop> 
+
+      <Docs>
+          <DocsTitle>Chatbot</DocsTitle>
+          <DocsList>
+            <Doc />
+            <Doc />
+            <Doc />
+            <Doc />
+            <Doc />
+          </DocsList>
+      </Docs>       
+    </Row>
+  )
+}
 
 // TODO: list of docs in folder
 const Row = styled.div`
   display: flex;
   justify-content: space-between;
+  width: 100%;
 `
 
 const Desktop = styled.div`
-    width: 65%;
-    height: 100vh;
-    overflow: auto;
-    display: flex;
-    justify-content: center;
+  width: 75%;
+  height: 100vh;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
 `
 
 const Docs = styled.div`
-    width: 20%;
-    height: 100vh;
-    overflow: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #f0f0f0;
+  width: 25%;
+  height: 100vh;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f0f0f0;
 `
 
 const DocsTitle = styled.div`
-  font-size: 36px;
-  margin-top: 30px;
+font-size: 36px;
+margin-top: 30px;
 `
 const DocsList = styled.div`
-  margin-top: 30px;
-  margin-left: 20px;
-  width: 70%;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+margin-top: 30px;
+margin-left: 20px;
+width: 70%;
+display: flex;
+flex-direction: row;
+flex-wrap: wrap;
 `
 
 const Doc = styled.div`
-  width: 69px;
-  height: 91px;
-  margin-bottom: 20px;
-  margin-right: 20px;
-  background-color: #c4c4c4;`
-
-export default function SharedDesktop () {
-    return (
-      <Row>
-        <LeftPanel />
-
-        <Desktop>
-            <iframe 
-                width="100%"
-                height="100%"
-                src="https://docs.google.com/spreadsheets/d/1QgJwm8rLpO70HNxzvzGGRhmskoYSe7MQhhsWrYiICgQ"
-            ></iframe>
-        </Desktop> 
-
-        <Docs>
-            <DocsTitle>Chatbot</DocsTitle>
-            <DocsList>
-              <Doc />
-              <Doc />
-              <Doc />
-              <Doc />
-              <Doc />
-            </DocsList>
-        </Docs>       
-
-        <RightPanel leave={true} />
-      </Row>
-    )
-  }
+width: 69px;
+height: 91px;
+margin-bottom: 20px;
+margin-right: 20px;
+background-color: #c4c4c4;`
