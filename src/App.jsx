@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BrowserRouter as Router, Switch, Route, } from "react-router-dom";
 
 import { provider, db } from 'shared/firebase';
-import { dummydata } from 'shared/dummydata';
+import dummydata from 'shared/dummydata';
 import firebase from "firebase/app";
 import ControlContext from "shared/control-context";
 import TestScreen from 'containers/TestScreen/TestScreen';

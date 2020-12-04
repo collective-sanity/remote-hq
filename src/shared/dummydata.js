@@ -1,9 +1,4 @@
-
-
-
-
-
-export const dummydata = {
+const dummydata = {
     "users": {
         "uid1": {
             "username": "connor",
@@ -11,6 +6,7 @@ export const dummydata = {
             "displayName": "Connor Shannon",
             "photoUrl":"https://lh5.googleusercontent.com/-JQAFWa4C0iE/AAAAAAAAAAI/AAAAAAAAAAA/AMZuucklRz2PpA4ZqvUEP2Bh6PDouB_hEA/s96-c/photo.jpg",
             "rooms": ["roomid1", "room2id"],
+            "teams": ["MHCI"]
 
         },
         "uid2": {
@@ -18,19 +14,22 @@ export const dummydata = {
             "displayName": "Nathan Jen",
             "email": "anonymousnathan@gmail.com",
             "photoUrl":"https://lh3.googleusercontent.com/a-/AOh14GhZFURtuuz-77wg8JU1PJuA-uqP0eKGMreiQLt9DA=s96-c",
-            "rooms": ["roomid1"]
+            "rooms": ["roomid1"],
+            "teams": ["MHCI"]
         },
         "uid3": {
             "username": "karthick",
             "displayName": "Karthick Shankar",
             "email": "karthicksh10@gmail.com",
-            "rooms": ["roomid1", "roomid2"]
+            "rooms": ["roomid1", "roomid2"],
+            "teams": ["MHCI"]
         },
         "uid4": {
             "username": "victor",
             "displayName": "Victor Grajski",
             "email": "victor.grajski@gmail.com",
-            "rooms": ["roomid1", "roomid2"]
+            "rooms": ["roomid1", "roomid2"],
+            "teams": ["MHCI"]
         }
     },
     "teams": {
@@ -144,6 +143,26 @@ export const dummydata = {
                         }
                     ]
                 },
+                "roomid3": {
+                    "name": "UCRE",
+                    "users": [
+                        {
+                            "userid": "uid1",
+                            "userName": "connor",
+                            "isActive": false
+                        }
+                    ]
+                },
+                "roomid4": {
+                    "name": "Pro Sem",
+                    "users": [
+                        {
+                            "userid": "uid1",
+                            "userName": "connor",
+                            "isActive": false
+                        }
+                    ]
+                },
 
             }
 
@@ -228,4 +247,4 @@ export const dummydata = {
     }
 }
 
-
+export default dummydata;
