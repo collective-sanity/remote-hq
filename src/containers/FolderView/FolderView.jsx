@@ -12,7 +12,55 @@ import RightPanel from "containers/Panels/RightPanel"
 // TODO: iframe + pointer-events: none;
 // TODO: breadcrumbs
 
-const Row = styled.div`
+const links = [
+  {
+    title: "meep",
+    link: "https://docs.google.com/document/d/19R4d_-EHnhiGkq2x9iUOYZttT3aflE8fzbZB4J7ZOh4/",
+    type: "doc"
+  },
+];
+
+export default function FolderView () {
+    return (
+      <Row>
+        <LeftPanel />
+
+        <Links>
+          <Breadcrumbs>MHCI > SSUI > Chatbot</Breadcrumbs>
+          <LinkListContainer>
+            <LinkListContainerTitle>Pinned Files</LinkListContainerTitle>
+            <LinksList>
+              {links.map((link) => <LinkContainer 
+                to={{
+                  pathname: '/shared-desktop',
+                  state: {
+                    link: link.link,
+                    type: link.type
+                  }
+                }} />
+              )}
+            </LinksList>
+          </LinkListContainer>
+
+          <LinkListContainer>
+            <HeaderContainerWithDropdown>
+              <LinkListContainerTitle>All Files</LinkListContainerTitle>
+              <FilesDropdown>
+                <option value="Recently Viewed">Recently Viewed</option>
+              </FilesDropdown>
+            </HeaderContainerWithDropdown>
+            <LinksList>
+
+            </LinksList>
+          </LinkListContainer>
+        </Links>
+
+        <RightPanel />
+      </Row>
+    )
+  }
+
+  const Row = styled.div`
   display: flex;
   justify-content: space-between;
 `
@@ -70,51 +118,3 @@ const FilesDropdown = styled.select`
   margin-left: auto;
   -webkit-appearance: menulist-button;
 `
-
-const links = [
-  {
-    title: "meep",
-    link: "https://docs.google.com/document/d/19R4d_-EHnhiGkq2x9iUOYZttT3aflE8fzbZB4J7ZOh4/",
-    type: "doc"
-  },
-];
-
-export default function FolderView () {
-    return (
-      <Row>
-        <LeftPanel />
-
-        <Links>
-          <Breadcrumbs>MHCI > SSUI > Chatbot</Breadcrumbs>
-          <LinkListContainer>
-            <LinkListContainerTitle>Pinned Files</LinkListContainerTitle>
-            <LinksList>
-              {links.map((link) => <LinkContainer 
-                to={{
-                  pathname: '/shared-desktop',
-                  state: {
-                    link: link.link,
-                    type: link.type
-                  }
-                }} />
-              )}
-            </LinksList>
-          </LinkListContainer>
-
-          <LinkListContainer>
-            <HeaderContainerWithDropdown>
-              <LinkListContainerTitle>All Files</LinkListContainerTitle>
-              <FilesDropdown>
-                <option value="Recently Viewed">Recently Viewed</option>
-              </FilesDropdown>
-            </HeaderContainerWithDropdown>
-            <LinksList>
-
-            </LinksList>
-          </LinkListContainer>
-        </Links>
-
-        <RightPanel />
-      </Row>
-    )
-  }

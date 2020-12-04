@@ -6,6 +6,37 @@ import LeftPanel from "containers/Panels/LeftPanel"
 import RightPanel from "containers/Panels/RightPanel"
 
 // TODO: leave button
+export default function SharedDesktop ({ location }) {
+  let { link, type } = location.state;
+
+    return (
+      <Row>
+        <LeftPanel />
+
+        <Desktop>
+            <iframe 
+                width="100%"
+                height="100%"
+                src={link}
+            ></iframe>
+        </Desktop> 
+
+        <Docs>
+            <DocsTitle>Chatbot</DocsTitle>
+            <DocsList>
+              <Doc />
+              <Doc />
+              <Doc />
+              <Doc />
+              <Doc />
+            </DocsList>
+        </Docs>       
+
+        <RightPanel leave={true} />
+      </Row>
+    )
+  }
+
 const Row = styled.div`
   display: flex;
   justify-content: space-between;
@@ -47,35 +78,5 @@ const Doc = styled.div`
   height: 91px;
   margin-bottom: 20px;
   margin-right: 20px;
-  background-color: #c4c4c4;`
-
-export default function SharedDesktop ({ location }) {
-  let { link, type } = location.state;
-
-    return (
-      <Row>
-        <LeftPanel />
-
-        <Desktop>
-            <iframe 
-                width="100%"
-                height="100%"
-                src={link}
-            ></iframe>
-        </Desktop> 
-
-        <Docs>
-            <DocsTitle>Chatbot</DocsTitle>
-            <DocsList>
-              <Doc />
-              <Doc />
-              <Doc />
-              <Doc />
-              <Doc />
-            </DocsList>
-        </Docs>       
-
-        <RightPanel leave={true} />
-      </Row>
-    )
-  }
+  background-color: #c4c4c4;
+`
