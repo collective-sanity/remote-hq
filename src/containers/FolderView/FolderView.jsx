@@ -1,6 +1,6 @@
-import React from "react"
+import React, { useContext } from "react"
+import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components"
-import { NavLink } from 'react-router-dom'
 
 export default function FolderView () {
   return (
@@ -49,7 +49,61 @@ export default function FolderView () {
 }
 
 
-const Row = styled.div`
+// TODO: dynamic lists
+// TODO: icon based on type
+// TODO: filename
+// TODO: iframe + pointer-events: none;
+// TODO: breadcrumbs
+
+const links = [
+  {
+    title: "meep",
+    link: "https://docs.google.com/document/d/19R4d_-EHnhiGkq2x9iUOYZttT3aflE8fzbZB4J7ZOh4/",
+    type: "doc"
+  },
+];
+
+export default function FolderView () {
+    return (
+      <Row>
+        <LeftPanel />
+
+        <Links>
+          <Breadcrumbs>MHCI > SSUI > Chatbot</Breadcrumbs>
+          <LinkListContainer>
+            <LinkListContainerTitle>Pinned Files</LinkListContainerTitle>
+            <LinksList>
+              {links.map((link) => <LinkContainer 
+                to={{
+                  pathname: '/shared-desktop',
+                  state: {
+                    link: link.link,
+                    type: link.type
+                  }
+                }} />
+              )}
+            </LinksList>
+          </LinkListContainer>
+
+          <LinkListContainer>
+            <HeaderContainerWithDropdown>
+              <LinkListContainerTitle>All Files</LinkListContainerTitle>
+              <FilesDropdown>
+                <option value="Recently Viewed">Recently Viewed</option>
+              </FilesDropdown>
+            </HeaderContainerWithDropdown>
+            <LinksList>
+
+            </LinksList>
+          </LinkListContainer>
+        </Links>
+
+        <RightPanel />
+      </Row>
+    )
+  }
+
+  const Row = styled.div`
   display: flex;
   justify-content: space-between;
 `
@@ -85,7 +139,7 @@ const LinksList = styled.div`
   flex-wrap: wrap;
 `
 
-const Link = styled.div`
+const LinkContainer = styled(Link)`
   height: 160px;
   width: 120px;
   background-color: #c4c4c4;
