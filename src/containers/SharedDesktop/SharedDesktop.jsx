@@ -5,7 +5,7 @@ import ControlContext from '../../shared/control-context'
 import LeftPanel from "containers/Panels/LeftPanel"
 import RightPanel from "containers/Panels/RightPanel"
 
-// TODO: list of docs in folder
+// TODO: leave button
 const Row = styled.div`
   display: flex;
   justify-content: space-between;
@@ -49,7 +49,9 @@ const Doc = styled.div`
   margin-right: 20px;
   background-color: #c4c4c4;`
 
-export default function SharedDesktop () {
+export default function SharedDesktop ({ location }) {
+  let { link, type } = location.state;
+
     return (
       <Row>
         <LeftPanel />
@@ -58,7 +60,7 @@ export default function SharedDesktop () {
             <iframe 
                 width="100%"
                 height="100%"
-                src="https://docs.google.com/spreadsheets/d/1QgJwm8rLpO70HNxzvzGGRhmskoYSe7MQhhsWrYiICgQ"
+                src={link}
             ></iframe>
         </Desktop> 
 

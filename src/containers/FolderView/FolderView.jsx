@@ -1,9 +1,16 @@
 import React, { useContext } from "react"
+import { Link } from "react-router-dom";
 import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
 
 import LeftPanel from "containers/Panels/LeftPanel"
 import RightPanel from "containers/Panels/RightPanel"
+
+// TODO: dynamic lists
+// TODO: icon based on type
+// TODO: filename
+// TODO: iframe + pointer-events: none;
+// TODO: breadcrumbs
 
 const Row = styled.div`
   display: flex;
@@ -41,7 +48,7 @@ const LinksList = styled.div`
   flex-wrap: wrap;
 `
 
-const Link = styled.div`
+const LinkContainer = styled(Link)`
   height: 160px;
   width: 120px;
   background-color: #c4c4c4;
@@ -64,6 +71,14 @@ const FilesDropdown = styled.select`
   -webkit-appearance: menulist-button;
 `
 
+const links = [
+  {
+    title: "meep",
+    link: "https://docs.google.com/document/d/19R4d_-EHnhiGkq2x9iUOYZttT3aflE8fzbZB4J7ZOh4/",
+    type: "doc"
+  },
+];
+
 export default function FolderView () {
     return (
       <Row>
@@ -74,16 +89,15 @@ export default function FolderView () {
           <LinkListContainer>
             <LinkListContainerTitle>Pinned Files</LinkListContainerTitle>
             <LinksList>
-              <Link />
-              <Link />
-              <Link />
-              <Link />
-              <Link />
-              <Link />
-              <Link />
-              <Link />
-              <Link />
-              <Link />
+              {links.map((link) => <LinkContainer 
+                to={{
+                  pathname: '/shared-desktop',
+                  state: {
+                    link: link.link,
+                    type: link.type
+                  }
+                }} />
+              )}
             </LinksList>
           </LinkListContainer>
 
@@ -95,16 +109,7 @@ export default function FolderView () {
               </FilesDropdown>
             </HeaderContainerWithDropdown>
             <LinksList>
-              <Link />
-              <Link />
-              <Link />
-              <Link />
-              <Link />
-              <Link />
-              <Link />
-              <Link />
-              <Link />
-              <Link />
+
             </LinksList>
           </LinkListContainer>
         </Links>
