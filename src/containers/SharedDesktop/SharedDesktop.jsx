@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useContext, useEffect } from "react"
 import styled from "styled-components"
 import { Link } from "react-router-dom";
 
@@ -6,12 +6,21 @@ import doc from '../../assets/Landing/google-docs.png';
 import sheet from '../../assets/Landing/google-sheets.png';
 import slides from '../../assets/Landing/google-slides.png';
 import figma from '../../assets/Landing/figma.png';
+import LeftPanel from "containers/Panels/LeftPanel";
+import RightPanel from "containers/Panels/RightPanel";
+import ControlContext from "shared/control-context";
 
 // TODO: leave button
-// TODO: dynamic docs list
 // TODO: pin
-export default function SharedDesktop ({ location }) {
-  let { link, type } = location.state;
+// TODO: delete
+// TODO: edit name
+export default function SharedDesktop () {
+  const context = useContext(ControlContext);
+  let { currentLink, setCurrentLink } = context;
+
+  useEffect(() => {
+    console.log(context);
+  })
 
   const docs = [
     {
@@ -45,18 +54,20 @@ export default function SharedDesktop ({ location }) {
 
   const getLink = type => {
     if (type === "figma") {
-      return `https://www.figma.com/embed?embed_host=astra&url=${link}`
+      return `https://www.figma.com/embed?embed_host=astra&url=${currentLink.link}`
     }
-    return link;
+    return currentLink.link;
   }
 
     return (
       <Row>
+        <LeftPanel />
         <Desktop>
             <iframe 
                 width="100%"
                 height="100%"
-                src={getLink(type)}
+                src={getLink(currentLink.type)}
+                title={currentLink.title}
             ></iframe>
         </Desktop> 
 
@@ -64,13 +75,14 @@ export default function SharedDesktop ({ location }) {
             <DocsTitle>Chatbot</DocsTitle>
             <DocsList>
               {docs.map((doc) => 
-                <Doc>
+                <Doc onClick={() => setCurrentLink(doc)}>
                   <DocIcon src={getIconType(doc.type)}></DocIcon>
                   <DocTitle>{doc.title}</DocTitle>
                 </Doc>
               )}
             </DocsList>
-        </Docs>       
+        </Docs>  
+        <RightPanel page={"SharedDesktop"} />     
       </Row>
     )
   }
@@ -112,7 +124,7 @@ flex-direction: row;
 flex-wrap: wrap;
 `
 
-const Doc = styled.div`
+const Doc = styled(Link)`
   width: 69px;
   height: 91px;
   margin-bottom: 20px;
