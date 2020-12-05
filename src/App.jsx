@@ -25,6 +25,7 @@ const App = () => {
   const [currentTeam, setCurrentTeam] = useState(null);
   const [currentFolder, setCurrentFolder] = useState(null);
   const teamsRef = firebase.firestore().collection("teams");
+  const [currentLink, setCurrentLink] = useState(null);
   const usersRef = firebase.firestore().collection("users")
   let userListener;
 
@@ -209,7 +210,6 @@ TEAMS
             /*
             Links are all the "files" in the system, they can be organized in folders and viewed in screens
             */
-  
             createLink: ({ 
               name, 
               linktype, 
@@ -247,10 +247,15 @@ TEAMS
                   .delete().then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
               }
             },
+            currentLink,
+            setCurrentLink: link => {
+              setCurrentLink(link);
+            },
+            updateLink: () => {},
+            pinLink: () => {},
           }}>
 
           <div className="App__container">
-            {user ? <LeftPanel /> : null}
             <Switch>
               <Route path="/room" component={Room}/>
               <Route path="/folder" component={FolderView}/>
@@ -260,7 +265,6 @@ TEAMS
                 {user ? <Landing /> : <Splash />}
               </Route>
             </Switch>
-            {user ? <RightPanel /> : null}
           </div>
         </ControlContext.Provider>
       </React.Fragment>
