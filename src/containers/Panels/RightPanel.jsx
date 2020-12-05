@@ -10,6 +10,63 @@ import Notification from '../../assets/Landing/bell.png'
 import Chat from '../../assets/Landing/chat.png'
 import MentalHealth from '../../assets/Landing/mental-health.png'
 
+export default function RightPanel ({ leave, page }) {
+  // const {
+  //   user,
+  //   createRoom,
+  // } = useContext(ControlContext);
+  
+  return (
+    <Panel>
+      {getTopIcons(page)}
+      <IconSection />
+    </Panel>
+  )
+}
+
+const getTopIcons = (page) => {
+  if (page === "FolderView") {
+    return (
+      <TopIconContainer>
+        <TopIcon src={GoogleDocs} />
+        <TopIcon src={GoogleSheets} />
+        <TopIcon src={GoogleSlides} />
+        <TextBtn onClick={() => {}}>Edit</TextBtn>
+        <TextBtn onClick={() => {}}>Delete</TextBtn>
+      </TopIconContainer>
+    )
+  }
+  if (page === "SharedDesktop") {
+    return (
+      <TopIconContainer>
+        <TextBtn onClick={() => {}}>Leave</TextBtn>
+        <TextBtn onClick={() => {}}>Rename</TextBtn>
+        <TextBtn onClick={() => {}}>Pin</TextBtn>
+        <TextBtn onClick={() => {}}>Delete</TextBtn>
+      </TopIconContainer>
+    );
+  }
+  return (
+    <TopIconContainer>
+      <Add>+</Add>
+      <TopIcon src={GoogleDocs} />
+      <TopIcon src={GoogleSheets} />
+      <TopIcon src={GoogleSlides} />
+      <TopIcon src={FigmaIcon} />
+    </TopIconContainer>
+  )
+}
+
+function IconSection () {
+  return (
+    <IconContainer>
+      <Icon src={Notification} />
+      <Icon src={Chat} />
+      <Icon src={MentalHealth} />
+    </IconContainer>
+  )
+}
+
 const Panel = styled.div`
   height: 100vh;
   width: 5%;
@@ -57,7 +114,7 @@ const IconContainer = styled.div`
   width: 40px;
 `
 
-const LeaveBtn = styled.button`
+const TextBtn = styled.button`
   width: 90%;
   height: 5%;
   font-size: 14px;
@@ -67,46 +124,5 @@ const LeaveBtn = styled.button`
   border: none;
   padding: 10px;
   border-radius: 10px;
-  margin: 0;
+  margin-top: 20px;
 `
-function TopIconSection ({ leave }) {
-  return (
-    <TopIconContainer>
-      {/* Add onClick={() => createRoom({users: [user.id]})} */}
-      {leave ? (
-          <LeaveBtn className='leaveBtn' onClick={() => leave()}>Leave</LeaveBtn>
-        ) : (
-          <></>
-      )}
-      <Add>+</Add>
-      <TopIcon src={GoogleDocs} />
-      <TopIcon src={GoogleSheets} />
-      <TopIcon src={GoogleSlides} />
-      <TopIcon src={FigmaIcon} />
-    </TopIconContainer>
-  )
-}
-
-function IconSection () {
-  return (
-    <IconContainer>
-      <Icon src={Notification} />
-      <Icon src={Chat} />
-      <Icon src={MentalHealth} />
-    </IconContainer>
-  )
-}
-
-export default function RightPanel ({ leave }) {
-  // const {
-  //   user,
-  //   createRoom,
-  // } = useContext(ControlContext);
-  
-  return (
-    <Panel>
-      <TopIconSection leave={leave} />
-      <IconSection />
-    </Panel>
-  )
-}
