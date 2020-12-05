@@ -180,7 +180,6 @@ const App = () => {
           }}>
 
           <div className="App__container">
-            {user ? <LeftPanel /> : null}
             <Switch>
               <Route path="/room" component={Room}/>
               <Route path="/folder" component={FolderView}/>
@@ -190,7 +189,6 @@ const App = () => {
                 {user ? <Landing /> : <Splash />}
               </Route>
             </Switch>
-            {user ? <RightPanel /> : null}
           </div>
         </ControlContext.Provider>
       </React.Fragment>
