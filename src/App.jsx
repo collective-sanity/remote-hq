@@ -26,6 +26,7 @@ const App = () => {
   const [rooms, setRooms] = useState(null);
   const [currentRoom, setCurrentRoom] = useState(null);
   const [currentFolder, setCurrentFolder] = useState(null);
+  const [currentLink, setCurrentLink] = useState(null);
 
   const roomsRef = firebase.firestore().collection("rooms");
   const usersRef = firebase.firestore().collection("users")
@@ -171,12 +172,18 @@ const App = () => {
             /*
             Links are all the "files" in the system, they can be organized in folders and viewed in screens
             */
+            currentLink,
+            setCurrentLink: link => {
+              setCurrentLink(link);
+            },
             createLink: ({ name, linktype }) => {
               if (linktype === "googleDoc") { }
               else if (linktype === "figma") { }
             },
             addLink: ({ name, linktype, url }) => { },
-            deleteLink: () => { },
+            editLink: () => {},
+            deleteLink: () => {},
+            pinLink: () => {},
           }}>
 
           <div className="App__container">
