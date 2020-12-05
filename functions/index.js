@@ -12,7 +12,6 @@ admin.initializeApp();
 Need Listener on link
 //https://stackoverflow.com/questions/50299329/node-js-firebase-service-account-private-key-wont-parse
 create events rather than figma files
-
 */
 const CONFIG_PRIVATE_KEY_ID = functions.config().serviceaccount.private_key_id;
 const CONFIG_PRIVATE_KEY = functions.config().serviceaccount.private_key.replace(/\\n/g, '\n');
@@ -38,7 +37,7 @@ On Create Link
 */
 
 exports.createLink = functions.firestore
-    .document('teams/{teamId}/{roomsCollectionId}/{roomId}/{linksCollectionId}/{linkId}')
+    .document('rooms/{roomId}/{linksCollectionId}/{linkId}')
     .onCreate((snap, context) => {
         let teamID = context.params.userId;
         let roomID = context.params.roomId;
@@ -94,7 +93,6 @@ exports.createLink = functions.firestore
         else if (data.type === "figma") {
 
         }
-
     });
 
 

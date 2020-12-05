@@ -19,15 +19,12 @@ const LOCALMODE = true;
 
 
 const App = () => {
+  const [data, setData] = useState(dummydata);
   const [user, setUser] = useState(null);
   const [teams, setTeams] = useState(null);
   const [currentTeam, setCurrentTeam] = useState(null);
-
-  const [rooms, setRooms] = useState(null);
-  const [currentRoom, setCurrentRoom] = useState(null);
   const [currentFolder, setCurrentFolder] = useState(null);
-
-  const roomsRef = firebase.firestore().collection("rooms");
+  const teamsRef = firebase.firestore().collection("teams");
   const usersRef = firebase.firestore().collection("users")
   let userListener;
 
@@ -36,9 +33,7 @@ const App = () => {
       <React.Fragment>
         <ControlContext.Provider
           value={{
-        
             user,
-            teams,
             loginUser: () => {
               if (LOCALMODE) {
                 setUser(dummydata.users.uid1);
@@ -82,8 +77,7 @@ const App = () => {
               if (LOCALMODE) {
                 setUser(null);
                 setTeams(null);
-                setRooms(null);
-                setCurrentRoom(null);
+                setCurrentTeam(null);
                 setCurrentFolder(null);
               }
               else {
@@ -91,34 +85,30 @@ const App = () => {
                   userListener();
                   setUser(null);
                   setTeams(null);
-                  setRooms(null);
-                  setCurrentRoom(null);
+                  setCurrentTeam(null);
                   setCurrentFolder(null);
-                }).catch(function (error) { });
+                }).catch(function (error) {
+                  console.log(error)
+                 });
               }
               // Force window refresh to display splash screen
               window.location.reload();
 
             },
-      
-           currentTeam,
-           setCurrentTeam: (teamID) => {
-             setCurrentTeam(dummydata["teams"][teamID]);
-             setCurrentRoom(null);
-           },
-        
-            /*
-            ROOM Functions
-            createRoom -
-            deleteRoom -
-            setCurrentRoom -  
-            */
-            rooms,
-            currentRoom,
-            createRoom: ({ name = "RandomTest", users = [] }) => {
-              if (LOCALMODE) {}
-              else{
-              const roomData = {
+
+/*
+
+TEAMS
+
+*/
+            teams,
+            currentTeam,
+            createTeam: ({ 
+              name = "RandomTest", 
+              users = [],
+
+            })=>{
+              const teamData = {
                 "name": name,
                 "host": user.id,
                 "users": [user.id, ...users],
@@ -127,56 +117,136 @@ const App = () => {
                 "screens": [],
                 "createdAt": firebase.firestore.FieldValue.serverTimestamp(),
               };
-              // Add Room
-              roomsRef.add(roomData).then((ref) => {
-                // Update User -- TODO update all users
-                usersRef.doc(user.id).update({
-                  rooms: [...user.rooms, ref.id]
-                });
-                console.log("Added doc with ID: ", ref.id);
-              });
-            }
-          },
-            deleteRoom: (roomID) => {
-              if (LOCALMODE) {}
+              if (LOCALMODE) {
+                let d = {...data};
+                d[name]=teamData;
+              }
               else{
-              roomsRef
-                .doc(roomID)
-                .delete()
-                .then(() => {
-                  usersRef.doc(user.id).update({
-                    roooms: user.rooms.filter(roomid => roomid !== roomID)
+                  
+                  // Add Room
+                  teamsRef.add(teamData).then((ref) => {
+                    // Update User -- TODO update all users
+                    usersRef.doc(user.id).update({
+                      teams: [...user.teams, ref.id]
+                    });
+                    console.log("Added doc with ID: ", ref.id);
                   });
-                }) // Document deleted
-                .catch((error) => console.error("Error deleting document", error));
-              }},
-            setCurrentRoom: (room) => {
-              setCurrentRoom(room);
-            },
-            /*
-          FOLDER Functions
-          setCurrentFolder - 
-          Create -
-          Delete -
-          */
-            currentFolder,
-            setCurrentFolder: (folder, { share = false }) => {
-              setCurrentFolder(folder);
-              if (share) {
-                roomsRef.get(currentRoom.id)
+                  setCurrentTeam(teamData);
               }
             },
-            createFolder: () => { },
-            deleteFolder: () => { },
+            updateTeam:({
+              teamId=currentTeam.id,
+              newData})=>{
+              if (LOCALMODE) {
+                let d = {...data};
+                d[teamId]=newData;
+                setData(d);
+              }
+              else{
+                teamsRef.doc(teamId).update(newData).then((ref)=>{ }).catch((error) => console.error("Error updating document", error));
+              }
+            },
+            deleteTeam:({
+              teamId=currentTeam.id
+            })=>{
+              if (LOCALMODE) {
+                let d = {...data};
+                delete d[teamId];
+                setData(d);
+              }
+              else{
+                  teamsRef.doc(teamId).delete().then((ref)=>{
+                    usersRef.doc(user.id).update({
+                      teams: user.teams.filter(t=>t!==ref.id)
+                    });
+                }).catch((error) => console.error("Error deleting document", error));
+              }
+            },
+            setCurrentTeam:({teamId}) =>setCurrentTeam(teamId),
+
+            /*
+
+            FOLDERS
+
+            */
+            createFolder: ({name="TestName"}) => { 
+
+            },
+            updateFolder: ({
+              teamId=currentTeam.id, 
+              folderId=currentFolder.id, 
+              newData})=> {
+              if (LOCALMODE) {
+                let d = {...data};
+                d[teamId][folderId]=newData;
+                setData(d);
+              }
+              else{
+                teamsRef.doc(teamId).update({
+                  "folders":newData
+                }).then((ref)=>{ }).catch((error) => console.error("Error updating document", error));
+              }
+            },
+            deleteFolder: ({
+              teamId=currentTeam.id
+            }) => {
+              if (LOCALMODE) {
+                let d = {...data};
+                delete d[teamId];
+                setData(d);
+              }
+              else{
+                  teamsRef.doc(teamId).delete().then((ref)=>{
+                    usersRef.doc(user.id).update({
+                      teams: user.teams.filter(t=>t!==ref.id)
+                    });
+                }).catch((error) => console.error("Error deleting document", error));
+              }
+            },
+            currentFolder,
+            setCurrentFolder,
+            
             /*
             Links are all the "files" in the system, they can be organized in folders and viewed in screens
             */
-            createLink: ({ name, linktype }) => {
-              if (linktype === "googleDoc") { }
-              else if (linktype === "figma") { }
+  
+            createLink: ({ 
+              name, 
+              linktype, 
+              url, 
+              folderId=currentFolder.id, 
+              teamId=currentTeam.id }) => {
+                const linkData = {
+                  "linkType": linktype,
+                  "isPinned": true,
+                  "name":name,
+                  "description": "",
+                  "createdDate": "2020-011-03T07:22Z",
+                  "lastModifiedDate": "2020-11-19T07:22Z",
+                  "link": url
+                };
+              if (LOCALMODE) {
+                let d = {...data};
+                d[teamId]["links"][name]=linkData;
+                d[teamId]["folders"][folderId]["links"].push(name);
+                setData(d);
+              }
+              else{
+
+                  teamsRef.doc(teamId).collection("links").add(linkData).then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
+              }
             },
-            addLink: ({ name, linktype, url }) => { },
-            deleteLink: () => { },
+            deleteLink: ({teamId=currentTeam.id, linkId}) => { 
+              if (LOCALMODE) {
+                let d = {...data};
+                delete d[teamId]["links"][linkId];
+                setData(d);
+              }
+              else{
+                  teamsRef.doc(teamId).collection("links").doc(linkId)
+                  .delete().then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
+              }
+            },
           }}>
 
           <div className="App__container">
