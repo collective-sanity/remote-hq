@@ -1,4 +1,5 @@
 import React, { useContext } from "react"
+import { useHistory } from "react-router-dom"
 import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
 
@@ -9,6 +10,7 @@ import FigmaIcon from '../../assets/Landing/figma.png'
 import Notification from '../../assets/Landing/bell.png'
 import Chat from '../../assets/Landing/chat.png'
 import MentalHealth from '../../assets/Landing/mental-health.png'
+import { Link } from "react-router-dom"
 
 export default function RightPanel ({ leave, page }) {
   const {
@@ -18,10 +20,12 @@ export default function RightPanel ({ leave, page }) {
     currentTeam,
     currentLink,
     pinLink,
-
+    deleteLink,
   } = useContext(ControlContext);
 
-  const getTopIcons = (page) => {
+  let history = useHistory();
+
+  const getTopIcons = (page, history) => {
     if (page === "FolderView") {
       return (
         <TopIconContainer>
@@ -40,13 +44,20 @@ export default function RightPanel ({ leave, page }) {
         <TopIconContainer>
           <TextBtn onClick={() => {}}>Leave</TextBtn>
           <TextBtn onClick={() => {}}>Rename</TextBtn>
+
           {!item.pinned ? (
-            <TextBtn onClick={() => pinLink() }>Pin</TextBtn>
+            <TextBtn onClick={ () => pinLink() }>Pin</TextBtn>
           ) : (
-            <TextBtn onClick={() => pinLink() }>Unpin</TextBtn>
+            <TextBtn onClick={ () => pinLink() }>Unpin</TextBtn>
           )}
           
-          <TextBtn onClick={() => {}}>Delete</TextBtn>
+          {/* <Link 
+            to="/folder"
+            onClick={ () => deleteLink() }
+          >
+            <TextBtn>Delete</TextBtn>
+          </Link> */}
+          <TextBtn onClick={ () => {deleteLink(); history.push("/folder");} }>Delete</TextBtn>
         </TopIconContainer>
       );
     }
@@ -63,7 +74,7 @@ export default function RightPanel ({ leave, page }) {
   
   return (
     <Panel>
-      {getTopIcons(page)}
+      {getTopIcons(page, history)}
       <IconSection />
     </Panel>
   )
