@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Switch, Route, } from "react-router-dom";
 
 import { provider, db } from 'shared/firebase';
@@ -27,6 +27,11 @@ const App = () => {
   const usersRef = firebase.firestore().collection("users")
   let userListener;
 
+  // handy for debugging state
+  useEffect(() => {
+    console.log(teams)
+  })
+
   return (
     <Router>
       <React.Fragment>
@@ -36,7 +41,8 @@ const App = () => {
             loginUser: () => {
               if (LOCALMODE) {
                 setUser(dummydata.users.uid1);
-                setTeams([dummydata.users.uid1.teams]);
+                setTeams([dummydata.teams.teamid1, dummydata.teams.teamid2, dummydata.teams.teamid3, dummydata.teams.teamid4]);
+                setCurrentTeam(dummydata.teams.teamid1);
               }
               else {
                 // Authenticate and get User Info
@@ -203,7 +209,9 @@ TEAMS
               }
             },
             currentFolder,
-            setCurrentFolder,
+            setCurrentFolder: folder => {
+              setCurrentFolder(folder);
+            },
             
             /*
             Links are all the "files" in the system, they can be organized in folders and viewed in screens

@@ -1,19 +1,24 @@
-import React from "react"
+import React, { useContext } from "react"
 import styled from "styled-components"
 import { Link } from 'react-router-dom'
+import ControlContext from '../../shared/control-context'
 
 export default function TeamBoards () {
+  const context = useContext(ControlContext);
+  let { currentTeam, setCurrentFolder } = context;
 
   return (
     <TeamContainer>
       <Title>Team Boards</Title>
       <BoardContainer>
-        <NavLink to='/folder'>
-          <Board></Board>
-        </NavLink>
-        <NavLink to='/folder'>
-          <Board></Board>
-        </NavLink>
+        {currentTeam.folders.map((folder) => 
+          <NavLink 
+            to='/folder'
+            onClick={() => setCurrentFolder(folder)}
+          >
+            <Board></Board>
+          </NavLink>
+        )}
       </BoardContainer>
     </TeamContainer>
   )
