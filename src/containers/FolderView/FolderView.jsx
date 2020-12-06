@@ -18,31 +18,9 @@ import figma from '../../assets/Landing/figma.png';
 // TODO: delete folder
 export default function FolderView () {
   const context = useContext(ControlContext);
-  const { data, user, currentTeam, currentFolder, setCurrentLink } = context;
-  console.log("meep" + currentFolder)
+  const { data, currentTeam, currentFolder, setCurrentLink } = context;
 
-  const links = [
-    {
-      title: "meep",
-      link: "https://docs.google.com/document/d/19R4d_-EHnhiGkq2x9iUOYZttT3aflE8fzbZB4J7ZOh4/",
-      type: "doc"
-    },
-    {
-      title: "beep",
-      link: "https://docs.google.com/spreadsheets/d/1QgJwm8rLpO70HNxzvzGGRhmskoYSe7MQhhsWrYiICgQ/",
-      type: "sheet"
-    },
-    {
-      title: "meow",
-      link: "https://docs.google.com/presentation/d/1u1dJoPthkIsEa_IAIrLYTvQRk6MYtzw6YCvRL1cL3xk/",
-      type: "slides"
-    },
-    {
-      title: "test",
-      link: "https://www.figma.com/file/jSPgLf0DbOKa9bdztdMngs/Mobile?node-id=0%3A1",
-      type: "figma"
-    },
-  ];
+  let links = data["teams"][currentTeam]["folders"][currentFolder]["links"];
   
   const getIconType = type => {
     if (type === "googledoc") return doc;
@@ -55,6 +33,21 @@ export default function FolderView () {
   useEffect(() => {
     console.log(context);
   })
+
+  const getLinks = (link, data, currentTeam, currentFolder) => {
+    let item = data["teams"][currentTeam]["links"][link];
+
+    return (
+      // <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
+      //   <LinkContainerType src={getIconType(link.linkType)}></LinkContainerType>
+      //   <LinkContainerTitle>{link.name}</LinkContainerTitle>
+      // </LinkContainer>
+      <LinkContainer href={item.link} target="_blank">
+        <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
+        <LinkContainerTitle>{item.name}</LinkContainerTitle>
+      </LinkContainer>
+    )
+  }
   
   return (
     
@@ -65,15 +58,8 @@ export default function FolderView () {
         <LinkListContainer>
           <LinkListContainerTitle>Pinned Files</LinkListContainerTitle>
           <LinksList>
-            {currentFolder.links.map((link) => 
-              // <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
-              //   <LinkContainerType src={getIconType(link.linkType)}></LinkContainerType>
-              //   <LinkContainerTitle>{link.name}</LinkContainerTitle>
-              // </LinkContainer>
-              <LinkContainer href={link.link} target="_blank">
-                <LinkContainerType src={getIconType(link.linkType)}></LinkContainerType>
-                <LinkContainerTitle>{link.name}</LinkContainerTitle>
-              </LinkContainer>
+            {links.map((link) => 
+              getLinks(link, data, currentTeam, currentFolder)
             )}
           </LinksList>
         </LinkListContainer>

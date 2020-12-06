@@ -44,7 +44,7 @@ const App = () => {
             loginUser: () => {
               if (LOCALMODE) {
                 setUser("uid1");
-                // setTeams([dummydata.teams.teamid1, dummydata.teams.teamid2, dummydata.teams.teamid3, dummydata.teams.teamid4]);
+                setTeams(data["users"]["uid1"]["teams"]);
               }
               else {
                 // Authenticate and get User Info
