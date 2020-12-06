@@ -31,7 +31,7 @@ const App = () => {
 
   // handy for debugging state
   useEffect(() => {
-    console.log(currentTeam)
+    console.log(data);
   })
 
   return (
@@ -244,7 +244,8 @@ TEAMS
                   teamsRef.doc(teamId).collection("links").add(linkData).then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
               }
             },
-            deleteLink: ({teamId=currentTeam.id, linkId}) => { 
+            updateLink: () => {},
+            deleteLink: ({teamId=currentTeam, linkId}) => { 
               if (LOCALMODE) {
                 let d = {...data};
                 delete d[teamId]["links"][linkId];
@@ -258,9 +259,20 @@ TEAMS
             currentLink,
             setCurrentLink: link => {
               setCurrentLink(link);
+              console.log(link);
             },
-            updateLink: () => {},
-            pinLink: () => {},
+            pinLink: () => {
+              if (LOCALMODE) {
+                let d = {...data};
+                let item = d["teams"][currentTeam]["links"][currentLink];
+                if (item.pinned) {
+                  item.pinned = false;
+                } else {
+                  item.pinned = true;
+                }
+                setData(d);
+              }
+            },
           }}>
 
           <div className="App__container">

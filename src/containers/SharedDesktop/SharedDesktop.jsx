@@ -23,6 +23,7 @@ export default function SharedDesktop () {
   const { data, currentTeam, currentFolder, setCurrentLink, currentLink } = context;
 
   let links = data["teams"][currentTeam]["folders"][currentFolder]["links"];
+  let currentLinkObj = data["teams"][currentTeam]["links"][currentLink];
 
   useEffect(() => {
     console.log(currentFolder);
@@ -38,16 +39,16 @@ export default function SharedDesktop () {
 
   const getLink = type => {
     if (type === "figma") {
-      return `https://www.figma.com/embed?embed_host=share&url=${currentLink.link}`
+      return `https://www.figma.com/embed?embed_host=share&url=${currentLinkObj.link}`
     }
-    return currentLink.link;
+    return currentLinkObj.link;
   }
 
   const getLinks = (link, data, currentTeam) => {
     let item = data["teams"][currentTeam]["links"][link];
 
     return (
-      <Doc onClick={() => setCurrentLink(item)}>
+      <Doc onClick={() => setCurrentLink(link)}>
         <DocIcon src={getIconType(item.linkType)}></DocIcon>
         <DocTitle>{item.name}</DocTitle>
       </Doc>
@@ -61,8 +62,8 @@ export default function SharedDesktop () {
             <iframe 
                 width="100%"
                 height="100%"
-                src={getLink(currentLink.linkType)}
-                title={currentLink.name}
+                src={getLink(currentLinkObj.linkType)}
+                title={currentLinkObj.name}
                 sandbox
                 allowFullScreen
             ></iframe>
