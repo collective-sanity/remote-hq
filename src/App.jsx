@@ -226,7 +226,6 @@ TEAMS
               teamId=currentTeam.id }) => {
                 const linkData = {
                   "linkType": linktype,
-                  "isPinned": true,
                   "name":name,
                   "description": "",
                   "createdDate": "2020-011-03T07:22Z",
@@ -244,7 +243,30 @@ TEAMS
                   teamsRef.doc(teamId).collection("links").add(linkData).then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
               }
             },
-            updateLink: () => {},
+            updateLink: () => {
+              if (LOCALMODE) {
+                let d = {...data};
+                let newName = d["teams"][currentTeam]["links"][currentLink].name;
+                let newDescription = d["teams"][currentTeam]["links"][currentLink].description;
+                let newLink = d["teams"][currentTeam]["links"][currentLink].link;
+
+                var name = prompt("Please enter your name", newName);
+                if (name == null || name == "") {
+                  return;
+                } else {
+                  newName = name;
+                }
+                d["teams"][currentTeam]["links"][currentLink].name = newName;
+
+                newDescription = "test";
+                d["teams"][currentTeam]["links"][currentLink].description = newDescription;
+
+                newLink = "https://www.figma.com/file/jSPgLf0DbOKa9bdztdMngs/Mobile";
+                d["teams"][currentTeam]["links"][currentLink].link = newLink;
+
+                setData(d);
+              }
+            },
             deleteLink: () => { 
               if (LOCALMODE) {
                 let d = {...data};
