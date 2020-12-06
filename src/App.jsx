@@ -245,14 +245,18 @@ TEAMS
               }
             },
             updateLink: () => {},
-            deleteLink: ({teamId=currentTeam, linkId}) => { 
+            deleteLink: () => { 
               if (LOCALMODE) {
                 let d = {...data};
-                delete d[teamId]["links"][linkId];
+                let links = d["teams"][currentTeam]["folders"][currentFolder]["links"];
+                let linkIndex = links.indexOf(currentLink);
+                d["teams"][currentTeam]["folders"][currentFolder]["links"].splice(linkIndex, 1);
+                delete d["teams"][currentTeam]["links"][currentLink];
                 setData(d);
+                setCurrentLink(null);
               }
               else{
-                  teamsRef.doc(teamId).collection("links").doc(linkId)
+                  teamsRef.doc(currentTeam).collection("links").doc(currentLink)
                   .delete().then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
               }
             },
