@@ -3,41 +3,43 @@ import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
 import { NavLink } from 'react-router-dom'
 
-const getRooms = (team, teams) => {
+const getFolders = (team, teams) => {
   for (let i=0; i<teams.length; i++) {
-    if (team === teams[i].id) {
-      return teams[i].rooms
+    if (team === teams[i].name) {
+      return teams[i].folders
     }
   }
 }
 
-const RoomCard = (room) => {
+const RoomCard = (folder) => {
   return (
     <Room>
       <NavLink 
         to={{
           pathname: '/room',
-          search: `?name=${room.room.name}`
+          search: `?name=${folder.folder.name}`
         }}
       >
         <RoomImage />
-        <RoomName>{room.room.name}</RoomName>
+        <RoomName>{folder.folder.name}</RoomName>
       </NavLink>
     </Room>
   )
 }
 
 export default function Landing () {
-  const { teams } = useContext(ControlContext);
+  const { currentTeam } = useContext(ControlContext);
 
   // eventually have to pass selected room as a prop
-  let rooms = getRooms("MHCI", teams)
+  // let folders = getFolders("SSUI Final Project", teams)
+  // console.log(folders)
+  let folders = currentTeam.folders;
 
   return (
     <ContentContainer>
-      <Title>MHCI Rooms</Title>
+      <Title>SSUI Final Project Folders</Title>
       <RoomsContainer>
-        {Object.keys(rooms).map((room, i) => <RoomCard key={i} room={rooms[room]} />)}
+        {folders.map((folder, i) => <RoomCard key={i} folder={folder} />)}
       </RoomsContainer>
     </ContentContainer>
   )
