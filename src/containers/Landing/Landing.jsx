@@ -20,37 +20,39 @@ const getTeams = (teams) => {
   return userTeams
 }
 
-const TeamCard = (team) => {
-  console.log(team)
+const TeamCard = ({ teamId, data, setCurrentTeam }) => {
+  let name = data["teams"][teamId].name;
+
   return (
     <Team>
-      <NavLink to='/folder'>
-        <TeamImage>
-          <OverlayContainer>
-            <StarIcon src={EmptyStar} />
-          </OverlayContainer>
-        </TeamImage>
-        <TeamName>{team.team.name}</TeamName>
+      <NavLink 
+        to={{
+          pathname: '/team',
+          search: `?name=${name}`
+        }}
+        onClick={() => setCurrentTeam(teamId)}
+      >
+        <TeamImage />
+        <TeamName>{name}</TeamName>
       </NavLink>
     </Team>
   )
 }
 
 export default function Landing () {
-  const { teams } = useContext(ControlContext);
-  const userTeams = getTeams(teams)
+  const { data, user, setCurrentTeam } = useContext(ControlContext);
+
+  // eventually have to pass selected Team as a prop
+  let teamsList = data["users"][user]["teams"];
+  console.log(teamsList)
 
   return (
-    <React.Fragment>
-      <LeftPanel />
-      <ContentContainer>
-        <Title>Your Teams</Title>
-        <TeamsContainer>
-          {userTeams.map((team, i) => <TeamCard key={i} team={team} />)}
-        </TeamsContainer>
-      </ContentContainer>
-      <RightPanel />
-    </React.Fragment>
+    <ContentContainer>
+      <Title>Teams</Title>
+      <TeamsContainer>
+        {teamsList.map((teamId, i) => <TeamCard key={i} data={data} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
+      </TeamsContainer>
+    </ContentContainer>
   )
 }
 

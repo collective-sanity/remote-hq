@@ -2,12 +2,12 @@ import React, { useContext } from "react"
 import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
 
-function Teams ({ teams }) {
+function Teams ({ teams, data }) {
   return (
     <TeamsSection>
       <MyTeams>My Teams:</MyTeams>
       <ul>
-        {teams.map((team, i) => <Team key={i}>{team.name}</Team>)}
+        {teams.map((team, i) => <Team key={i}>{data["teams"][team].name}</Team>)}
       </ul>
     </TeamsSection>
   )
@@ -15,19 +15,22 @@ function Teams ({ teams }) {
 
 export default function LeftPanel () {
   const {
+    data,
     user,
     teams,
     logoutUser,
   } = useContext(ControlContext);
+
+  let userData = data["users"][user];
   
   return (
     <Panel>
       <section>
-        <PhotoUrl src={user.photoUrl} alt='Profile' />
+        <PhotoUrl src={userData.photoUrl} alt='Profile' />
         {/* Only get user first name */}
-        <Name>Hi, {user.displayName.split(' ')[0]}</Name>
+        <Name>Hi, {userData.displayName.split(' ')[0]}</Name>
       </section>
-      <Teams teams={teams} />
+      <Teams teams={teams} data={data} />
       <LogoutBtn className='logoutBtn' onClick={() => logoutUser()}>Log Out</LogoutBtn>
     </Panel>
   )
