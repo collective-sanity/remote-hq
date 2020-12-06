@@ -11,35 +11,37 @@ const getFolders = (team, teams) => {
   }
 }
 
-const RoomCard = (folder) => {
+const RoomCard = ({ teamId, data, setCurrentTeam }) => {
+  let name = data["teams"][teamId].name;
+
   return (
     <Room>
       <NavLink 
         to={{
-          pathname: '/room',
-          search: `?name=${folder.folder.name}`
+          pathname: '/team',
+          search: `?name=${name}`
         }}
+        onClick={() => setCurrentTeam(teamId)}
       >
         <RoomImage />
-        <RoomName>{folder.folder.name}</RoomName>
+        <RoomName>{name}</RoomName>
       </NavLink>
     </Room>
   )
 }
 
 export default function Landing () {
-  const { currentTeam } = useContext(ControlContext);
+  const { data, user, setCurrentTeam } = useContext(ControlContext);
 
   // eventually have to pass selected room as a prop
-  // let folders = getFolders("SSUI Final Project", teams)
-  // console.log(folders)
-  let folders = currentTeam.folders;
+  let teamsList = data["users"][user]["teams"];
+  console.log(teamsList)
 
   return (
     <ContentContainer>
-      <Title>SSUI Final Project Folders</Title>
+      <Title>Teams</Title>
       <RoomsContainer>
-        {folders.map((folder, i) => <RoomCard key={i} folder={folder} />)}
+        {teamsList.map((teamId, i) => <RoomCard key={i} data={data} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
       </RoomsContainer>
     </ContentContainer>
   )

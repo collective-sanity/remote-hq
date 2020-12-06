@@ -6,7 +6,7 @@ const dummydata = {
             "displayName": "Connor Shannon",
             "photoUrl": "https://lh5.googleusercontent.com/-JQAFWa4C0iE/AAAAAAAAAAI/AAAAAAAAAAA/AMZuucklRz2PpA4ZqvUEP2Bh6PDouB_hEA/s96-c/photo.jpg",
             "rooms": ["roomid1", "room2id"],
-            "teams": ["MHCI"]
+            "teams": ["teamid1", "teamid2", "teamid3", "teamid4"]
         },
         "uid2": {
             "username": "nathan",
@@ -43,58 +43,59 @@ const dummydata = {
                 { "id": "uid3", "email": "karthicksh10@gmail.com" },
                 { "id": "uid4", "email": "victor.grajski@gmail.com" },
             ],
-            "folders": [
-                {
+            "folders": {
+                "folderid1": {
                     "name": "Chatbot",
-                    "links": [
-                        {
-                            "linkType": "figma",
-                            "name": "SSUI Project",
-                            "description": "Figma for project",
-                            "createdDate": "2020-011-03T07:22Z",
-                            "lastModifiedDate": "2020-11-19T07:22Z",
-                            "link": "https://www.figma.com/file/SLqyt8cQoYxRzY5XBoLOxN/SSUI-Project?node-id=42%3A2",
-                            "connectedLinks": []
-                        },
-                        {
-                            "linkType": "drive",
-                            "name": "SSUI Project",
-                            "description": "drive",
-                            "createdDate": "2020-011-03T07:22Z",
-                            "lastModifiedDate": "2020-11-19T07:22Z",
-                            "link": "https://drive.google.com/drive/folders/1o42xhoveHJbLQN5FuGpFAcPVIUHP7bTq?usp=sharing",
-                            "connectedLinks": ["linkid3"]
-                        },
-                        {
-                            "linkType": "googledoc",
-                            "name": "Proposal",
-                            "description": "proposal",
-                            "createdDate": "2020-011-03T07:22Z",
-                            "lastModifiedDate": "2020-11-19T07:22Z",
-                            "link": "https://docs.google.com/document/d/1QqmPSPdQtVxpHPOjabcbN3WaHFdbTPKBbwfVKuBSVWE/edit?usp=sharing",
-                            "connectedLinks": ["linkid2", "linkid5", "linkid6"]
-                        },
-                        {
-                            "linkType": "googledoc",
-                            "name": "Proposal Notes",
-                            "description": "",
-                            "createdDate": "2020-011-03T07:22Z",
-                            "lastModifiedDate": "2020-11-19T07:22Z",
-                            "link": "https://docs.google.com/document/d/1AqYkYBaBsueyWFtj7IYqZLY3dQgvkVsBV7vnywYcF74/edit?usp=sharing",
-                            "connectedLinks": ["linkid2"]
-                        },
-                        {
-                            "linkType": "resource",
-                            "name": "Dialogflow",
-                            "description": "",
-                            "createdDate": "2020-011-03T07:22Z",
-                            "lastModifiedDate": "2020-11-19T07:22Z",
-                            "link": "https://cloud.google.com/dialogflow",
-                            "connectedLinks": ["linkid3"]
-                        },
-                    ]
+                    "links": ["linkid1", "linkid2", "linkid3", "linkid4", "linkid5"]
                 }
-            ],
+            },
+            "links": {
+                "linkid1": {
+                    "linkType": "figma",
+                    "name": "SSUI Project",
+                    "description": "Figma for project",
+                    "createdDate": "2020-011-03T07:22Z",
+                    "lastModifiedDate": "2020-11-19T07:22Z",
+                    "link": "https://www.figma.com/file/SLqyt8cQoYxRzY5XBoLOxN/SSUI-Project?node-id=42%3A2",
+                    "connectedLinks": []
+                },
+                "linkid2": {
+                    "linkType": "drive",
+                    "name": "SSUI Project",
+                    "description": "drive",
+                    "createdDate": "2020-011-03T07:22Z",
+                    "lastModifiedDate": "2020-11-19T07:22Z",
+                    "link": "https://drive.google.com/drive/folders/1o42xhoveHJbLQN5FuGpFAcPVIUHP7bTq?usp=sharing",
+                    "connectedLinks": ["linkid3"]
+                },
+                "linkid3": {
+                    "linkType": "googledoc",
+                    "name": "Proposal",
+                    "description": "proposal",
+                    "createdDate": "2020-011-03T07:22Z",
+                    "lastModifiedDate": "2020-11-19T07:22Z",
+                    "link": "https://docs.google.com/document/d/1QqmPSPdQtVxpHPOjabcbN3WaHFdbTPKBbwfVKuBSVWE/edit?usp=sharing",
+                    "connectedLinks": ["linkid2", "linkid5", "linkid6"]
+                },
+                "linkid4": {
+                    "linkType": "googledoc",
+                    "name": "Proposal Notes",
+                    "description": "",
+                    "createdDate": "2020-011-03T07:22Z",
+                    "lastModifiedDate": "2020-11-19T07:22Z",
+                    "link": "https://docs.google.com/document/d/1AqYkYBaBsueyWFtj7IYqZLY3dQgvkVsBV7vnywYcF74/edit?usp=sharing",
+                    "connectedLinks": ["linkid2"]
+                },
+                "linkid5": {
+                    "linkType": "resource",
+                    "name": "Dialogflow",
+                    "description": "",
+                    "createdDate": "2020-011-03T07:22Z",
+                    "lastModifiedDate": "2020-11-19T07:22Z",
+                    "link": "https://cloud.google.com/dialogflow",
+                    "connectedLinks": ["linkid3"]
+                },
+            }
         },
         "teamid2": {
             "name": "PUI",

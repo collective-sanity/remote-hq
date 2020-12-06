@@ -2,13 +2,15 @@ import React, { useContext, useEffect } from "react"
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
-import doc from '../../assets/Landing/google-docs.png';
-import sheet from '../../assets/Landing/google-sheets.png';
-import slides from '../../assets/Landing/google-slides.png';
-import figma from '../../assets/Landing/figma.png';
 import ControlContext from "shared/control-context";
 import LeftPanel from "containers/Panels/LeftPanel";
 import RightPanel from "containers/Panels/RightPanel";
+
+import doc from '../../assets/Landing/google-docs.png';
+import sheet from '../../assets/Landing/google-sheets.png';
+import slides from '../../assets/Landing/google-slides.png';
+import drive from '../../assets/Landing/google-drive.png';
+import figma from '../../assets/Landing/figma.png';
 
 // TODO: create file
 // TODO: create link
@@ -16,10 +18,9 @@ import RightPanel from "containers/Panels/RightPanel";
 // TODO: delete folder
 export default function FolderView () {
   const context = useContext(ControlContext);
-  const { currentRoom, currentFolder, setCurrentLink } = context;
-  console.log(currentFolder)
+  const { data, user, currentTeam, currentFolder, setCurrentLink } = context;
+  console.log("meep" + currentFolder)
 
-  // context.currentFolder.links
   const links = [
     {
       title: "meep",
@@ -44,9 +45,10 @@ export default function FolderView () {
   ];
   
   const getIconType = type => {
-    if (type === "doc") return doc;
-    if (type === "sheet") return sheet;
-    if (type === "slides") return slides;
+    if (type === "googledoc") return doc;
+    if (type === "googlesheet") return sheet;
+    if (type === "googleslides") return slides;
+    if (type === "drive") return drive;
     if (type === "figma") return figma;
   }
 
@@ -59,12 +61,16 @@ export default function FolderView () {
     <Row>
       <LeftPanel />
       <Links>
-        <Breadcrumbs>{currentRoom} {'>'} {currentFolder.name}</Breadcrumbs>
+        <Breadcrumbs>{currentTeam.name} {'>'} {currentFolder.name}</Breadcrumbs>
         <LinkListContainer>
           <LinkListContainerTitle>Pinned Files</LinkListContainerTitle>
           <LinksList>
             {currentFolder.links.map((link) => 
-              <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
+              // <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
+              //   <LinkContainerType src={getIconType(link.linkType)}></LinkContainerType>
+              //   <LinkContainerTitle>{link.name}</LinkContainerTitle>
+              // </LinkContainer>
+              <LinkContainer href={link.link} target="_blank">
                 <LinkContainerType src={getIconType(link.linkType)}></LinkContainerType>
                 <LinkContainerTitle>{link.name}</LinkContainerTitle>
               </LinkContainer>
@@ -136,7 +142,7 @@ const LinksList = styled.div`
   flex-wrap: wrap;
 `
 
-const LinkContainer = styled(Link)`
+const LinkContainer = styled.a`
   height: 160px;
   width: 120px;
   background-color: #c4c4c4;

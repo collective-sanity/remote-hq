@@ -2,21 +2,25 @@ import React, { useContext, useEffect } from "react"
 import styled from "styled-components"
 import { Link } from "react-router-dom";
 
-import doc from '../../assets/Landing/google-docs.png';
-import sheet from '../../assets/Landing/google-sheets.png';
-import slides from '../../assets/Landing/google-slides.png';
-import figma from '../../assets/Landing/figma.png';
 import LeftPanel from "containers/Panels/LeftPanel";
 import RightPanel from "containers/Panels/RightPanel";
 import ControlContext from "shared/control-context";
 
+import doc from '../../assets/Landing/google-docs.png';
+import sheet from '../../assets/Landing/google-sheets.png';
+import slides from '../../assets/Landing/google-slides.png';
+import drive from '../../assets/Landing/google-drive.png';
+import figma from '../../assets/Landing/figma.png';
+
+
 // TODO: leave button
+
 // TODO: pin
 // TODO: delete
 // TODO: edit name
 export default function SharedDesktop () {
   const context = useContext(ControlContext);
-  let { currentLink, setCurrentLink } = context;
+  let { currentLink, setCurrentLink, currentFolder } = context;
 
   useEffect(() => {
     console.log(context);
@@ -46,15 +50,16 @@ export default function SharedDesktop () {
   ];
 
   const getIconType = type => {
-    if (type === "doc") return doc;
-    if (type === "sheet") return sheet;
-    if (type === "slides") return slides;
+    if (type === "googledoc") return doc;
+    if (type === "googlesheet") return sheet;
+    if (type === "googleslides") return slides;
+    if (type === "drive") return drive;
     if (type === "figma") return figma;
   }
 
   const getLink = type => {
     if (type === "figma") {
-      return `https://www.figma.com/embed?embed_host=astra&url=${currentLink.link}`
+      return `https://www.figma.com/embed?embed_host=share&url=${currentLink.link}`
     }
     return currentLink.link;
   }
@@ -68,16 +73,18 @@ export default function SharedDesktop () {
                 height="100%"
                 src={getLink(currentLink.type)}
                 title={currentLink.title}
+                sandbox
+                allowFullScreen
             ></iframe>
         </Desktop> 
 
         <Docs>
             <DocsTitle>Chatbot</DocsTitle>
             <DocsList>
-              {docs.map((doc) => 
-                <Doc onClick={() => setCurrentLink(doc)}>
-                  <DocIcon src={getIconType(doc.type)}></DocIcon>
-                  <DocTitle>{doc.title}</DocTitle>
+              {currentFolder.links.map((link) => 
+                <Doc onClick={() => setCurrentLink(link)}>
+                  <DocIcon src={getIconType(link.linkType)}></DocIcon>
+                  <DocTitle>{link.name}</DocTitle>
                 </Doc>
               )}
             </DocsList>
