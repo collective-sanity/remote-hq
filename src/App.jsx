@@ -211,7 +211,9 @@ TEAMS
               }
             },
             currentFolder,
-            setCurrentFolder,
+            setCurrentFolder: folder => {
+              setCurrentFolder(folder);
+            },
             
             /*
             Links are all the "files" in the system, they can be organized in folders and viewed in screens

@@ -17,6 +17,7 @@ import RightPanel from "containers/Panels/RightPanel";
 export default function FolderView () {
   const context = useContext(ControlContext);
   const { currentRoom, currentFolder, setCurrentLink } = context;
+  console.log(currentFolder)
 
   // context.currentFolder.links
   const links = [
@@ -58,14 +59,14 @@ export default function FolderView () {
     <Row>
       <LeftPanel />
       <Links>
-        <Breadcrumbs>{currentRoom} {'>'} {currentFolder}</Breadcrumbs>
+        <Breadcrumbs>{currentRoom} {'>'} {currentFolder.name}</Breadcrumbs>
         <LinkListContainer>
           <LinkListContainerTitle>Pinned Files</LinkListContainerTitle>
           <LinksList>
-            {links.map((link) => 
+            {currentFolder.links.map((link) => 
               <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
-                <LinkContainerType src={getIconType(link.type)}></LinkContainerType>
-                <LinkContainerTitle>{link.title}</LinkContainerTitle>
+                <LinkContainerType src={getIconType(link.linkType)}></LinkContainerType>
+                <LinkContainerTitle>{link.name}</LinkContainerTitle>
               </LinkContainer>
             )}
           </LinksList>

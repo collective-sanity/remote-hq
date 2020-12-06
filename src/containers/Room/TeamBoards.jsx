@@ -5,21 +5,20 @@ import ControlContext from '../../shared/control-context'
 
 export default function TeamBoards () {
   const context = useContext(ControlContext);
-  let { setCurrentFolder } = context;
+  let { currentTeam, setCurrentFolder } = context;
 
   return (
     <TeamContainer>
       <Title>Team Boards</Title>
       <BoardContainer>
-        <NavLink 
-          to='/folder'
-          onClick={() => setCurrentFolder("Chatbot")}
-        >
-          <Board></Board>
-        </NavLink>
-        <NavLink to='/folder'>
-          <Board></Board>
-        </NavLink>
+        {currentTeam.folders.map((folder) => 
+          <NavLink 
+            to='/folder'
+            onClick={() => setCurrentFolder(folder)}
+          >
+            <Board></Board>
+          </NavLink>
+        )}
       </BoardContainer>
     </TeamContainer>
   )
