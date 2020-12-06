@@ -145,11 +145,11 @@ const dummydata = {
                 { "id": "uid1", "email": "conreshan@gmail.com" },
                 { "id": "uid2", "email": "anonymousnathan@gmail.com" },
             ],
-            "folders": [
-                {
+            "folders": {
+                "folderid1": {
                     "name": "Name"
-                }
-            ],
+                },
+            },
             "links": {
                 "links": {
                     "linkid6": {
