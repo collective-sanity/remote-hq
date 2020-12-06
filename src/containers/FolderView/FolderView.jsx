@@ -38,7 +38,7 @@ export default function FolderView () {
     let item = data["teams"][currentTeam]["links"][link];
 
     return (
-      <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(item)}>
+      <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
         <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
         <LinkContainerTitle>{item.name}</LinkContainerTitle>
       </LinkContainer>

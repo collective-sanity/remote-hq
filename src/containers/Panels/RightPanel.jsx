@@ -11,10 +11,55 @@ import Chat from '../../assets/Landing/chat.png'
 import MentalHealth from '../../assets/Landing/mental-health.png'
 
 export default function RightPanel ({ leave, page }) {
-  // const {
-  //   user,
-  //   createRoom,
-  // } = useContext(ControlContext);
+  const {
+    data,
+    user,
+    createRoom,
+    currentTeam,
+    currentLink,
+    pinLink,
+
+  } = useContext(ControlContext);
+
+  const getTopIcons = (page) => {
+    if (page === "FolderView") {
+      return (
+        <TopIconContainer>
+          <TopIcon src={GoogleDocs} />
+          <TopIcon src={GoogleSheets} />
+          <TopIcon src={GoogleSlides} />
+          <Add>+</Add>
+          <TextBtn onClick={() => {}}>Edit</TextBtn>
+          <TextBtn onClick={() => {}}>Delete</TextBtn>
+        </TopIconContainer>
+      )
+    }
+    if (page === "SharedDesktop") {
+      let item = data["teams"][currentTeam]["links"][currentLink];
+      return (
+        <TopIconContainer>
+          <TextBtn onClick={() => {}}>Leave</TextBtn>
+          <TextBtn onClick={() => {}}>Rename</TextBtn>
+          {!item.pinned ? (
+            <TextBtn onClick={() => pinLink() }>Pin</TextBtn>
+          ) : (
+            <TextBtn onClick={() => pinLink() }>Unpin</TextBtn>
+          )}
+          
+          <TextBtn onClick={() => {}}>Delete</TextBtn>
+        </TopIconContainer>
+      );
+    }
+    return (
+      <TopIconContainer>
+        <Add>+</Add>
+        <TopIcon src={GoogleDocs} />
+        <TopIcon src={GoogleSheets} />
+        <TopIcon src={GoogleSlides} />
+        <TopIcon src={FigmaIcon} />
+      </TopIconContainer>
+    )
+  }
   
   return (
     <Panel>
@@ -24,38 +69,7 @@ export default function RightPanel ({ leave, page }) {
   )
 }
 
-const getTopIcons = (page) => {
-  if (page === "FolderView") {
-    return (
-      <TopIconContainer>
-        <TopIcon src={GoogleDocs} />
-        <TopIcon src={GoogleSheets} />
-        <TopIcon src={GoogleSlides} />
-        <TextBtn onClick={() => {}}>Edit</TextBtn>
-        <TextBtn onClick={() => {}}>Delete</TextBtn>
-      </TopIconContainer>
-    )
-  }
-  if (page === "SharedDesktop") {
-    return (
-      <TopIconContainer>
-        <TextBtn onClick={() => {}}>Leave</TextBtn>
-        <TextBtn onClick={() => {}}>Rename</TextBtn>
-        <TextBtn onClick={() => {}}>Pin</TextBtn>
-        <TextBtn onClick={() => {}}>Delete</TextBtn>
-      </TopIconContainer>
-    );
-  }
-  return (
-    <TopIconContainer>
-      <Add>+</Add>
-      <TopIcon src={GoogleDocs} />
-      <TopIcon src={GoogleSheets} />
-      <TopIcon src={GoogleSlides} />
-      <TopIcon src={FigmaIcon} />
-    </TopIconContainer>
-  )
-}
+
 
 function IconSection () {
   return (
