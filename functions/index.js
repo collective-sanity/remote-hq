@@ -5,8 +5,8 @@ const { google } = require('googleapis');
 
 const admin = require('firebase-admin');
 admin.initializeApp();
-
-//const db = admin.firestore();
+const db = admin.firestore();
+// TODO Return Promise
 
 /*
 Need Listener on link
@@ -32,68 +32,132 @@ const credentials = {
     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/main-account%40remote-hq.iam.gserviceaccount.com"
 }
 
+const mimeTypes = {
+    "googleDoc": 'application/vnd.google-apps.document',
+    "googleSheet": 'application/vnd.google-apps.spreadsheet',
+    "googleSlides": 'application/vnd.google-apps.presentation'
+}
+
+const toURL = {
+    "googleDoc": (id)=>`https://docs.google.com/document/d/${id}/edit`,
+    "googleSheet": (id)=>`https://docs.google.com/spreadsheets/d/${id}/edit`,
+    "googleSlides": (id)=>`https://docs.google.com/presentation/d/${id}/edit`
+}
+
 /*
-On Create Link
+On Create Team
 */
-
-exports.createLink = functions.firestore
-    .document('rooms/{roomId}/{linksCollectionId}/{linkId}')
+exports.createTeam = functions.firestore
+    .document('teams/{teamId}')
     .onCreate((snap, context) => {
-        let teamID = context.params.userId;
-        let roomID = context.params.roomId;
-        let linkID = context.params.linkId;
+        let teamID = context.params.teamId;
         let data = snap.data();
-
-        /*
-        First want to see what type of link it is
-        */
-        if (data.type === "googleDoc") {
-            // If type is google doc, create metadata
-            let name = data.name;
-            var fileMetadata = {
-                name: name,
-                mimeType: 'application/vnd.google-apps.document',
-                parents: [SHARED_FOLDER_ID],
-            };
-            var media = {
-                mimeType: 'text/plain',
-                body: '',
-            };
-            // authenticate google client
-            google.auth.getClient({
-                credentials,
-                scopes: 'https://www.googleapis.com/auth/drive.file',
-            }).then((client) => {
-                let drive = google.drive({
-                    version: 'v3',
-                    auth: client,
-                });
-                // create file
-                drive.files.create({
-                    requestBody: fileMetadata,
-                    media: media,
-                }).then((t) => {
-                    //
-                    console.log(t.data);
-                    let fileID = t.data.id;
-                   // let f = functions.firestore.document(`teams/${teamID}/rooms/${roomID}/links/${linkID}`);
-                    let ref = admin.firestore().collection("teams")
-                                    .doc(teamID).collection("rooms")
-                                    .doc(roomID).collection("links")
-                                    .doc(linkID);
-                    console.log(ref);
-                    ref.update({
-                        "url":fileID
-                    }).then((t)=>{}).catch((e)=>{});
-                }).catch((e) => {
-                    console.log(e);
-                });
+        var fileMetadata = {
+            'name': teamID,
+            'mimeType': 'application/vnd.google-apps.folder',
+            parents: [SHARED_FOLDER_ID],
+        };
+        google.auth.getClient({
+            credentials,
+            scopes: 'https://www.googleapis.com/auth/drive.file',
+        }).then((client) => {
+            let drive = google.drive({
+                version: 'v3',
+                auth: client,
             });
-        }
-        else if (data.type === "figma") {
+            drive.files.create({
+                resource: fileMetadata,
+                fields: 'id'
+            }).then((res) => {
 
-        }
+                console.log('Folder Id: ', res.data);
+                const promises = []
+                // now add permissions
+                const userList = data.users;
+                console.log(userList);
+                userList.map((userData) => {
+                    console.log(userData);
+                    // In the below line, two things happen.
+                    // 1. We are calling the async function (timeout()). So at this point the async function has started and enters the 'pending' state.
+                    // 2. We are pushing the pending promise to an array.
+                    promises.push(
+                        new Promise((resolve, reject) => {
+                            const userPermission = {
+                                'type': 'user',
+                                'role': 'writer',
+                                'emailAddress': userData.email
+                            };
+                            drive.permissions.create({
+                                resource: userPermission,
+                                fileId: res.data.id,
+                                fields: 'id',
+                            }).then(() => resolve('Changed permissions')).catch((e) => reject('Failed permissions'));
+
+                        })
+                    );
+                });
+                Promise.all(promises);
+
+            }).catch((e1) => { })
+
+        });
+
+
     });
 
 
-    //  //
+
+
+
+exports.createLink = functions.firestore
+    .document('teams/{teamId}/{linksCollectionId}/{linkId}')
+    .onCreate((snap, context) => {
+        console.log(snap);
+        console.log(context);
+        let teamID = context.params.teamId;
+        let linkID = context.params.linkId;
+        let data = snap.data();
+        /*
+        First want to see what type of link it is
+        */
+       if(!data.type.includes("google")){return false;}
+       const teamsPromise = new Promise((resolve, reject) => {
+            db.doc(`teams/${teamID}`).get().then((teamData) => resolve(teamData.data().driveFolderID)).catch((e) => reject('Failed permissions'));
+        });
+        teamsPromise.then((val)=>{
+            let name = data.name;
+                var fileMetadata = {
+                    name: name,
+                    mimeType: mimeTypes[data.type],
+                    parents: [val],
+                };
+                var media = { mimeType: 'text/plain', body: '', };
+             
+                google.auth.getClient({
+                    credentials,
+                    scopes: 'https://www.googleapis.com/auth/drive.file',
+                }).then((client) => {
+                    let drive = google.drive({
+                        version: 'v3',
+                        auth: client,
+                    });
+                    // create file
+                    drive.files.create({
+                        requestBody: fileMetadata,
+                        media: media,
+                    }).then((t) => {
+                        console.log(t.data);
+                        let fileID = t.data.id;
+                        let ref = admin.firestore().collection("teams")
+                            .doc(teamID).collection("links")
+                            .doc(linkID);
+                        console.log(ref);
+                        ref.update({
+                            "url": toURL[data.type](fileID)
+                        }).then((t) => { }).catch((e) => { });
+                    }).catch((e) => { console.log(e); });
+                });
+            });
+               
+    });
+   
