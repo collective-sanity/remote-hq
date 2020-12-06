@@ -21,6 +21,7 @@ export default function RightPanel ({ leave, page }) {
     currentLink,
     pinLink,
     deleteLink,
+    updateLink,
   } = useContext(ControlContext);
 
   let history = useHistory();
@@ -42,8 +43,8 @@ export default function RightPanel ({ leave, page }) {
       let item = data["teams"][currentTeam]["links"][currentLink];
       return (
         <TopIconContainer>
-          <TextBtn onClick={() => {}}>Leave</TextBtn>
-          <TextBtn onClick={() => {}}>Rename</TextBtn>
+          <TextBtn onClick={ () => history.push("/folder") }>Leave</TextBtn>
+          <TextBtn onClick={ () => updateLink() }>Edit</TextBtn>
 
           {!item.pinned ? (
             <TextBtn onClick={ () => pinLink() }>Pin</TextBtn>
@@ -57,7 +58,7 @@ export default function RightPanel ({ leave, page }) {
           >
             <TextBtn>Delete</TextBtn>
           </Link> */}
-          <TextBtn onClick={ () => {deleteLink(); history.push("/folder");} }>Delete</TextBtn>
+          <TextBtn onClick={ () => { deleteLink(); history.push("/folder"); } }>Delete</TextBtn>
         </TopIconContainer>
       );
     }

@@ -12,10 +12,6 @@ import slides from '../../assets/Landing/google-slides.png';
 import drive from '../../assets/Landing/google-drive.png';
 import figma from '../../assets/Landing/figma.png';
 
-
-// TODO: leave button
-
-// TODO: pin
 // TODO: delete
 // TODO: edit name
 export default function SharedDesktop () {
