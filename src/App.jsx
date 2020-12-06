@@ -7,8 +7,6 @@ import firebase from "firebase/app";
 import ControlContext from "shared/control-context";
 import Splash from 'containers/Splash/Splash'
 import Landing from 'containers/Landing/Landing'
-import LeftPanel from 'containers/Panels/LeftPanel'
-import RightPanel from 'containers/Panels/RightPanel'
 import Room from 'containers/Room/Room'
 import FolderView from 'containers/FolderView/FolderView'
 import SharedDesktop from 'containers/SharedDesktop/SharedDesktop'
@@ -38,7 +36,7 @@ const App = () => {
             loginUser: () => {
               if (LOCALMODE) {
                 setUser(dummydata.users.uid1);
-                setTeams([dummydata.teams.MHCI, dummydata.teams.Work]);
+                setTeams([dummydata.users.uid1.teams]);
               }
               else {
                 // Authenticate and get User Info
