@@ -31,7 +31,7 @@ const App = () => {
 
   // handy for debugging state
   useEffect(() => {
-    console.log(teams)
+    console.log(currentTeam)
   })
 
   return (
@@ -39,12 +39,12 @@ const App = () => {
       <React.Fragment>
         <ControlContext.Provider
           value={{
+            data,
             user,
             loginUser: () => {
               if (LOCALMODE) {
-                setUser(dummydata.users.uid1);
-                setTeams([dummydata.teams.teamid1, dummydata.teams.teamid2, dummydata.teams.teamid3, dummydata.teams.teamid4]);
-                setCurrentTeam(dummydata.teams.teamid1);
+                setUser("uid1");
+                setTeams(data["users"]["uid1"]["teams"]);
               }
               else {
                 // Authenticate and get User Info
@@ -169,7 +169,7 @@ TEAMS
                 }).catch((error) => console.error("Error deleting document", error));
               }
             },
-            setCurrentTeam:({teamId}) =>setCurrentTeam(teamId),
+            setCurrentTeam:(teamId) =>setCurrentTeam(teamId),
 
             /*
 
@@ -265,7 +265,7 @@ TEAMS
 
           <div className="App__container">
             <Switch>
-              <Route path="/room" component={Room}/>
+              <Route path="/team" component={Room}/>
               <Route path="/folder" component={FolderView}/>
               <Route path="/shared-desktop" component={SharedDesktop} />
               <Route exact path="/">
