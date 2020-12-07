@@ -14,7 +14,6 @@ import FolderView from 'containers/FolderView/FolderView'
 import SharedDesktop from 'containers/SharedDesktop/SharedDesktop'
 
 import './App.scss';
-import { getDefaultNormalizer } from "@testing-library/react";
 
 const LOCALMODE = false;
 
