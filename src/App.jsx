@@ -14,9 +14,9 @@ import FolderView from 'containers/FolderView/FolderView'
 import SharedDesktop from 'containers/SharedDesktop/SharedDesktop'
 
 import './App.scss';
+import { getDefaultNormalizer } from "@testing-library/react";
 
-const LOCALMODE = true;
-
+const LOCALMODE = false;
 
 const App = () => {
   const [data, setData] = useState(dummydata);
@@ -31,7 +31,7 @@ const App = () => {
 
   // handy for debugging state
   useEffect(() => {
-    console.log(data);
+    // console.log(user);
   })
 
   return (
@@ -39,6 +39,7 @@ const App = () => {
       <React.Fragment>
         <ControlContext.Provider
           value={{
+            LOCALMODE,
             data,
             user,
             loginUser: () => {
@@ -52,7 +53,7 @@ const App = () => {
                   let userRef = usersRef.doc(result.user.uid);
                   // Next . . . load user info
                   userRef.get()
-                    .then((doc) => {
+                    .then(async (doc) => {
                       // Set Data
                       let data;
                       if (!doc.exists) {
@@ -62,22 +63,24 @@ const App = () => {
                           "photoUrl": result.user.photoURL,
                           "email": result.user.email,
                           "createdAt": firebase.firestore.FieldValue.serverTimestamp(),
-                          "rooms": [],
-                          "teams": result.user.teams,
+                          "teams": [],
                         };
                         userRef.set(data);
                       } else {
                         data = { id: doc.id, ...doc.data(), }
+                        setUser(doc.id);
+                        setTeams(doc.teams);
                       }
                       // Add listener to keep track of changes and update state
                       userListener = userRef.onSnapshot(function (doc) {
                         console.log("Current data: ", doc.data());
-                        setUser(data);
+                        setUser(doc.id);
+                        setTeams(doc.teams);
                       });
                       // Get Rooms and set them
                       // Add room listener
                     })
-                });
+                })
               }
             },
             logoutUser: () => {
@@ -218,29 +221,46 @@ TEAMS
             /*
             Links are all the "files" in the system, they can be organized in folders and viewed in screens
             */
-            createLink: ({ 
+            createLink: (
               name, 
               linktype, 
-              url, 
-              folderId=currentFolder.id, 
-              teamId=currentTeam.id }) => {
+              url
+              ) => {
+                let d = {...data};
+                d["teams"][currentTeam]["links"][name] = linkData;
+                d["teams"][currentTeam]["folders"][currentFolder]["links"].push(name);
+                setData(d);
+
                 const linkData = {
                   "linkType": linktype,
-                  "name":name,
+                  "name": name,
                   "description": "",
-                  "createdDate": "2020-011-03T07:22Z",
-                  "lastModifiedDate": "2020-11-19T07:22Z",
-                  "link": url
+                  "createdDate": firebase.firestore.FieldValue.serverTimestamp(),
                 };
+                if (linktype === "figma" || linktype === "resource") {
+                  linkData.link = url;
+                }
               if (LOCALMODE) {
                 let d = {...data};
-                d[teamId]["links"][name]=linkData;
-                d[teamId]["folders"][folderId]["links"].push(name);
+                d["teams"][currentTeam]["links"][name] = linkData;
+                d["teams"][currentTeam]["folders"][currentFolder]["links"].push(name);
                 setData(d);
               }
-              else{
-
-                  teamsRef.doc(teamId).collection("links").add(linkData).then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
+              else {
+                if (linktype === "figma" || linktype === "resource") {
+                  teamsRef.doc(currentTeam).collection("links").add(linkData).then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
+                  
+                  teamsRef
+                    .doc(currentTeam)
+                    .collection("folders")
+                    .doc(currentFolder)
+                    .collection("links")
+                    .set({
+                      links: d["teams"][currentTeam]["folders"][currentFolder]["links"]
+                    });
+                    
+                    // .add(linkData).then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
+                }
               }
             },
             updateLink: () => {
