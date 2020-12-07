@@ -28,12 +28,12 @@ export default function SharedDesktop () {
     currentLinkObj = data["teams"][currentTeam]["links"][currentLink];
   }
 
-  // const [value, loading, error] = useDocument(
-  //   firebase.firestore().collection("teams").doc(currentTeam).collection("folders").doc(currentFolder),
-  //   {
-  //     snapshotListenOptions: { includeMetadataChanges: true },
-  //   }
-  // );
+  const [firebaseLinks, linksLoading, linksError] = useDocument(
+    firebase.firestore().collection("teams").doc(currentTeam).collection("folders").doc(currentFolder),
+    {
+      snapshotListenOptions: { includeMetadataChanges: true },
+    }
+  );
 
   const [value, loading, error] = useDocument(
     firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(currentLink),
@@ -42,19 +42,9 @@ export default function SharedDesktop () {
     }
   );
 
-  
-
   useEffect(() => {
     // console.log(currentFolder);
   })
-
-  const getIconType = type => {
-    if (type === "googledoc") return doc;
-    if (type === "googlesheet") return sheet;
-    if (type === "googleslides") return slides;
-    if (type === "drive") return drive;
-    if (type === "figma") return figma;
-  }
 
   const getLink = (type, link) => {
     if (LOCALMODE) {
@@ -68,24 +58,12 @@ export default function SharedDesktop () {
         return `https://www.figma.com/embed?embed_host=share&url=${link}`
       }
       return link;}
-  }
-
-  const getLinks = (link, data, currentTeam) => {
-    let item = data["teams"][currentTeam]["links"][link];
-
-    return (
-      <Doc onClick={() => setCurrentLink(link)}>
-        <DocIcon src={getIconType(item.linkType)}></DocIcon>
-        <DocTitle>{item.name}</DocTitle>
-      </Doc>
-    )
-  }
+    }
 
     return (
       <Row>
         {/* <LeftPanel /> */}
         <Desktop>
-        {/* {value && <span>Document: {JSON.stringify(value.data())}</span>} */}
           {LOCALMODE ? (
             <iframe 
               width="100%"
@@ -109,16 +87,65 @@ export default function SharedDesktop () {
 
         <Docs>
             <DocsTitle>Chatbot</DocsTitle>
-            {/* <DocsList>
-              {links.map((link) => 
-                getLinks(link, data, currentTeam, currentFolder)
-              )}
-            </DocsList> */}
+            {LOCALMODE ? (
+              <DocsList>
+                {links.map((link) => 
+                  getLinks(link, data, currentTeam, currentFolder, setCurrentLink)
+                )}
+              </DocsList>
+            ) : (
+              <DocsList>
+                {firebaseLinks && firebaseLinks.data().links.map((link) => 
+                  <GetFirebaseLinks link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
+                )}
+              </DocsList>
+            )}
         </Docs>  
         <RightPanel page={"SharedDesktop"} />     
       </Row>
     )
   }
+
+  const getLinks = (link, data, currentTeam, setCurrentLink) => {
+    let item = data["teams"][currentTeam]["links"][link];
+
+    return (
+      <Doc onClick={() => setCurrentLink(link)}>
+        <DocIcon src={getIconType(item.linkType)}></DocIcon>
+        <DocTitle>{item.name}</DocTitle>
+      </Doc>
+    )
+  }
+
+  const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink }) => {
+    const [value, loading, error] = useDocument(
+      firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(link),
+      {
+        snapshotListenOptions: { includeMetadataChanges: true },
+      }
+    );
+
+    return (
+      <div>
+        {value && 
+          <Doc onClick={() => setCurrentLink(value.id)}>
+            <DocIcon src={getIconType(value.data().linkType)}></DocIcon>
+            <DocTitle>{value.data().name}</DocTitle>
+          </Doc>
+        }
+      </div>
+    )
+  }
+
+  const getIconType = type => {
+    if (type === "googledoc") return doc;
+    if (type === "googlesheet") return sheet;
+    if (type === "googleslides") return slides;
+    if (type === "drive") return drive;
+    if (type === "figma") return figma;
+  }
+
+
 
 const Row = styled.div`
   display: flex;
