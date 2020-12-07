@@ -20,6 +20,7 @@ export default function RightPanel ({ leave, page }) {
     currentTeam,
     currentLink,
     pinLink,
+    createLink,
     deleteLink,
     updateLink,
   } = useContext(ControlContext);
@@ -33,7 +34,8 @@ export default function RightPanel ({ leave, page }) {
           <TopIcon src={GoogleDocs} />
           <TopIcon src={GoogleSheets} />
           <TopIcon src={GoogleSlides} />
-          <Add>+</Add>
+          <TopIcon src={FigmaIcon} onClick={() => createLink("test", "figma", "https://www.figma.com/file/jSPgLf0DbOKa9bdztdMngs/Mobile")} />
+          <Add onClick={() => createLink("test", "resource", "https://reddit.com")}>+</Add>
           <TextBtn onClick={() => {}}>Edit</TextBtn>
           <TextBtn onClick={() => {}}>Delete</TextBtn>
         </TopIconContainer>

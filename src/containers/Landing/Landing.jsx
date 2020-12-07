@@ -1,7 +1,9 @@
-import React, { useContext } from "react"
+import React, { useContext, useState, useEffect } from "react"
 import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
 import { NavLink } from 'react-router-dom'
+import firebase from 'firebase/app'
+import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore';
 
 const getFolders = (team, teams) => {
   for (let i=0; i<teams.length; i++) {
@@ -30,19 +32,59 @@ const RoomCard = ({ teamId, data, setCurrentTeam }) => {
   )
 }
 
-export default function Landing () {
-  const { data, user, setCurrentTeam } = useContext(ControlContext);
+const FirebaseRoomCard = ({ teamId, setCurrentTeam }) => {
+  const [value, loading, error] = useDocument(
+    firebase.firestore().doc(`teams/${teamId}`),
+    {
+      snapshotListenOptions: { includeMetadataChanges: true },
+    }
+  );
 
-  // eventually have to pass selected room as a prop
-  let teamsList = data["users"][user]["teams"];
-  console.log(teamsList)
+  return (
+    <Room>
+      <NavLink 
+        to={{
+          pathname: '/team',
+        }}
+        onClick={() => setCurrentTeam(teamId)}
+      >
+        <RoomImage />
+        <RoomName>{value && value.data().name}</RoomName>
+      </NavLink>
+    </Room>
+  )
+}
+
+
+
+export default function Landing () {
+  const { LOCALMODE, data, user, setCurrentTeam } = useContext(ControlContext);
+  const [teamsList, setTeamsList] = useState(null);
+
+  const [value, loading, error] = useDocument(
+    firebase.firestore().doc(`users/${user}`),
+    {
+      snapshotListenOptions: { includeMetadataChanges: true },
+    }
+  );
+
+  if (LOCALMODE) {
+    setTeamsList(data["users"][user]["teams"]);
+  }
+  
 
   return (
     <ContentContainer>
       <Title>Teams</Title>
-      <RoomsContainer>
-        {teamsList.map((teamId, i) => <RoomCard key={i} data={data} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
-      </RoomsContainer>
+      {LOCALMODE ? (
+        <RoomsContainer>
+          {teamsList.map((teamId, i) => <RoomCard key={i} data={data} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
+        </RoomsContainer>
+      ) : (
+        <RoomsContainer>
+          {value && value.data().teams.map((teamId, i) => <FirebaseRoomCard key={i} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
+        </RoomsContainer>
+      )}
     </ContentContainer>
   )
 }
