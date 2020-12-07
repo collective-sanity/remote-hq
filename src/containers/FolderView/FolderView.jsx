@@ -38,19 +38,18 @@ export default function FolderView () {
     let item = data["teams"][currentTeam]["links"][link];
 
     return (
-      // <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
-      //   <LinkContainerType src={getIconType(link.linkType)}></LinkContainerType>
-      //   <LinkContainerTitle>{link.name}</LinkContainerTitle>
-      // </LinkContainer>
-      <LinkContainer href={item.link} target="_blank">
+      <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
         <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
         <LinkContainerTitle>{item.name}</LinkContainerTitle>
       </LinkContainer>
+      // <LinkContainer href={item.link} target="_blank">
+      //   <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
+      //   <LinkContainerTitle>{item.name}</LinkContainerTitle>
+      // </LinkContainer>
     )
   }
   
   return (
-    
     <Row>
       <LeftPanel />
       <Links>
@@ -128,7 +127,7 @@ const LinksList = styled.div`
   flex-wrap: wrap;
 `
 
-const LinkContainer = styled.a`
+const LinkContainer = styled(Link)`
   height: 160px;
   width: 120px;
   background-color: #c4c4c4;

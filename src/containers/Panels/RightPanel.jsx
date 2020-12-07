@@ -1,4 +1,5 @@
 import React, { useContext } from "react"
+import { useHistory } from "react-router-dom"
 import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
 
@@ -9,53 +10,80 @@ import FigmaIcon from '../../assets/Landing/figma.png'
 import Notification from '../../assets/Landing/bell.png'
 import Chat from '../../assets/Landing/chat.png'
 import MentalHealth from '../../assets/Landing/mental-health.png'
+import { Link } from "react-router-dom"
 
 export default function RightPanel ({ leave, page }) {
-  // const {
-  //   user,
-  //   createRoom,
-  // } = useContext(ControlContext);
+  const {
+    data,
+    user,
+    createRoom,
+    currentTeam,
+    currentLink,
+    pinLink,
+    createLink,
+    deleteLink,
+    updateLink,
+  } = useContext(ControlContext);
+
+  let history = useHistory();
+
+  const getTopIcons = (page, history) => {
+    if (page === "FolderView") {
+      return (
+        <TopIconContainer>
+          <TopIcon src={GoogleDocs} />
+          <TopIcon src={GoogleSheets} />
+          <TopIcon src={GoogleSlides} />
+          <TopIcon src={FigmaIcon} onClick={() => createLink("test", "figma", "https://www.figma.com/file/jSPgLf0DbOKa9bdztdMngs/Mobile")} />
+          <Add onClick={() => createLink("test", "resource", "https://reddit.com")}>+</Add>
+          <TextBtn onClick={() => {}}>Edit</TextBtn>
+          <TextBtn onClick={() => {}}>Delete</TextBtn>
+        </TopIconContainer>
+      )
+    }
+    if (page === "SharedDesktop") {
+      let item = data["teams"][currentTeam]["links"][currentLink];
+      return (
+        <TopIconContainer>
+          <TextBtn onClick={ () => history.push("/folder") }>Leave</TextBtn>
+          <TextBtn onClick={ () => updateLink() }>Edit</TextBtn>
+
+          {!item.pinned ? (
+            <TextBtn onClick={ () => pinLink() }>Pin</TextBtn>
+          ) : (
+            <TextBtn onClick={ () => pinLink() }>Unpin</TextBtn>
+          )}
+          
+          {/* <Link 
+            to="/folder"
+            onClick={ () => deleteLink() }
+          >
+            <TextBtn>Delete</TextBtn>
+          </Link> */}
+          <TextBtn onClick={ () => { deleteLink(); history.push("/folder"); } }>Delete</TextBtn>
+        </TopIconContainer>
+      );
+    }
+    return (
+      <TopIconContainer>
+        <Add>+</Add>
+        <TopIcon src={GoogleDocs} />
+        <TopIcon src={GoogleSheets} />
+        <TopIcon src={GoogleSlides} />
+        <TopIcon src={FigmaIcon} />
+      </TopIconContainer>
+    )
+  }
   
   return (
     <Panel>
-      {getTopIcons(page)}
+      {getTopIcons(page, history)}
       <IconSection />
     </Panel>
   )
 }
 
-const getTopIcons = (page) => {
-  if (page === "FolderView") {
-    return (
-      <TopIconContainer>
-        <TopIcon src={GoogleDocs} />
-        <TopIcon src={GoogleSheets} />
-        <TopIcon src={GoogleSlides} />
-        <TextBtn onClick={() => {}}>Edit</TextBtn>
-        <TextBtn onClick={() => {}}>Delete</TextBtn>
-      </TopIconContainer>
-    )
-  }
-  if (page === "SharedDesktop") {
-    return (
-      <TopIconContainer>
-        <TextBtn onClick={() => {}}>Leave</TextBtn>
-        <TextBtn onClick={() => {}}>Rename</TextBtn>
-        <TextBtn onClick={() => {}}>Pin</TextBtn>
-        <TextBtn onClick={() => {}}>Delete</TextBtn>
-      </TopIconContainer>
-    );
-  }
-  return (
-    <TopIconContainer>
-      <Add>+</Add>
-      <TopIcon src={GoogleDocs} />
-      <TopIcon src={GoogleSheets} />
-      <TopIcon src={GoogleSlides} />
-      <TopIcon src={FigmaIcon} />
-    </TopIconContainer>
-  )
-}
+
 
 function IconSection () {
   return (

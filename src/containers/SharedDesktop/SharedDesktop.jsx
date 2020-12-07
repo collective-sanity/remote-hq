@@ -12,42 +12,18 @@ import slides from '../../assets/Landing/google-slides.png';
 import drive from '../../assets/Landing/google-drive.png';
 import figma from '../../assets/Landing/figma.png';
 
-
-// TODO: leave button
-
-// TODO: pin
 // TODO: delete
 // TODO: edit name
 export default function SharedDesktop () {
   const context = useContext(ControlContext);
-  let { currentLink, setCurrentLink, currentFolder } = context;
+  const { data, currentTeam, currentFolder, setCurrentLink, currentLink } = context;
+
+  let links = data["teams"][currentTeam]["folders"][currentFolder]["links"];
+  let currentLinkObj = data["teams"][currentTeam]["links"][currentLink];
 
   useEffect(() => {
-    console.log(context);
+    console.log(currentFolder);
   })
-
-  const docs = [
-    {
-      title: "meep",
-      link: "https://docs.google.com/document/d/19R4d_-EHnhiGkq2x9iUOYZttT3aflE8fzbZB4J7ZOh4/",
-      type: "doc"
-    },
-    {
-      title: "beep",
-      link: "https://docs.google.com/spreadsheets/d/1QgJwm8rLpO70HNxzvzGGRhmskoYSe7MQhhsWrYiICgQ/",
-      type: "sheet"
-    },
-    {
-      title: "meow",
-      link: "https://docs.google.com/presentation/d/1u1dJoPthkIsEa_IAIrLYTvQRk6MYtzw6YCvRL1cL3xk/",
-      type: "slides"
-    },
-    {
-      title: "test",
-      link: "https://www.figma.com/file/jSPgLf0DbOKa9bdztdMngs/Mobile?node-id=0%3A1",
-      type: "figma"
-    },
-  ];
 
   const getIconType = type => {
     if (type === "googledoc") return doc;
@@ -59,9 +35,20 @@ export default function SharedDesktop () {
 
   const getLink = type => {
     if (type === "figma") {
-      return `https://www.figma.com/embed?embed_host=share&url=${currentLink.link}`
+      return `https://www.figma.com/embed?embed_host=share&url=${currentLinkObj.link}`
     }
-    return currentLink.link;
+    return currentLinkObj.link;
+  }
+
+  const getLinks = (link, data, currentTeam) => {
+    let item = data["teams"][currentTeam]["links"][link];
+
+    return (
+      <Doc onClick={() => setCurrentLink(link)}>
+        <DocIcon src={getIconType(item.linkType)}></DocIcon>
+        <DocTitle>{item.name}</DocTitle>
+      </Doc>
+    )
   }
 
     return (
@@ -71,8 +58,8 @@ export default function SharedDesktop () {
             <iframe 
                 width="100%"
                 height="100%"
-                src={getLink(currentLink.type)}
-                title={currentLink.title}
+                src={getLink(currentLinkObj.linkType)}
+                title={currentLinkObj.name}
                 sandbox
                 allowFullScreen
             ></iframe>
@@ -81,11 +68,8 @@ export default function SharedDesktop () {
         <Docs>
             <DocsTitle>Chatbot</DocsTitle>
             <DocsList>
-              {currentFolder.links.map((link) => 
-                <Doc onClick={() => setCurrentLink(link)}>
-                  <DocIcon src={getIconType(link.linkType)}></DocIcon>
-                  <DocTitle>{link.name}</DocTitle>
-                </Doc>
+              {links.map((link) => 
+                getLinks(link, data, currentTeam, currentFolder)
               )}
             </DocsList>
         </Docs>  

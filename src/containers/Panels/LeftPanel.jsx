@@ -1,36 +1,52 @@
 import React, { useContext } from "react"
 import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
+import firebase from 'firebase/app'
+import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore';
 
-function Teams ({ teams, data }) {
+function Team ({ teamId }) {
+  const [value, loading, error] = useDocument(
+    firebase.firestore().doc(`teams/${teamId.trim()}`),
+    {
+      snapshotListenOptions: { includeMetadataChanges: true },
+    }
+  );
+
+  return (
+    <TeamName>{value && value.data().name}</TeamName>
+  )
+}
+
+function Teams ({ teams }) {
   return (
     <TeamsSection>
       <MyTeams>My Teams:</MyTeams>
-      <ul>
-        {teams.map((team, i) => <Team key={i}>{data["teams"][team].name}</Team>)}
-      </ul>
+      {teams && teams.map((team, i) => <Team teamId={team} key={i} />)}
     </TeamsSection>
   )
 }
 
 export default function LeftPanel () {
   const {
-    data,
     user,
-    teams,
     logoutUser,
   } = useContext(ControlContext);
 
-  let userData = data["users"][user];
+  const [value, loading, error] = useDocument(
+    firebase.firestore().doc(`users/${user}`),
+    {
+      snapshotListenOptions: { includeMetadataChanges: true },
+    }
+  );
   
   return (
     <Panel>
       <section>
-        <PhotoUrl src={userData.photoUrl} alt='Profile' />
+        <PhotoUrl src={value && value.data().photoUrl} alt='Profile' />
         {/* Only get user first name */}
-        <Name>Hi, {userData.displayName.split(' ')[0]}</Name>
+        <Name>Hi, {value && value.data().displayName.split(' ')[0]}</Name>
       </section>
-      <Teams teams={teams} data={data} />
+      <Teams teams={value && value.data().teams} />
       <LogoutBtn className='logoutBtn' onClick={() => logoutUser()}>Log Out</LogoutBtn>
     </Panel>
   )
@@ -80,7 +96,7 @@ const MyTeams = styled.p`
   font-size: 16px;
 `
 
-const Team = styled.li`
+const TeamName = styled.li`
   list-style: none;
   font-size: 12px;
   margin-left: 15%;

@@ -1,24 +1,12 @@
-import React, { useContext } from "react"
+import React, { useContext, useState, useEffect } from "react"
 import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
 import { NavLink } from 'react-router-dom'
-import dummydata from '../../shared/dummydata'
+import firebase from 'firebase/app'
+import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore';
+
 import LeftPanel from "containers/Panels/LeftPanel";
 import RightPanel from "containers/Panels/RightPanel";
-import EmptyStar from '../../assets/Landing/star.svg'
-
-const getTeams = (teams) => {
-  const allTeams = dummydata.teams
-  const userTeams = []
-
-  for (let i=0; i<Object.keys(allTeams).length; i++) {
-    if (teams[0].includes(Object.keys(allTeams)[i])) {
-      userTeams.push(allTeams[Object.keys(allTeams)[i]])
-    }
-  }
-
-  return userTeams
-}
 
 const TeamCard = ({ teamId, data, setCurrentTeam }) => {
   let name = data["teams"][teamId].name;
@@ -39,22 +27,73 @@ const TeamCard = ({ teamId, data, setCurrentTeam }) => {
   )
 }
 
-export default function Landing () {
-  const { data, user, setCurrentTeam } = useContext(ControlContext);
-
-  // eventually have to pass selected Team as a prop
-  let teamsList = data["users"][user]["teams"];
-  console.log(teamsList)
+const FirebaseTeamCard = ({ teamId, setCurrentTeam }) => {
+  const [value, loading, error] = useDocument(
+    firebase.firestore().doc(`teams/${teamId.trim()}`),
+    {
+      snapshotListenOptions: { includeMetadataChanges: true },
+    }
+  );
 
   return (
-    <ContentContainer>
-      <Title>Teams</Title>
-      <TeamsContainer>
-        {teamsList.map((teamId, i) => <TeamCard key={i} data={data} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
-      </TeamsContainer>
-    </ContentContainer>
+    <Team>
+      <NavLink 
+        to={{
+          pathname: '/team',
+          search: `?id=${value && value.id}`
+        }}
+        onClick={() => setCurrentTeam(teamId)}
+      >
+        <TeamImage />
+        <TeamName>{value && value.data().name}</TeamName>
+      </NavLink>
+    </Team>
   )
 }
+
+
+
+export default function Landing () {
+  const { LOCALMODE, data, user, setCurrentTeam } = useContext(ControlContext);
+  const [teamsList, setTeamsList] = useState(null);
+
+  const [value, loading, error] = useDocument(
+    firebase.firestore().doc(`users/${user}`),
+    {
+      snapshotListenOptions: { includeMetadataChanges: true },
+    }
+  );
+
+  console.log(value && value.data())
+
+  if (LOCALMODE) {
+    setTeamsList(data["users"][user]["teams"]);
+  }
+
+  return (
+    <Row>
+      <LeftPanel />
+      <ContentContainer>
+        <Title>Teams</Title>
+        {LOCALMODE ? (
+          <TeamsContainer>
+            {teamsList.map((teamId, i) => <TeamCard key={i} data={data} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
+          </TeamsContainer>
+        ) : (
+          <TeamsContainer>
+            {value && value.data().teams.map((teamId, i) => <FirebaseTeamCard key={i} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
+          </TeamsContainer>
+        )}
+      </ContentContainer>
+      <RightPanel />
+    </Row>
+  )
+}
+
+const Row = styled.div`
+  display: flex;
+  width: 100%;
+`
 
 const ContentContainer = styled.div`
   width: 100%;
@@ -100,7 +139,6 @@ const StarIcon = styled.img`
   height: 30px;
   width: 30px;
 `
-
 
   // .favorites-icon:hover {
   //   cursor: pointer;
