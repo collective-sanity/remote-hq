@@ -229,6 +229,7 @@ TEAMS
                   "description": "",
                   "createdDate": firebase.firestore.FieldValue.serverTimestamp(),
                 };
+                
                 if (linktype === "figma" || linktype === "resource") {
                   linkData.link = url;
                 }
@@ -239,28 +240,43 @@ TEAMS
                 setData(d);
               }
               else {
-                if (linktype === "figma" || linktype === "resource") {
+                if (linktype === "figma" || linktype === "resource" || linktype.includes("google")) {
+                  let folderRef = teamsRef.doc(currentTeam).collection("folders").doc(currentFolder);
+              
                   teamsRef
                     .doc(currentTeam)
                     .collection("links")
                     .add(linkData)
                     .then((result)=>{
+                      // link data added
                       console.log(result)
-                    })
-                    .catch((error) => console.error("Error adding document", error));
-                  
-                  // teamsRef.doc(currentTeam).collection("links")
+                      let linkID = result.id;
+                      folderRef.get().then((val)=>{
+                        let folderData = val.data();
+                        console.log(folderData)
+                        folderRef.update({
+                          "links":[ ...folderData.links, linkID]
+                        });
+                      });
+                      /*
+                      if(linktype === "figma" || linktype === "resource"){
+                        setCurrentLink(linkData);
+                      }
+                      else if(linktype.includes("google")){
+                        //let linkListener = 
+                        teamsRef
+                        .doc( currentTeam).collection("links").doc(linkID).onSnapshot(function (doc) {
+                          console.log("Current data: ", doc.data());
+                          let newData = doc.data();
+                        if(newData.url!==null && newData !==""){
+                              setCurrentLink(doc.id);
+                              linkListener();
+                         }
 
-                  // teamsRef
-                  //   .doc(currentTeam)
-                  //   .collection("folders")
-                  //   .doc(currentFolder)
-                  //   .collection("links")
-                  //   .set({
-                  //     links: d["teams"][currentTeam]["folders"][currentFolder]["links"]
-                  //   });
-                    
-                    // .add(linkData).then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
+                        });
+                      }*/
+                    }).catch((error) => console.error("Error adding document", error));
+             
                 }
               }
             },
@@ -271,8 +287,8 @@ TEAMS
                 let newDescription = d["teams"][currentTeam]["links"][currentLink].description;
                 let newLink = d["teams"][currentTeam]["links"][currentLink].link;
 
-                var name = prompt("Please enter your name", newName);
-                if (name == null || name == "") {
+                var name = prompt("Please enter a new name", newName);
+                if (name === null || name === "") {
                   return;
                 } else {
                   newName = name;
@@ -286,7 +302,29 @@ TEAMS
                 d["teams"][currentTeam]["links"][currentLink].link = newLink;
 
                 setData(d);
-              }
+              } else {
+                  let newName;
+                  var name = prompt("Please enter a new name", '');
+                  if (name === null || name === "") {
+                    return;
+                  } else {
+                    newName = name;
+                  }
+
+                  teamsRef
+                    .doc(currentTeam)
+                    .collection("links")
+                    .doc(currentLink)
+                    .update({
+                      name: newName
+                    })
+                    .then(() => {
+                      console.log("Document successfully updated!")
+                    })
+                    .catch(function(error) {
+                      console.error("Error updating document: ", error);
+                    });
+                }
             },
             deleteLink: () => { 
               if (LOCALMODE) {
@@ -298,15 +336,39 @@ TEAMS
                 setData(d);
                 setCurrentLink(null);
               }
-              else{
-                  teamsRef.doc(currentTeam).collection("links").doc(currentLink)
-                  .delete().then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
+              else {
+                  teamsRef
+                    .doc(currentTeam)
+                    .collection("links")
+                    .doc(currentLink)
+                    .delete()
+                    .then(
+                      teamsRef
+                        .doc(currentTeam)
+                        .collection("folders")
+                        .doc(currentFolder)
+                        .get()
+                        .then((doc) => {
+                          let links = doc.data().links;
+                          let index = links.indexOf(currentLink);
+                          links.splice(index, 1);
+
+                          teamsRef
+                            .doc(currentTeam)
+                            .collection("folders")
+                            .doc(currentFolder)
+                            .update({
+                              links: links
+                            })
+                        })
+                    )
+                    .catch((error) => console.error("Error deleting document", error));
+                    setCurrentLink(null);
               }
             },
             currentLink,
             setCurrentLink: link => {
               setCurrentLink(link);
-              console.log(link);
             },
             pinLink: () => {
               if (LOCALMODE) {
@@ -340,3 +402,18 @@ TEAMS
 }
 
 export default App;
+
+
+                  
+                  // teamsRef.doc(currentTeam).collection("links")
+
+                  // teamsRef
+                  //   .doc(currentTeam)
+                  //   .collection("folders")
+                  //   .doc(currentFolder)
+                  //   .collection("links")
+                  //   .set({
+                  //     links: d["teams"][currentTeam]["folders"][currentFolder]["links"]
+                  //   });
+                    
+                    // .add(linkData).then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
