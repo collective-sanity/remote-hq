@@ -33,6 +33,7 @@ const RoomCard = ({ teamId, data, setCurrentTeam }) => {
 }
 
 const FirebaseRoomCard = ({ teamId, setCurrentTeam }) => {
+  console.log(teamId)
   const [value, loading, error] = useDocument(
     firebase.firestore().doc(`teams/${teamId}`),
     {
