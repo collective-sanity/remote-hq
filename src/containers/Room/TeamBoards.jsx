@@ -20,8 +20,7 @@ export default function TeamBoards () {
   let folders;
   if (LOCALMODE) {
     let foldersObj = data["teams"][currentTeam]["folders"];
-    let folders = Object.keys(foldersObj);
-    let meep = data["teams"][currentTeam]["folders"]
+    folders = Object.keys(foldersObj);
   }
 
   return (
