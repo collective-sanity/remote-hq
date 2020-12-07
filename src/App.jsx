@@ -231,6 +231,7 @@ TEAMS
                   "description": "",
                   "createdDate": firebase.firestore.FieldValue.serverTimestamp(),
                 };
+                
                 if (linktype === "figma" || linktype === "resource") {
                   linkData.link = url;
                 }
@@ -241,28 +242,43 @@ TEAMS
                 setData(d);
               }
               else {
-                if (linktype === "figma" || linktype === "resource") {
+                if (linktype === "figma" || linktype === "resource" || linktype.includes("google")) {
+                  let folderRef = teamsRef.doc(currentTeam).collection("folders").doc(currentFolder);
+              
                   teamsRef
                     .doc(currentTeam)
                     .collection("links")
                     .add(linkData)
                     .then((result)=>{
+                      // link data added
                       console.log(result)
-                    })
-                    .catch((error) => console.error("Error adding document", error));
-                  
-                  // teamsRef.doc(currentTeam).collection("links")
+                      let linkID = result.id;
+                      folderRef.get().then((val)=>{
+                        let folderData = val.data();
+                        console.log(folderData)
+                        folderRef.update({
+                          "links":[ ...folderData.links, linkID]
+                        });
+                      });
+                      /*
+                      if(linktype === "figma" || linktype === "resource"){
+                        setCurrentLink(linkData);
+                      }
+                      else if(linktype.includes("google")){
+                        //let linkListener = 
+                        teamsRef
+                        .doc( currentTeam).collection("links").doc(linkID).onSnapshot(function (doc) {
+                          console.log("Current data: ", doc.data());
+                          let newData = doc.data();
+                        if(newData.url!==null && newData !==""){
+                              setCurrentLink(doc.id);
+                              linkListener();
+                         }
 
-                  // teamsRef
-                  //   .doc(currentTeam)
-                  //   .collection("folders")
-                  //   .doc(currentFolder)
-                  //   .collection("links")
-                  //   .set({
-                  //     links: d["teams"][currentTeam]["folders"][currentFolder]["links"]
-                  //   });
-                    
-                    // .add(linkData).then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
+                        });
+                      }*/
+                    }).catch((error) => console.error("Error adding document", error));
+             
                 }
               }
             },
@@ -342,3 +358,18 @@ TEAMS
 }
 
 export default App;
+
+
+                  
+                  // teamsRef.doc(currentTeam).collection("links")
+
+                  // teamsRef
+                  //   .doc(currentTeam)
+                  //   .collection("folders")
+                  //   .doc(currentFolder)
+                  //   .collection("links")
+                  //   .set({
+                  //     links: d["teams"][currentTeam]["folders"][currentFolder]["links"]
+                  //   });
+                    
+                    // .add(linkData).then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
