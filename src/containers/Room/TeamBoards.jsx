@@ -2,27 +2,53 @@ import React, { useContext } from "react"
 import styled from "styled-components"
 import { Link } from 'react-router-dom'
 import ControlContext from '../../shared/control-context'
+import firebase from 'firebase/app'
+import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore';
 
 export default function TeamBoards () {
   const context = useContext(ControlContext);
-  let { data, currentTeam, setCurrentFolder } = context;
+  let { LOCALMODE, data, currentTeam, setCurrentFolder } = context;
+  console.log(currentTeam)
 
-  let foldersObj = data["teams"][currentTeam]["folders"];
-  let folders = Object.keys(foldersObj);
-  let meep = data["teams"][currentTeam]["folders"]
+  const [value, loading, error] = useCollection(
+    firebase.firestore().collection("teams").doc(currentTeam).collection("folders"),
+    {
+      snapshotListenOptions: { includeMetadataChanges: true },
+    }
+  );
 
-  console.log(folders)
+  let folders;
+  if (LOCALMODE) {
+    let foldersObj = data["teams"][currentTeam]["folders"];
+    let folders = Object.keys(foldersObj);
+    let meep = data["teams"][currentTeam]["folders"]
+  }
 
   return (
     <TeamContainer>
       <Title>Team Boards</Title>
-      <BoardContainer>
+      {LOCALMODE ? (
+        <BoardContainer>
         {folders.map((folder, i) => 
           <Board>
             <BoardLink folder={folder} data={data} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
           </Board>
         )}
       </BoardContainer>
+      ) : (
+        <BoardContainer>
+          {value && value.docs.map((folder, i) => (
+            <Board>
+              <FirebaseBoardLink key={i} folder={folder.data()} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
+            </Board>
+          ))}
+        {/* {value && Object.keys(value.data()).map((folder, i) => 
+          <Board>
+            <FirebaseBoardLink folder={folder} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
+          </Board>
+        )} */}
+      </BoardContainer>
+      )}
     </TeamContainer>
   )
 }
@@ -37,6 +63,26 @@ const BoardLink = ({ folder, data, currentTeam, setCurrentFolder }) => {
       onClick={() => setCurrentFolder(folder)}
     >
       {name}
+    </NavLink>
+  )
+}
+
+const FirebaseBoardLink = ({ folder, currentTeam, setCurrentFolder }) => {
+  console.log(folder)
+  // let name = data["teams"][currentTeam]["folders"][folder].name;
+  // const [value, loading, error] = useDocument(
+  //   firebase.firestore().collection("teams").doc(currentTeam).collection("folders").doc(folder),
+  //   {
+  //     snapshotListenOptions: { includeMetadataChanges: true },
+  //   }
+  // );
+
+  return (
+    <NavLink 
+      to='/folder'
+      onClick={() => setCurrentFolder(folder.name)}
+    >
+      {folder.name}
     </NavLink>
   )
 }
