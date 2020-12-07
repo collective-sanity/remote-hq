@@ -120,15 +120,16 @@ exports.createLink = functions.firestore
         /*
         First want to see what type of link it is
         */
-       if(!data.type.includes("google")){return false;}
+       if(!data.linkType.includes("google")){return false;}
        const teamsPromise = new Promise((resolve, reject) => {
             db.doc(`teams/${teamID}`).get().then((teamData) => resolve(teamData.data().driveFolderID)).catch((e) => reject('Failed permissions'));
         });
         teamsPromise.then((val)=>{
+            console.log(val);
             let name = data.name;
                 var fileMetadata = {
                     name: name,
-                    mimeType: mimeTypes[data.type],
+                    mimeType: mimeTypes[data.linkType],
                     parents: [val],
                 };
                 var media = { mimeType: 'text/plain', body: '', };
@@ -153,7 +154,7 @@ exports.createLink = functions.firestore
                             .doc(linkID);
                         console.log(ref);
                         ref.update({
-                            "url": toURL[data.type](fileID)
+                            "link": toURL[data.linkType](fileID)
                         }).then((t) => { }).catch((e) => { });
                     }).catch((e) => { console.log(e); });
                 });
