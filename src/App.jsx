@@ -223,11 +223,6 @@ TEAMS
               linktype, 
               url
               ) => {
-                let d = {...data};
-                d["teams"][currentTeam]["links"][name] = linkData;
-                d["teams"][currentTeam]["folders"][currentFolder]["links"].push(name);
-                setData(d);
-
                 const linkData = {
                   "linkType": linktype,
                   "name": name,
@@ -245,16 +240,25 @@ TEAMS
               }
               else {
                 if (linktype === "figma" || linktype === "resource") {
-                  teamsRef.doc(currentTeam).collection("links").add(linkData).then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
-                  
                   teamsRef
                     .doc(currentTeam)
-                    .collection("folders")
-                    .doc(currentFolder)
                     .collection("links")
-                    .set({
-                      links: d["teams"][currentTeam]["folders"][currentFolder]["links"]
-                    });
+                    .add(linkData)
+                    .then((result)=>{
+                      console.log(result)
+                    })
+                    .catch((error) => console.error("Error adding document", error));
+                  
+                  // teamsRef.doc(currentTeam).collection("links")
+
+                  // teamsRef
+                  //   .doc(currentTeam)
+                  //   .collection("folders")
+                  //   .doc(currentFolder)
+                  //   .collection("links")
+                  //   .set({
+                  //     links: d["teams"][currentTeam]["folders"][currentFolder]["links"]
+                  //   });
                     
                     // .add(linkData).then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
                 }

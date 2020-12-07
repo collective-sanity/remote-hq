@@ -55,7 +55,7 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam }) => {
 
 export default function Landing () {
   const { LOCALMODE, data, user, setCurrentTeam } = useContext(ControlContext);
-  const [teamsList, setTeamsList] = useState(null);
+  // const [teamsList, setTeamsList] = useState(null);
 
   const [value, loading, error] = useDocument(
     firebase.firestore().doc(`users/${user}`),
@@ -64,10 +64,9 @@ export default function Landing () {
     }
   );
 
-  console.log(value && value.data())
-
+  let teamsList;
   if (LOCALMODE) {
-    setTeamsList(data["users"][user]["teams"]);
+    teamsList = data["users"][user]["teams"];
   }
 
   return (
