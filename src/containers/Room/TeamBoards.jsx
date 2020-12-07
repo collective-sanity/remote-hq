@@ -8,7 +8,7 @@ import { useCollection, useCollectionData, useDocument } from 'react-firebase-ho
 export default function TeamBoards () {
   const context = useContext(ControlContext);
   let { LOCALMODE, data, currentTeam, setCurrentFolder } = context;
-  console.log(currentTeam)
+  // console.log(currentTeam)
 
   const [value, loading, error] = useCollection(
     firebase.firestore().collection("teams").doc(currentTeam).collection("folders"),
@@ -39,14 +39,9 @@ export default function TeamBoards () {
         <BoardContainer>
           {value && value.docs.map((folder, i) => (
             <Board>
-              <FirebaseBoardLink key={i} folder={folder.data()} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
+              <FirebaseBoardLink key={i} id={folder.id} folder={folder.data()} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
             </Board>
           ))}
-        {/* {value && Object.keys(value.data()).map((folder, i) => 
-          <Board>
-            <FirebaseBoardLink folder={folder} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
-          </Board>
-        )} */}
       </BoardContainer>
       )}
     </TeamContainer>
@@ -67,8 +62,8 @@ const BoardLink = ({ folder, data, currentTeam, setCurrentFolder }) => {
   )
 }
 
-const FirebaseBoardLink = ({ folder, currentTeam, setCurrentFolder }) => {
-  console.log(folder)
+const FirebaseBoardLink = ({ id, folder, currentTeam, setCurrentFolder }) => {
+  // console.log(folder)
   // let name = data["teams"][currentTeam]["folders"][folder].name;
   // const [value, loading, error] = useDocument(
   //   firebase.firestore().collection("teams").doc(currentTeam).collection("folders").doc(folder),
@@ -80,7 +75,7 @@ const FirebaseBoardLink = ({ folder, currentTeam, setCurrentFolder }) => {
   return (
     <NavLink 
       to='/folder'
-      onClick={() => setCurrentFolder(folder.name)}
+      onClick={() => setCurrentFolder(id)}
     >
       {folder.name}
     </NavLink>
