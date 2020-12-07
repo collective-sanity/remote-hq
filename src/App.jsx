@@ -289,8 +289,8 @@ TEAMS
                 let newDescription = d["teams"][currentTeam]["links"][currentLink].description;
                 let newLink = d["teams"][currentTeam]["links"][currentLink].link;
 
-                var name = prompt("Please enter your name", newName);
-                if (name == null || name == "") {
+                var name = prompt("Please enter a new name", newName);
+                if (name === null || name === "") {
                   return;
                 } else {
                   newName = name;
@@ -304,7 +304,29 @@ TEAMS
                 d["teams"][currentTeam]["links"][currentLink].link = newLink;
 
                 setData(d);
-              }
+              } else {
+                  let newName;
+                  var name = prompt("Please enter a new name", '');
+                  if (name === null || name === "") {
+                    return;
+                  } else {
+                    newName = name;
+                  }
+
+                  teamsRef
+                    .doc(currentTeam)
+                    .collection("links")
+                    .doc(currentLink)
+                    .update({
+                      name: newName
+                    })
+                    .then(() => {
+                      console.log("Document successfully updated!")
+                    })
+                    .catch(function(error) {
+                      console.error("Error updating document: ", error);
+                    });
+                }
             },
             deleteLink: () => { 
               if (LOCALMODE) {
