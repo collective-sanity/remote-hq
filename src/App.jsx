@@ -316,15 +316,39 @@ TEAMS
                 setData(d);
                 setCurrentLink(null);
               }
-              else{
-                  teamsRef.doc(currentTeam).collection("links").doc(currentLink)
-                  .delete().then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
+              else {
+                  teamsRef
+                    .doc(currentTeam)
+                    .collection("links")
+                    .doc(currentLink)
+                    .delete()
+                    .then(
+                      teamsRef
+                        .doc(currentTeam)
+                        .collection("folders")
+                        .doc(currentFolder)
+                        .get()
+                        .then((doc) => {
+                          let links = doc.data().links;
+                          let index = links.indexOf(currentLink);
+                          links.splice(index, 1);
+
+                          teamsRef
+                            .doc(currentTeam)
+                            .collection("folders")
+                            .doc(currentFolder)
+                            .update({
+                              links: links
+                            })
+                        })
+                    )
+                    .catch((error) => console.error("Error deleting document", error));
+                    setCurrentLink(null);
               }
             },
             currentLink,
             setCurrentLink: link => {
               setCurrentLink(link);
-              console.log(link);
             },
             pinLink: () => {
               if (LOCALMODE) {

@@ -12,6 +12,7 @@ import Chat from '../../assets/Landing/chat.png'
 import MentalHealth from '../../assets/Landing/mental-health.png'
 import { Link } from "react-router-dom"
 
+// TODO: pinned firebase
 export default function RightPanel ({ leave, page }) {
   const {
     LOCALMODE,
@@ -57,13 +58,7 @@ export default function RightPanel ({ leave, page }) {
           ) : (
             <TextBtn onClick={ () => pinLink() }>Unpin</TextBtn>
           )}
-          
-          {/* <Link 
-            to="/folder"
-            onClick={ () => deleteLink() }
-          >
-            <TextBtn>Delete</TextBtn>
-          </Link> */}
+
           <TextBtn onClick={ () => { deleteLink(); history.push("/folder"); } }>Delete</TextBtn>
         </TopIconContainer>
       );
