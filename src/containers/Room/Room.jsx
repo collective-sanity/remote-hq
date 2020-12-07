@@ -23,8 +23,8 @@ export default function Room ({ location }) {
     <Row>
       <LeftPanel />
       <RoomsContainer>
-        <Breadcrumbs>{`MHCI > ${value.data().name}`}</Breadcrumbs>
-        {/* <TeamSummary /> */}
+        <Breadcrumbs>{`MHCI > ${value && value.data().name}`}</Breadcrumbs>
+        <TeamSummary users={value && value.data().users} />
         {/* <TeamBoards /> */}
       </RoomsContainer>
       <RightPanel />
