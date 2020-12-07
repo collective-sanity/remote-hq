@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useKeyPress } from 'hooks/useKeyPress';
 import { BrowserRouter as Router, Switch, Route, } from "react-router-dom";
 
 import { provider, db } from 'shared/firebase';
@@ -12,8 +13,10 @@ import RightPanel from 'containers/Panels/RightPanel'
 import Room from 'containers/Room/Room'
 import FolderView from 'containers/FolderView/FolderView'
 import SharedDesktop from 'containers/SharedDesktop/SharedDesktop'
+import Chat from 'components/Chat/Chat'
 
 import './App.scss';
+import VoiceChat from "components/VoiceChat/VoiceChat";
 
 const LOCALMODE = true;
 
@@ -26,7 +29,7 @@ const App = () => {
   const [currentFolder, setCurrentFolder] = useState(null);
   const teamsRef = firebase.firestore().collection("teams");
   const [currentLink, setCurrentLink] = useState(null);
-  const usersRef = firebase.firestore().collection("users")
+  const usersRef = firebase.firestore().collection("users");
   let userListener;
 
   // handy for debugging state
@@ -264,6 +267,14 @@ TEAMS
           }}>
 
           <div className="App__container">
+            {user ? 
+              <>
+                <VoiceChat />
+                <Chat />
+              </>
+            :
+              <></>
+            }
             <Switch>
               <Route path="/team" component={Room}/>
               <Route path="/folder" component={FolderView}/>
