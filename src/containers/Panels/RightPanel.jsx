@@ -14,6 +14,7 @@ import { Link } from "react-router-dom"
 
 export default function RightPanel ({ leave, page }) {
   const {
+    LOCALMODE,
     data,
     user,
     createRoom,
@@ -42,13 +43,16 @@ export default function RightPanel ({ leave, page }) {
       )
     }
     if (page === "SharedDesktop") {
-      let item = data["teams"][currentTeam]["links"][currentLink];
+      let item;
+      if (LOCALMODE) {
+        item = data["teams"][currentTeam]["links"][currentLink];
+      }
       return (
         <TopIconContainer>
           <TextBtn onClick={ () => history.push("/folder") }>Leave</TextBtn>
           <TextBtn onClick={ () => updateLink() }>Edit</TextBtn>
 
-          {!item.pinned ? (
+          {LOCALMODE && !item.pinned ? (
             <TextBtn onClick={ () => pinLink() }>Pin</TextBtn>
           ) : (
             <TextBtn onClick={ () => pinLink() }>Unpin</TextBtn>
