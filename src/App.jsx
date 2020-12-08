@@ -203,20 +203,21 @@ TEAMS
                 }).then((ref)=>{ }).catch((error) => console.error("Error updating document", error));
               }
             },
-            deleteFolder: ({
-              teamId=currentTeam.id
-            }) => {
+            deleteFolder: (
+              teamId = currentTeam
+            ) => {
               if (LOCALMODE) {
                 let d = {...data};
                 delete d[teamId];
                 setData(d);
               }
-              else{
-                  teamsRef.doc(teamId).delete().then((ref)=>{
-                    usersRef.doc(user.id).update({
-                      teams: user.teams.filter(t=>t!==ref.id)
-                    });
-                }).catch((error) => console.error("Error deleting document", error));
+              else {
+                const folderRef = teamsRef.doc(currentTeam).collection("folders");
+                folderRef.doc(currentFolder).delete().then((ref)=>{
+                  // What should we do about links in a delete folder?
+                  console.log("Deleted folder with ID: ", currentFolder);
+                  setCurrentFolder(null)
+                }).catch((error) => console.error("Error folder document", error));
               }
             },
             currentFolder,

@@ -24,6 +24,8 @@ export default function RightPanel ({ page }) {
     currentTeam,
     currentLink,
     createFolder,
+    updateFolder,
+    deleteFolder,
     pinLink,
     createLink,
     deleteLink,
@@ -47,7 +49,7 @@ export default function RightPanel ({ page }) {
         <TopIconContainer>
           <Add onClick={() => createFolder()}>+</Add>
           <TextBtn onClick={() => {}}>Edit</TextBtn>
-          <TextBtn onClick={() => {}}>Delete</TextBtn>
+          <TextBtn onClick={() => deleteFolder()}>Delete</TextBtn>
         </TopIconContainer>
       )
     }
