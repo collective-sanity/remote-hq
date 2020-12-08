@@ -1,9 +1,11 @@
-import React, { useContext, useEffect } from "react"
+import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-
+import firebase from 'firebase/app';
+import { useDocument } from 'react-firebase-hooks/firestore';
 import ControlContext from "shared/control-context";
-import LeftPanel from "containers/Panels/LeftPanel";
+
+// import LeftPanel from "containers/Panels/LeftPanel";
 import RightPanel from "containers/Panels/RightPanel";
 
 import doc from '../../assets/Landing/google-docs.png';
@@ -12,33 +14,36 @@ import slides from '../../assets/Landing/google-slides.png';
 import drive from '../../assets/Landing/google-drive.png';
 import figma from '../../assets/Landing/figma.png';
 
-// TODO: create file
-// TODO: create link
-// TODO: edit folder name
-// TODO: delete folder
+// TODO: open gdrive and web links in new tab
+// TODO: pinned files
+// TODO: link icon
+// TODO: breadcrumbs
 export default function FolderView () {
   const context = useContext(ControlContext);
-  const { data, currentTeam, currentFolder, setCurrentLink } = context;
+  const { LOCALMODE, data, currentTeam, currentFolder, setCurrentLink } = context;
+  // console.log(currentFolder)
 
-  let links = data["teams"][currentTeam]["folders"][currentFolder]["links"];
-  
-  const getIconType = type => {
-    if (type === "googledoc") return doc;
-    if (type === "googlesheet") return sheet;
-    if (type === "googleslides") return slides;
-    if (type === "drive") return drive;
-    if (type === "figma") return figma;
+  let links;
+  if (LOCALMODE) {
+    links = data["teams"][currentTeam]["folders"][currentFolder]["links"];
   }
 
+  const [value] = useDocument(
+    firebase.firestore().collection("teams").doc(currentTeam).collection("folders").doc(currentFolder),
+    {
+      snapshotListenOptions: { includeMetadataChanges: true },
+    }
+  );
+
   useEffect(() => {
-    console.log(context);
+    // console.log(context);
   })
 
   const getLinks = (link, data, currentTeam, currentFolder) => {
     let item = data["teams"][currentTeam]["links"][link];
 
     return (
-      <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(item)}>
+      <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
         <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
         <LinkContainerTitle>{item.name}</LinkContainerTitle>
       </LinkContainer>
@@ -48,46 +53,76 @@ export default function FolderView () {
       // </LinkContainer>
     )
   }
-  
+
   return (
     <Row>
-      <LeftPanel />
+      {/* <LeftPanel /> */}
       <Links>
         <Breadcrumbs>{currentTeam.name} {'>'} {currentFolder.name}</Breadcrumbs>
         <LinkListContainer>
           <LinkListContainerTitle>Pinned Files</LinkListContainerTitle>
-          <LinksList>
-            {links.map((link) => 
-              getLinks(link, data, currentTeam, currentFolder)
-            )}
-          </LinksList>
+          {LOCALMODE ? (
+            <LinksList>
+              {links.map((link) => 
+                getLinks(link, data, currentTeam, currentFolder)
+              )}
+            </LinksList>
+          ) : (
+            <LinksList>
+            {value && value.data().links.map((link, i) => (
+              <GetFirebaseLinks link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
+            ))}
+            </LinksList>
+          )}
         </LinkListContainer>
 
         <LinkListContainer>
           <HeaderContainerWithDropdown>
             <LinkListContainerTitle>All Files</LinkListContainerTitle>
-            <FilesDropdown>
+            {/* <FilesDropdown>
               <option value="Recently Viewed">Recently Viewed</option>
-            </FilesDropdown>
+            </FilesDropdown> */}
           </HeaderContainerWithDropdown>
           <LinksList>
-            {links.map((link) => <LinkContainer 
-              to={{
-                pathname: '/shared-desktop',
-                state: {
-                  link: link.link,
-                  type: link.type
-                }
-              }}>
-                <LinkContainerType src={getIconType(link.type)}></LinkContainerType>
-                <LinkContainerTitle>{link.title}</LinkContainerTitle>
-              </LinkContainer>
-            )}
           </LinksList>
         </LinkListContainer>
       </Links>
       <RightPanel page={"FolderView"} />
     </Row>
+  )
+}
+
+const getIconType = type => {
+  if (type === "googledoc") return doc;
+  if (type === "googlesheet") return sheet;
+  if (type === "googleslides") return slides;
+  if (type === "drive") return drive;
+  if (type === "figma") return figma;
+}
+
+const GetFirebaseLinks = ({ link, currentTeam, currentFolder, setCurrentLink }) => {
+  const [value] = useDocument(
+    firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(link),
+    {
+      snapshotListenOptions: { includeMetadataChanges: true },
+    }
+  );
+
+  return (
+    <div>
+      {/* {value && <span>Document: {JSON.stringify(value.data())}</span>} */}
+      {value && 
+        <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(value.id)}>
+          <LinkContainerType src={getIconType(value.data().linkType)}></LinkContainerType>
+          <LinkContainerTitle>{value.data().name}</LinkContainerTitle>
+        </LinkContainer>
+      }
+
+      {/* <LinkContainer href={item.link} target="_blank">
+        <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
+        <LinkContainerTitle>{item.name}</LinkContainerTitle>
+      </LinkContainer> */}
+    </div>
   )
 }
 
@@ -152,11 +187,11 @@ const HeaderContainerWithDropdown = styled.div`
   width: 100%;
 `
 
-const FilesDropdown = styled.select`
-  width: 200px;
-  height: 50px;
-  font-size: 18px;
-  align-self: center;
-  margin-left: auto;
-  -webkit-appearance: menulist-button;
-`
+// const FilesDropdown = styled.select`
+//   width: 200px;
+//   height: 50px;
+//   font-size: 18px;
+//   align-self: center;
+//   margin-left: auto;
+//   -webkit-appearance: menulist-button;
+// `

@@ -1,10 +1,12 @@
 import React, { useContext, useEffect } from "react"
 import styled from "styled-components"
 import { Link } from "react-router-dom";
-
-import LeftPanel from "containers/Panels/LeftPanel";
-import RightPanel from "containers/Panels/RightPanel";
+import firebase from 'firebase/app';
+import { useDocument } from 'react-firebase-hooks/firestore';
 import ControlContext from "shared/control-context";
+
+// import LeftPanel from "containers/Panels/LeftPanel";
+import RightPanel from "containers/Panels/RightPanel";
 
 import doc from '../../assets/Landing/google-docs.png';
 import sheet from '../../assets/Landing/google-sheets.png';
@@ -12,21 +14,127 @@ import slides from '../../assets/Landing/google-slides.png';
 import drive from '../../assets/Landing/google-drive.png';
 import figma from '../../assets/Landing/figma.png';
 
-
-// TODO: leave button
-
-// TODO: pin
-// TODO: delete
-// TODO: edit name
+// TODO: open gdrive and web links in new tab
+// TODO: link icon
 export default function SharedDesktop () {
   const context = useContext(ControlContext);
-  const { data, currentTeam, currentFolder, setCurrentLink, currentLink } = context;
+  const { LOCALMODE, data, currentTeam, currentFolder, setCurrentLink, currentLink } = context;
 
-  let links = data["teams"][currentTeam]["folders"][currentFolder]["links"];
+  let links;
+  let currentLinkObj;
+  if (LOCALMODE) {
+    links = data["teams"][currentTeam]["folders"][currentFolder]["links"];
+    currentLinkObj = data["teams"][currentTeam]["links"][currentLink];
+  }
+
+  const [firebaseLinks] = useDocument(
+    firebase.firestore().collection("teams").doc(currentTeam).collection("folders").doc(currentFolder),
+    {
+      snapshotListenOptions: { includeMetadataChanges: true },
+    }
+  );
+
+  const [value] = useDocument(
+    firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(currentLink),
+    {
+      snapshotListenOptions: { includeMetadataChanges: true },
+    }
+  );
 
   useEffect(() => {
-    console.log(currentFolder);
+    // console.log(currentFolder);
   })
+
+  const getLink = (type, link) => {
+    if (LOCALMODE) {
+      if (type === "figma") {
+        return `https://www.figma.com/embed?embed_host=share&url=${currentLinkObj.link}`
+      }
+      return currentLinkObj.link;
+    }
+    else { 
+      if (type === "figma") {
+        return `https://www.figma.com/embed?embed_host=share&url=${link}`
+      }
+      return link;}
+    }
+
+    return (
+      <Row>
+        {/* <LeftPanel /> */}
+        <Desktop>
+          {LOCALMODE ? (
+            <iframe 
+              width="100%"
+              height="100%"
+              src={getLink(currentLinkObj.linkType)}
+              title={currentLinkObj.name}
+              sandbox
+              allowFullScreen
+          ></iframe>
+          ) : (
+            <iframe 
+                width="100%"
+                height="100%"
+                src={value && getLink(value.data().linkType, value.data().link)}
+                title={value && value.data().name}
+                sandbox
+                allowFullScreen
+            ></iframe>
+          )}
+        </Desktop> 
+
+        <Docs>
+            <DocsTitle>Chatbot</DocsTitle>
+            {LOCALMODE ? (
+              <DocsList>
+                {links.map((link) => 
+                  getLinks(link, data, currentTeam, currentFolder, setCurrentLink)
+                )}
+              </DocsList>
+            ) : (
+              <DocsList>
+                {firebaseLinks && firebaseLinks.data().links.map((link) => 
+                  <GetFirebaseLinks link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
+                )}
+              </DocsList>
+            )}
+        </Docs>  
+        <RightPanel page={"SharedDesktop"} />     
+      </Row>
+    )
+  }
+
+  const getLinks = (link, data, currentTeam, setCurrentLink) => {
+    let item = data["teams"][currentTeam]["links"][link];
+
+    return (
+      <Doc onClick={() => setCurrentLink(link)}>
+        <DocIcon src={getIconType(item.linkType)}></DocIcon>
+        <DocTitle>{item.name}</DocTitle>
+      </Doc>
+    )
+  }
+
+  const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink }) => {
+    const [value] = useDocument(
+      firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(link),
+      {
+        snapshotListenOptions: { includeMetadataChanges: true },
+      }
+    );
+
+    return (
+      <div>
+        {value && 
+          <Doc onClick={() => setCurrentLink(value.id)}>
+            <DocIcon src={getIconType(value.data().linkType)}></DocIcon>
+            <DocTitle>{value.data().name}</DocTitle>
+          </Doc>
+        }
+      </div>
+    )
+  }
 
   const getIconType = type => {
     if (type === "googledoc") return doc;
@@ -34,51 +142,6 @@ export default function SharedDesktop () {
     if (type === "googleslides") return slides;
     if (type === "drive") return drive;
     if (type === "figma") return figma;
-  }
-
-  const getLink = type => {
-    if (type === "figma") {
-      return `https://www.figma.com/embed?embed_host=share&url=${currentLink.link}`
-    }
-    return currentLink.link;
-  }
-
-  const getLinks = (link, data, currentTeam) => {
-    let item = data["teams"][currentTeam]["links"][link];
-
-    return (
-      <Doc onClick={() => setCurrentLink(item)}>
-        <DocIcon src={getIconType(item.linkType)}></DocIcon>
-        <DocTitle>{item.name}</DocTitle>
-      </Doc>
-    )
-  }
-
-    return (
-      <Row>
-        <LeftPanel />
-        <Desktop>
-            <iframe 
-                width="100%"
-                height="100%"
-                src={getLink(currentLink.linkType)}
-                title={currentLink.name}
-                sandbox
-                allowFullScreen
-            ></iframe>
-        </Desktop> 
-
-        <Docs>
-            <DocsTitle>Chatbot</DocsTitle>
-            <DocsList>
-              {links.map((link) => 
-                getLinks(link, data, currentTeam, currentFolder)
-              )}
-            </DocsList>
-        </Docs>  
-        <RightPanel page={"SharedDesktop"} />     
-      </Row>
-    )
   }
 
 const Row = styled.div`

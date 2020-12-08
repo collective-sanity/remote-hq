@@ -2,14 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useKeyPress } from 'hooks/useKeyPress';
 import { BrowserRouter as Router, Switch, Route, } from "react-router-dom";
 
-import { provider, db } from 'shared/firebase';
+import { provider } from 'shared/firebase';
 import dummydata from 'shared/dummydata';
 import firebase from "firebase/app";
 import ControlContext from "shared/control-context";
 import Splash from 'containers/Splash/Splash'
 import Landing from 'containers/Landing/Landing'
-import LeftPanel from 'containers/Panels/LeftPanel'
-import RightPanel from 'containers/Panels/RightPanel'
 import Room from 'containers/Room/Room'
 import FolderView from 'containers/FolderView/FolderView'
 import SharedDesktop from 'containers/SharedDesktop/SharedDesktop'
@@ -18,8 +16,7 @@ import Chat from 'components/Chat/Chat'
 import './App.scss';
 import VoiceChat from "components/VoiceChat/VoiceChat";
 
-const LOCALMODE = true;
-
+const LOCALMODE = false;
 
 const App = () => {
   const [data, setData] = useState(dummydata);
@@ -34,7 +31,7 @@ const App = () => {
 
   // handy for debugging state
   useEffect(() => {
-    console.log(currentTeam)
+    // console.log(user);
   })
 
   return (
@@ -42,6 +39,7 @@ const App = () => {
       <React.Fragment>
         <ControlContext.Provider
           value={{
+            LOCALMODE,
             data,
             user,
             loginUser: () => {
@@ -55,7 +53,7 @@ const App = () => {
                   let userRef = usersRef.doc(result.user.uid);
                   // Next . . . load user info
                   userRef.get()
-                    .then((doc) => {
+                    .then(async (doc) => {
                       // Set Data
                       let data;
                       if (!doc.exists) {
@@ -65,22 +63,24 @@ const App = () => {
                           "photoUrl": result.user.photoURL,
                           "email": result.user.email,
                           "createdAt": firebase.firestore.FieldValue.serverTimestamp(),
-                          "rooms": [],
-                          "teams": result.user.teams,
+                          "teams": [],
                         };
                         userRef.set(data);
                       } else {
                         data = { id: doc.id, ...doc.data(), }
+                        setUser(doc.id);
+                        setTeams(doc.teams);
                       }
                       // Add listener to keep track of changes and update state
                       userListener = userRef.onSnapshot(function (doc) {
                         console.log("Current data: ", doc.data());
-                        setUser(data);
+                        setUser(doc.id);
+                        setTeams(doc.teams);
                       });
                       // Get Rooms and set them
                       // Add room listener
                     })
-                });
+                })
               }
             },
             logoutUser: () => {
@@ -221,49 +221,170 @@ TEAMS
             /*
             Links are all the "files" in the system, they can be organized in folders and viewed in screens
             */
-            createLink: ({ 
+            createLink: (
               name, 
               linktype, 
-              url, 
-              folderId=currentFolder.id, 
-              teamId=currentTeam.id }) => {
+              url
+              ) => {
                 const linkData = {
                   "linkType": linktype,
-                  "isPinned": true,
-                  "name":name,
+                  "name": name,
                   "description": "",
-                  "createdDate": "2020-011-03T07:22Z",
-                  "lastModifiedDate": "2020-11-19T07:22Z",
-                  "link": url
+                  "createdDate": firebase.firestore.FieldValue.serverTimestamp(),
                 };
+                
+                if (linktype === "figma" || linktype === "resource") {
+                  linkData.link = url;
+                }
               if (LOCALMODE) {
                 let d = {...data};
-                d[teamId]["links"][name]=linkData;
-                d[teamId]["folders"][folderId]["links"].push(name);
+                d["teams"][currentTeam]["links"][name] = linkData;
+                d["teams"][currentTeam]["folders"][currentFolder]["links"].push(name);
                 setData(d);
               }
-              else{
+              else {
+                if (linktype === "figma" || linktype === "resource" || linktype.includes("google")) {
+                  let folderRef = teamsRef.doc(currentTeam).collection("folders").doc(currentFolder);
+              
+                  teamsRef
+                    .doc(currentTeam)
+                    .collection("links")
+                    .add(linkData)
+                    .then((result)=>{
+                      // link data added
+                      console.log(result)
+                      let linkID = result.id;
+                      folderRef.get().then((val)=>{
+                        let folderData = val.data();
+                        console.log(folderData)
+                        folderRef.update({
+                          "links":[ ...folderData.links, linkID]
+                        });
+                      });
+                      /*
+                      if(linktype === "figma" || linktype === "resource"){
+                        setCurrentLink(linkData);
+                      }
+                      else if(linktype.includes("google")){
+                        //let linkListener = 
+                        teamsRef
+                        .doc( currentTeam).collection("links").doc(linkID).onSnapshot(function (doc) {
+                          console.log("Current data: ", doc.data());
+                          let newData = doc.data();
+                        if(newData.url!==null && newData !==""){
+                              setCurrentLink(doc.id);
+                              linkListener();
+                         }
 
-                  teamsRef.doc(teamId).collection("links").add(linkData).then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
+                        });
+                      }*/
+                    }).catch((error) => console.error("Error adding document", error));
+             
+                }
               }
             },
-            deleteLink: ({teamId=currentTeam.id, linkId}) => { 
+            updateLink: () => {
               if (LOCALMODE) {
                 let d = {...data};
-                delete d[teamId]["links"][linkId];
+                let newName = d["teams"][currentTeam]["links"][currentLink].name;
+                let newDescription = d["teams"][currentTeam]["links"][currentLink].description;
+                let newLink = d["teams"][currentTeam]["links"][currentLink].link;
+
+                let name = prompt("Please enter a new name", newName);
+                if (name === null || name === "") {
+                  return;
+                } else {
+                  newName = name;
+                }
+                d["teams"][currentTeam]["links"][currentLink].name = newName;
+
+                newDescription = "test";
+                d["teams"][currentTeam]["links"][currentLink].description = newDescription;
+
+                newLink = "https://www.figma.com/file/jSPgLf0DbOKa9bdztdMngs/Mobile";
+                d["teams"][currentTeam]["links"][currentLink].link = newLink;
+
                 setData(d);
+              } else {
+                  let newName;
+                  let name = prompt("Please enter a new name", '');
+                  if (name === null || name === "") {
+                    return;
+                  } else {
+                    newName = name;
+                  }
+
+                  teamsRef
+                    .doc(currentTeam)
+                    .collection("links")
+                    .doc(currentLink)
+                    .update({
+                      name: newName
+                    })
+                    .then(() => {
+                      console.log("Document successfully updated!")
+                    })
+                    .catch(function(error) {
+                      console.error("Error updating document: ", error);
+                    });
+                }
+            },
+            deleteLink: () => { 
+              if (LOCALMODE) {
+                let d = {...data};
+                let links = d["teams"][currentTeam]["folders"][currentFolder]["links"];
+                let linkIndex = links.indexOf(currentLink);
+                d["teams"][currentTeam]["folders"][currentFolder]["links"].splice(linkIndex, 1);
+                delete d["teams"][currentTeam]["links"][currentLink];
+                setData(d);
+                setCurrentLink(null);
               }
-              else{
-                  teamsRef.doc(teamId).collection("links").doc(linkId)
-                  .delete().then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
+              else {
+                  teamsRef
+                    .doc(currentTeam)
+                    .collection("links")
+                    .doc(currentLink)
+                    .delete()
+                    .then(
+                      teamsRef
+                        .doc(currentTeam)
+                        .collection("folders")
+                        .doc(currentFolder)
+                        .get()
+                        .then((doc) => {
+                          let links = doc.data().links;
+                          let index = links.indexOf(currentLink);
+                          links.splice(index, 1);
+
+                          teamsRef
+                            .doc(currentTeam)
+                            .collection("folders")
+                            .doc(currentFolder)
+                            .update({
+                              links: links
+                            })
+                        })
+                    )
+                    .catch((error) => console.error("Error deleting document", error));
+                    setCurrentLink(null);
               }
             },
             currentLink,
             setCurrentLink: link => {
               setCurrentLink(link);
             },
-            updateLink: () => {},
-            pinLink: () => {},
+            pinLink: () => {
+              if (LOCALMODE) {
+                let d = {...data};
+                let item = d["teams"][currentTeam]["links"][currentLink];
+                if (item.pinned) {
+                  item.pinned = false;
+                } else {
+                  item.pinned = true;
+                }
+                setData(d);
+              }
+            },
           }}>
 
           <div className="App__container">
@@ -292,3 +413,18 @@ TEAMS
 }
 
 export default App;
+
+
+                  
+                  // teamsRef.doc(currentTeam).collection("links")
+
+                  // teamsRef
+                  //   .doc(currentTeam)
+                  //   .collection("folders")
+                  //   .doc(currentFolder)
+                  //   .collection("links")
+                  //   .set({
+                  //     links: d["teams"][currentTeam]["folders"][currentFolder]["links"]
+                  //   });
+                    
+                    // .add(linkData).then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
