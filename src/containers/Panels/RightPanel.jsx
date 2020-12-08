@@ -16,8 +16,14 @@ export default function RightPanel ({ page }) {
   const {
     LOCALMODE,
     data,
+    createTeam,
+    updateTeam,
+    deleteTeam,
     currentTeam,
     currentLink,
+    createFolder,
+    updateFolder,
+    deleteFolder,
     pinLink,
     createLink,
     deleteLink,
@@ -47,7 +53,25 @@ export default function RightPanel ({ page }) {
   })
 
   const getTopIcons = (page, history) => {
-    if (page === "FolderView") {
+    if (page === "Landing") {
+      return (
+        <TopIconContainer>
+          <Add onClick={() => createTeam()}>+</Add>
+          <TextBtn onClick={() => {}}>Edit</TextBtn>
+          <TextBtn onClick={() => deleteTeam()}>Delete</TextBtn>
+        </TopIconContainer>
+      )
+    }
+    else if (page === "Team") {
+      return (
+        <TopIconContainer>
+          <Add onClick={() => createFolder()}>+</Add>
+          <TextBtn onClick={() => {}}>Edit</TextBtn>
+          <TextBtn onClick={() => deleteFolder()}>Delete</TextBtn>
+        </TopIconContainer>
+      )
+    }
+    else if (page === "FolderView") {
       return (
         <TopIconContainer>
           <TopIcon src={GoogleDocs} onClick={() => createLink("googleDoc")} />
@@ -60,8 +84,11 @@ export default function RightPanel ({ page }) {
         </TopIconContainer>
       )
     }
-    if (page === "SharedDesktop") {
-
+    else if (page === "SharedDesktop") {
+      let item;
+      if (LOCALMODE) {
+        item = data["teams"][currentTeam]["links"][currentLink];
+      }
       return (
         <TopIconContainer>
           <TextBtn onClick={ () => history.push("/folder") }>Leave</TextBtn>
@@ -108,7 +135,7 @@ export default function RightPanel ({ page }) {
 
 const Panel = styled.div`
   height: 100vh;
-  width: 5%;
+  width: 8%;
   border-left: 1px solid black;
   overflow: auto;
   display: flex;
