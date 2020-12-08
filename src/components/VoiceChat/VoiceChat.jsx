@@ -12,13 +12,17 @@ const VoiceChat = () => {
   const triggerVoiceChat = useKeyPress(" ", true);
   const [openVoiceChat, setOpenVoiceChat] = useState(false);
   const { transcript, resetTranscript, listening } = useSpeechRecognition();
+  const [chatbotText, setChatbotText] = useState("Hi, how can I help you?");
+  const [continueSession, setContinueSession] = useState("");
+
   if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
-    console.log("Not supported!");
+    setChatbotText("Sorry, this browser is not supported. Please use RemoteHQ on Google Chrome");
   }
 
   useEffect(() => {
     if (triggerVoiceChat) {
-      setOpenVoiceChat(!openVoiceChat);
+      console.log("VoiceChat triggered!");
+      setOpenVoiceChat(prev => !prev);
     }
   }, [triggerVoiceChat]);
 
@@ -32,21 +36,33 @@ const VoiceChat = () => {
   // On listening stop
   useEffect(() => {
     if (!listening && transcript.length > 0) {
-      detectIntent(transcript);
-      setTimeout(() => {
-        console.log("DONE WITH DIALOGFLOW");
-        setOpenVoiceChat(false);
-      }, 1000);
+      detectIntent(transcript, continueSession).then(({ result, sessionId }) => {
+        setChatbotText(result.fulfillmentText);
+        console.log("VoiceChat result: ", result);
+        if (!result.allRequiredParamsPresent) {
+          console.log("VoiceChat not finished.");
+          setContinueSession(sessionId);
+          SpeechRecognition.startListening();
+        } else {
+          setContinueSession("");
+          setTimeout(() => {
+            console.log("End of conversation!");
+            setOpenVoiceChat(false);
+          }, 7000);
+        }
+      });
     } else if (!listening && transcript.length === 0) {
+      console.log("VoiceChat nothing said at all!");
       setOpenVoiceChat(false);
     }
-  }, [listening, transcript])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listening])
 
   if (openVoiceChat) {
     return (
       <div className="VoiceChat__container">
         <p className="VoiceChat__prompt">&nbsp;{transcript}&nbsp;</p>
-        <p className="VoiceChat__prompt">How can I help you?</p>
+        <p className="VoiceChat__prompt">{chatbotText}</p>
         <div className="VoiceChat__icon">
           {listening ? 
             <RingLoader

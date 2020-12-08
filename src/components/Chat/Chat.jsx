@@ -11,8 +11,6 @@ const Chat = () => {
 
   const handleNewUserMessage = (newMessage) => {
     detectIntent(newMessage, continueSession).then(({ result, sessionId }) => {
-      console.log("Got it on the then::", result);
-      console.log("Old session ID: ", sessionId);
       addResponseMessage(result.fulfillmentText);
 
       if (!result.allRequiredParamsPresent) {
