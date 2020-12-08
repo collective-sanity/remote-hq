@@ -2,10 +2,10 @@ import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import firebase from 'firebase/app';
-import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore';
-
+import { useDocument } from 'react-firebase-hooks/firestore';
 import ControlContext from "shared/control-context";
-import LeftPanel from "containers/Panels/LeftPanel";
+
+// import LeftPanel from "containers/Panels/LeftPanel";
 import RightPanel from "containers/Panels/RightPanel";
 
 import doc from '../../assets/Landing/google-docs.png';
@@ -14,10 +14,10 @@ import slides from '../../assets/Landing/google-slides.png';
 import drive from '../../assets/Landing/google-drive.png';
 import figma from '../../assets/Landing/figma.png';
 
-// TODO: create file
-// TODO: create link
-// TODO: edit folder name
-// TODO: delete folder
+// TODO: open gdrive and web links in new tab
+// TODO: pinned files
+// TODO: link icon
+// TODO: breadcrumbs
 export default function FolderView () {
   const context = useContext(ControlContext);
   const { LOCALMODE, data, currentTeam, currentFolder, setCurrentLink } = context;
@@ -28,14 +28,12 @@ export default function FolderView () {
     links = data["teams"][currentTeam]["folders"][currentFolder]["links"];
   }
 
-  const [value, loading, error] = useDocument(
+  const [value] = useDocument(
     firebase.firestore().collection("teams").doc(currentTeam).collection("folders").doc(currentFolder),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
   );
-  
-
 
   useEffect(() => {
     // console.log(context);
@@ -56,9 +54,6 @@ export default function FolderView () {
     )
   }
 
-
-
-  
   return (
     <Row>
       {/* <LeftPanel /> */}
@@ -74,7 +69,6 @@ export default function FolderView () {
             </LinksList>
           ) : (
             <LinksList>
-            {/* {value && <span>Document: {JSON.stringify(value.data())}</span>} */}
             {value && value.data().links.map((link, i) => (
               <GetFirebaseLinks link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
             ))}
@@ -85,9 +79,9 @@ export default function FolderView () {
         <LinkListContainer>
           <HeaderContainerWithDropdown>
             <LinkListContainerTitle>All Files</LinkListContainerTitle>
-            <FilesDropdown>
+            {/* <FilesDropdown>
               <option value="Recently Viewed">Recently Viewed</option>
-            </FilesDropdown>
+            </FilesDropdown> */}
           </HeaderContainerWithDropdown>
           <LinksList>
           </LinksList>
@@ -107,16 +101,12 @@ const getIconType = type => {
 }
 
 const GetFirebaseLinks = ({ link, currentTeam, currentFolder, setCurrentLink }) => {
-  // let item = data["teams"][currentTeam]["links"][link];
-
-  const [value, loading, error] = useDocument(
+  const [value] = useDocument(
     firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(link),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
   );
-
-
 
   return (
     <div>
@@ -197,11 +187,11 @@ const HeaderContainerWithDropdown = styled.div`
   width: 100%;
 `
 
-const FilesDropdown = styled.select`
-  width: 200px;
-  height: 50px;
-  font-size: 18px;
-  align-self: center;
-  margin-left: auto;
-  -webkit-appearance: menulist-button;
-`
+// const FilesDropdown = styled.select`
+//   width: 200px;
+//   height: 50px;
+//   font-size: 18px;
+//   align-self: center;
+//   margin-left: auto;
+//   -webkit-appearance: menulist-button;
+// `
