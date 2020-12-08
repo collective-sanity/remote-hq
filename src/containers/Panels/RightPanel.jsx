@@ -103,7 +103,7 @@ function IconSection () {
 
 const Panel = styled.div`
   height: 100vh;
-  width: 5%;
+  width: 8%;
   border-left: 1px solid black;
   overflow: auto;
   display: flex;

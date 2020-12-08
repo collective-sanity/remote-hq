@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useKeyPress } from 'hooks/useKeyPress';
 import { BrowserRouter as Router, Switch, Route, } from "react-router-dom";
 
-import { provider } from 'shared/firebase';
+import { provider, getUserData } from 'shared/firebase';
 import dummydata from 'shared/dummydata';
 import firebase from "firebase/app";
 import ControlContext from "shared/control-context";
@@ -69,14 +69,14 @@ const App = () => {
                       } else {
                         data = { id: doc.id, ...doc.data(), }
                         setUser(doc.id);
-                        setTeams(doc.teams);
+                        setTeams(doc.data().teams);
                       }
                       // Add listener to keep track of changes and update state
                       userListener = userRef.onSnapshot(function (doc) {
                         console.log("Current data: ", doc.data());
                           
                         setUser(doc.id);
-                        setTeams(doc.teams);
+                        setTeams(doc.data().teams);
                       });
                       // Get Rooms and set them
                       // Add room listener
@@ -135,9 +135,9 @@ TEAMS
                 // Add Room
                 teamsRef.add(teamData).then((ref) => {
                   // Update User -- TODO update all users
-                  // usersRef.doc(user.id).update({
-                  //   teams: [...user.teams, ref.id]
-                  // });
+                  usersRef.doc(user).update({
+                    teams: [...teams, ref.id]
+                  });
                   console.log("Added doc with ID: ", ref.id);
                 });
                 setCurrentTeam(teamData);
@@ -178,7 +178,7 @@ TEAMS
             FOLDERS
 
             */
-            createFolder: ({name="TestName"}) => { 
+            createFolder: (name="TestName") => { 
 
             },
             updateFolder: ({
