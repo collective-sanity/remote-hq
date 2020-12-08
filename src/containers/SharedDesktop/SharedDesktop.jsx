@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react"
 import styled from "styled-components"
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import firebase from 'firebase/app';
 import { useDocument } from 'react-firebase-hooks/firestore';
 import ControlContext from "shared/control-context";
