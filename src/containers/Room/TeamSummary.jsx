@@ -14,7 +14,7 @@ const Person = ({ user }) => {
   return (
     <PersonCard>
       <Photo src={value && value.data().photoUrl} alt='Profile' />
-      <p>{value && value.data().displayName}</p>
+      <Name>{value && value.data().displayName}</Name>
     </PersonCard>
   )
 }
@@ -29,6 +29,11 @@ export default function Room ({ users }) {
     </TeamContainer>
   )
 }
+
+const Name = styled.p`
+  font-size: 14px;
+  text-align: center;
+`
 
 const Photo = styled.img`
   width: 30%;
@@ -47,7 +52,7 @@ const Title = styled.h1`
 `
 
 const TeamCard = styled.div`
-  height: 175px;
+  height: 130px;
   background: #F0F0F0;
   border-radius: 5px;
   margin-top: 30px;

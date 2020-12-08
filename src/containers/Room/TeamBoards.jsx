@@ -11,7 +11,7 @@ export default function TeamBoards () {
   // console.log(currentTeam)
 
   const [value, loading, error] = useCollection(
-    firebase.firestore().collection("teams").doc(currentTeam).collection("folders"),
+    firebase.firestore().collection("teams").doc(currentTeam.trim()).collection("folders"),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
@@ -25,12 +25,12 @@ export default function TeamBoards () {
 
   return (
     <TeamContainer>
-      <Title>Team Boards</Title>
+      <Title>Team Folders</Title>
       {LOCALMODE ? (
         <BoardContainer>
         {folders.map((folder, i) => 
           <Board>
-            <BoardLink folder={folder} data={data} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
+            <BoardLink key={i} folder={folder} data={data} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
           </Board>
         )}
       </BoardContainer>

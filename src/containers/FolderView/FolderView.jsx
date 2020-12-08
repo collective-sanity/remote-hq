@@ -29,7 +29,7 @@ export default function FolderView () {
   }
 
   const [value, loading, error] = useDocument(
-    firebase.firestore().collection("teams").doc(currentTeam).collection("folders").doc(currentFolder),
+    firebase.firestore().collection("teams").doc(currentTeam.trim()).collection("folders").doc(currentFolder),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
@@ -76,7 +76,7 @@ export default function FolderView () {
             <LinksList>
             {/* {value && <span>Document: {JSON.stringify(value.data())}</span>} */}
             {value && value.data().links.map((link, i) => (
-              <GetFirebaseLinks link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
+              <GetFirebaseLinks link={link} currentTeam={currentTeam.trim()} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
             ))}
             </LinksList>
           )}

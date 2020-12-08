@@ -1,19 +1,20 @@
-import React from "react"
+import React, { useContext } from "react"
 import styled from "styled-components"
 import queryString from 'query-string'
 import firebase from 'firebase/app'
-import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore';
+import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore'
+import ControlContext from '../../shared/control-context'
 
 import TeamSummary from './TeamSummary'
 import TeamBoards from './TeamBoards'
-import LeftPanel from "containers/Panels/LeftPanel";
-import RightPanel from "containers/Panels/RightPanel";
+import LeftPanel from "containers/Panels/LeftPanel"
+import RightPanel from "containers/Panels/RightPanel"
 
 export default function Room ({ location }) {
-  const { id } = queryString.parse(location.search)
+  const { currentTeam } = useContext(ControlContext)
 
   const [value, loading, error] = useDocument(
-    firebase.firestore().doc(`teams/${id.trim()}`),
+    firebase.firestore().doc(`teams/${currentTeam.trim()}`),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
@@ -23,9 +24,9 @@ export default function Room ({ location }) {
     <Row>
       <LeftPanel />
       <RoomsContainer>
-        <Breadcrumbs>{`MHCI > ${value && value.data().name}`}</Breadcrumbs>
+        <Breadcrumbs>{`Teams > ${value && value.data().name}`}</Breadcrumbs>
         <TeamSummary users={value && value.data().users} />
-        {/* <TeamBoards /> */}
+        <TeamBoards />
       </RoomsContainer>
       <RightPanel />
     </Row>

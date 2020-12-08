@@ -38,10 +38,7 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam }) => {
   return (
     <Team>
       <NavLink 
-        to={{
-          pathname: '/team',
-          search: `?id=${value && value.id}`
-        }}
+        to='/team'
         onClick={() => setCurrentTeam(teamId)}
       >
         <TeamImage />
