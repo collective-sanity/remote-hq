@@ -2,10 +2,12 @@ import React, { useContext } from "react"
 import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
 import firebase from 'firebase/app'
-import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore';
+import { NavLink } from 'react-router-dom'
+import { useDocument } from 'react-firebase-hooks/firestore';
 
 function Team ({ teamId }) {
-  const [value, loading, error] = useDocument(
+  const { setCurrentTeam } = useContext(ControlContext);
+  const [value] = useDocument(
     firebase.firestore().doc(`teams/${teamId.trim()}`),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
@@ -13,7 +15,9 @@ function Team ({ teamId }) {
   );
 
   return (
-    <TeamName>{value && value.data().name}</TeamName>
+    <NavLink to='/team' onClick={() => setCurrentTeam(value.id)}>
+      <TeamName>{value && value.data().name}</TeamName>
+    </NavLink>
   )
 }
 
@@ -32,7 +36,7 @@ export default function LeftPanel () {
     logoutUser,
   } = useContext(ControlContext);
 
-  const [value, loading, error] = useDocument(
+  const [value] = useDocument(
     firebase.firestore().doc(`users/${user}`),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
