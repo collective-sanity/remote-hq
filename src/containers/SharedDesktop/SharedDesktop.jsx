@@ -5,7 +5,7 @@ import firebase from 'firebase/app';
 import { useDocument } from 'react-firebase-hooks/firestore';
 import ControlContext from "shared/control-context";
 
-// import LeftPanel from "containers/Panels/LeftPanel";
+import LeftPanel from "containers/Panels/LeftPanel";
 import RightPanel from "containers/Panels/RightPanel";
 
 import doc from 'assets/Landing/google-docs.png';
@@ -60,7 +60,7 @@ export default function SharedDesktop () {
 
     return (
       <Row>
-        {/* <LeftPanel /> */}
+        <LeftPanel />
         <Desktop>
           {LOCALMODE ? (
             <iframe 
