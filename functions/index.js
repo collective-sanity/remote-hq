@@ -73,8 +73,13 @@ exports.createTeam = functions.firestore
                 resource: fileMetadata,
                 fields: 'id'
             }).then((res) => {
-
-                console.log('Folder Id: ', res.data);
+                let fileID = t.data.id;
+                let ref = admin.firestore().collection("teams")
+                    .doc(teamID);
+                ref.update({
+                    "driveFolderID": fileID
+                }).then((t) => { }).catch((e) => { });
+                //console.log('Folder Id: ', res.data);
                 const promises = []
                 // now add permissions
                 const userList = data.users;
