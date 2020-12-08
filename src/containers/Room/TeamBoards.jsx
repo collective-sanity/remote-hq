@@ -35,7 +35,7 @@ export default function TeamBoards () {
         )}
       </BoardContainer>
       ) : (
-        <BoardContainer>
+      <BoardContainer>
           {value && value.docs.map((folder, i) => (
             <Board>
               <FirebaseBoardLink key={i} id={folder.id} folder={folder.data()} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
@@ -100,10 +100,11 @@ const NavLink = styled(Link)`
 ` 
 
 const Board = styled.div`
-  width: 100%;
-  height: 100%;
+  width: 47%;
+  height: auto;
   background: #F0F0F0;
   border-radius: 5px;
   margin-top: 30px;
+  padding: 30px;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.25);
 `

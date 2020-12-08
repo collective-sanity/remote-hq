@@ -21,6 +21,7 @@ export default function RightPanel ({ page }) {
     createTeam,
     currentTeam,
     currentLink,
+    createFolder,
     pinLink,
     createLink,
     deleteLink,
@@ -39,7 +40,16 @@ export default function RightPanel ({ page }) {
         </TopIconContainer>
       )
     }
-    if (page === "FolderView") {
+    else if (page === "Team") {
+      return (
+        <TopIconContainer>
+          <Add onClick={() => createFolder()}>+</Add>
+          <TextBtn onClick={() => {}}>Edit</TextBtn>
+          <TextBtn onClick={() => {}}>Delete</TextBtn>
+        </TopIconContainer>
+      )
+    }
+    else if (page === "FolderView") {
       return (
         <TopIconContainer>
           <TopIcon src={GoogleDocs} />
@@ -52,7 +62,7 @@ export default function RightPanel ({ page }) {
         </TopIconContainer>
       )
     }
-    if (page === "SharedDesktop") {
+    else if (page === "SharedDesktop") {
       let item;
       if (LOCALMODE) {
         item = data["teams"][currentTeam]["links"][currentLink];

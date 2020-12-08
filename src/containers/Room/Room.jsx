@@ -28,7 +28,7 @@ export default function Room ({ location }) {
         <TeamSummary users={value && value.data().users} />
         <TeamBoards />
       </RoomsContainer>
-      <RightPanel />
+      <RightPanel page="Team" />
     </Row>
   )
 }

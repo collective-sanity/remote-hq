@@ -1,10 +1,10 @@
 import React from "react"
 import styled from "styled-components"
 import firebase from 'firebase/app'
-import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore';
+import { useDocument } from 'react-firebase-hooks/firestore';
 
 const Person = ({ user }) => {
-  const [value, loading, error] = useDocument(
+  const [value] = useDocument(
     firebase.firestore().doc(`users/${user.id}`),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
@@ -36,7 +36,7 @@ const Name = styled.p`
 `
 
 const Photo = styled.img`
-  width: 30%;
+  width: 20%;
   display: block;
   margin: 10px auto;
   border-radius: 50px;
@@ -52,7 +52,7 @@ const Title = styled.h1`
 `
 
 const TeamCard = styled.div`
-  height: 130px;
+  height: auto;
   background: #F0F0F0;
   border-radius: 5px;
   margin-top: 30px;
@@ -63,8 +63,7 @@ const TeamCard = styled.div`
 `
 
 const PersonCard = styled.div`
-  width: 23%;
-  height: 100%;
+  width: 18%;
   margin-right: 1%;
   background: #C4C4C4;
   border-radius: 5px;

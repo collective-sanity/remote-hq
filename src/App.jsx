@@ -121,7 +121,7 @@ TEAMS
               const teamData = {
                 "name": name,
                 "host": user,
-                "users": [user, ...users],
+                "users": [{id: user}, ...users],
                 "folders": [],
                 "links": [],
                 "screens": [],
@@ -132,19 +132,19 @@ TEAMS
                 d[name]=teamData;
               }
               else{
-                // Add Room
+                // Add team
                 teamsRef.add(teamData).then((ref) => {
                   // Update User -- TODO update all users
                   usersRef.doc(user).update({
                     teams: [...teams, ref.id]
                   });
                   console.log("Added doc with ID: ", ref.id);
+                  setCurrentTeam(ref.id);
                 });
-                setCurrentTeam(teamData);
               }
             },
             updateTeam:({
-              teamId=currentTeam.id,
+              teamId=currentTeam,
               newData})=>{
               if (LOCALMODE) {
                 let d = {...data};
@@ -156,7 +156,7 @@ TEAMS
               }
             },
             deleteTeam:({
-              teamId=currentTeam.id
+              teamId=currentTeam
             })=>{
               if (LOCALMODE) {
                 let d = {...data};
@@ -179,7 +179,13 @@ TEAMS
 
             */
             createFolder: (name="TestName") => { 
+              const folderData = {"name": name, "links": []};
+              const folderRef = teamsRef.doc(currentTeam).collection("folders");
 
+              folderRef.add(folderData).then((ref) => {
+                console.log("Added folder with ID: ", ref.id);
+                setCurrentFolder(ref.id);
+              });
             },
             updateFolder: ({
               teamId=currentTeam.id, 
