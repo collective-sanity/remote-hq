@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-// import { useKeyPress } from 'hooks/useKeyPress';
 import { BrowserRouter as Router, Switch, Route, } from "react-router-dom";
 
 import { provider, getUserData } from 'shared/firebase';
@@ -431,14 +430,7 @@ TEAMS
             },
           }}>
           <div className="App__container">
-            {user ? 
-              <>
-                <VoiceChat />
-                <Chat />
-              </>
-            :
-              <></>
-            }
+            {user ? <><VoiceChat /><Chat /></> : <></> }
             <Switch>
               <Route path="/team" component={Room}/>
               <Route path="/folder" component={FolderView}/>

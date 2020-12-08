@@ -17,10 +17,12 @@
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.0",
+    "react-speech-kit": "^3.0.1",
     "react-speech-recognition": "^3.3.0",
     "react-spinners": "^0.9.0",
     "reactstrap": "^8.7.1",
     "styled-components": "^5.2.1",
+    "use-sound": "^2.0.1",
     "web-vitals": "^0.2.4"
   },
   "scripts": {

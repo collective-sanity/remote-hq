@@ -167,34 +167,19 @@ exports.createLink = functions.firestore
     });
    
 
-var audioBufferStrToArrayBuffer = (json) => {
-	var ret = new Uint8Array(Object.keys(json).length);
-	for (var i = 0; i < Object.keys(json).length; i++) {
-		ret[i] = json[i.toString()];
-	}
-	return ret
-};
-
 exports.dialogflowGateway = functions.https.onRequest((request, response) => {
     cors(request, response, async () => {
-        const { queryInput, sessionId, inputAudio } = request.body;
+        const { queryInput, sessionId } = request.body;
     
-        // console.log(request.body);
         console.log(queryInput, sessionId);
 
         const sessionClient = new SessionsClient({ credentials: dialogflowCredentials  });
         const session = sessionClient.sessionPath('remotehq-297119', sessionId);
 
-        let dfRequest = { session, queryInput };
-
-        console.log(dfRequest);
-        const responses = await sessionClient.detectIntent(dfRequest);
-        console.log(responses);
+        const responses = await sessionClient.detectIntent({ session, queryInput });
+ 
         const result = responses[0].queryResult;
-        console.log("RESULT: ")
-        console.log(result);
-
-        response.send(result);
+        response.send({ result, sessionId });
     });
 });
 

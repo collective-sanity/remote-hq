@@ -1,41 +1,24 @@
-import React from "react"
+import React, { useState } from "react"
 import { Widget, addResponseMessage  } from 'react-chat-widget';
 import ChatIcon from 'assets/Landing/chat.png'
+import { detectIntent } from 'shared/dialogflow';
 
 import './Chat.scss';
 import 'react-chat-widget/lib/styles.css';
 
 const Chat = () => {
-  
+  const [continueSession, setContinueSession] = useState("");
 
   const handleNewUserMessage = (newMessage) => {
-    console.log(newMessage);
-    const sessionId = Math.random().toString(36).slice(-5);
+    detectIntent(newMessage, continueSession).then(({ result, sessionId }) => {
+      addResponseMessage(result.fulfillmentText);
 
-    const dialogflowAPI = 'http://localhost:5001/remote-hq/us-central1/dialogflowGateway';
-    const requestBody = {
-      "sessionId": sessionId,
-      "queryInput": {
-        "text": {
-          "text": "find the figma file from yesterday",
-          "languageCode": "en-US",
-        }
+      if (!result.allRequiredParamsPresent) {
+        setContinueSession(sessionId);
+      } else {
+        setContinueSession("");
       }
-    }
-
-    fetch(dialogflowAPI, {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody),
-    })
-    .then((response => response.json()))
-    .then(result => {
-      console.log(result);
-      addResponseMessage(newMessage + " yay");
-    })
-
+    });
   }
 
   return (
@@ -43,7 +26,7 @@ const Chat = () => {
       handleNewUserMessage={handleNewUserMessage}
       profileAvatar={ChatIcon}
       title="RemoteHQ"
-      subtitle="Hi Connor, how can I help you?"
+      subtitle="Hi, how can I help you?"
     />
   )
 }
