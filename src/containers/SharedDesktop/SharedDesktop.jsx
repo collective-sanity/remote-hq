@@ -1,13 +1,12 @@
 import React, { useContext, useEffect } from "react"
 import styled from "styled-components"
 import { Link } from "react-router-dom";
-
-import LeftPanel from "containers/Panels/LeftPanel";
-import RightPanel from "containers/Panels/RightPanel";
-import ControlContext from "shared/control-context";
 import firebase from 'firebase/app';
-import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore';
+import { useDocument } from 'react-firebase-hooks/firestore';
+import ControlContext from "shared/control-context";
 
+// import LeftPanel from "containers/Panels/LeftPanel";
+import RightPanel from "containers/Panels/RightPanel";
 
 import doc from '../../assets/Landing/google-docs.png';
 import sheet from '../../assets/Landing/google-sheets.png';
@@ -15,8 +14,8 @@ import slides from '../../assets/Landing/google-slides.png';
 import drive from '../../assets/Landing/google-drive.png';
 import figma from '../../assets/Landing/figma.png';
 
-// TODO: delete
-// TODO: edit name
+// TODO: open gdrive and web links in new tab
+// TODO: link icon
 export default function SharedDesktop () {
   const context = useContext(ControlContext);
   const { LOCALMODE, data, currentTeam, currentFolder, setCurrentLink, currentLink } = context;
@@ -28,14 +27,14 @@ export default function SharedDesktop () {
     currentLinkObj = data["teams"][currentTeam]["links"][currentLink];
   }
 
-  const [firebaseLinks, linksLoading, linksError] = useDocument(
+  const [firebaseLinks] = useDocument(
     firebase.firestore().collection("teams").doc(currentTeam).collection("folders").doc(currentFolder),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
   );
 
-  const [value, loading, error] = useDocument(
+  const [value] = useDocument(
     firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(currentLink),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
@@ -118,7 +117,7 @@ export default function SharedDesktop () {
   }
 
   const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink }) => {
-    const [value, loading, error] = useDocument(
+    const [value] = useDocument(
       firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(link),
       {
         snapshotListenOptions: { includeMetadataChanges: true },
@@ -144,8 +143,6 @@ export default function SharedDesktop () {
     if (type === "drive") return drive;
     if (type === "figma") return figma;
   }
-
-
 
 const Row = styled.div`
   display: flex;
