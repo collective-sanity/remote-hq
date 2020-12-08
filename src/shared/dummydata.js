@@ -14,21 +14,21 @@ const dummydata = {
             "email": "anonymousnathan@gmail.com",
             "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GhZFURtuuz-77wg8JU1PJuA-uqP0eKGMreiQLt9DA=s96-c",
             "rooms": ["roomid1"],
-            "teams": ["MHCI"]
+            "teams": ["teamid1"]
         },
         "uid3": {
             "username": "karthick",
             "displayName": "Karthick Shankar",
             "email": "karthicksh10@gmail.com",
             "rooms": ["roomid1", "roomid2"],
-            "teams": ["MHCI"]
+            "teams": ["teamid1"]
         },
         "uid4": {
             "username": "victor",
             "displayName": "Victor Grajski",
             "email": "victor.grajski@gmail.com",
             "rooms": ["roomid1", "roomid2"],
-            "teams": ["MHCI"]
+            "teams": ["teamid1"]
         }
     },
 

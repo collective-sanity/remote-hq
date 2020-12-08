@@ -17,4 +17,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 export const provider = new firebase.auth.GoogleAuthProvider();
+
+export async function getUserData(userId) {
+    let db = await firebase.firestore().collection("users").doc(userId).get() 
+    return db.data()
+}
 //export const db = firebase.firestore();

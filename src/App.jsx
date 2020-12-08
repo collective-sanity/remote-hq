@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 // import { useKeyPress } from 'hooks/useKeyPress';
 import { BrowserRouter as Router, Switch, Route, } from "react-router-dom";
 
-import { provider } from 'shared/firebase';
+import { provider, getUserData } from 'shared/firebase';
 import dummydata from 'shared/dummydata';
 import firebase from "firebase/app";
 import ControlContext from "shared/control-context";
@@ -69,13 +69,14 @@ const App = () => {
                       } else {
                         data = { id: doc.id, ...doc.data(), }
                         setUser(doc.id);
-                        setTeams(doc.teams);
+                        setTeams(doc.data().teams);
                       }
                       // Add listener to keep track of changes and update state
                       userListener = userRef.onSnapshot(function (doc) {
                         console.log("Current data: ", doc.data());
+                          
                         setUser(doc.id);
-                        setTeams(doc.teams);
+                        setTeams(doc.data().teams);
                       });
                       // Get Rooms and set them
                       // Add room listener
@@ -113,15 +114,14 @@ TEAMS
 */
             teams,
             currentTeam,
-            createTeam: ({ 
+            createTeam: ( 
               name = "RandomTest", 
               users = [],
-
-            })=>{
+            )=>{
               const teamData = {
                 "name": name,
-                "host": user.id,
-                "users": [user.id, ...users],
+                "host": user,
+                "users": [{id: user}, ...users],
                 "folders": [],
                 "links": [],
                 "screens": [],
@@ -132,20 +132,19 @@ TEAMS
                 d[name]=teamData;
               }
               else{
-                  
-                  // Add Room
-                  teamsRef.add(teamData).then((ref) => {
-                    // Update User -- TODO update all users
-                    usersRef.doc(user.id).update({
-                      teams: [...user.teams, ref.id]
-                    });
-                    console.log("Added doc with ID: ", ref.id);
+                // Add team
+                teamsRef.add(teamData).then((ref) => {
+                  // Update User -- TODO update all users
+                  usersRef.doc(user).update({
+                    teams: [...teams, ref.id]
                   });
-                  setCurrentTeam(teamData);
+                  console.log("Added team with ID: ", ref.id);
+                  setCurrentTeam(ref.id);
+                });
               }
             },
             updateTeam:({
-              teamId=currentTeam.id,
+              teamId=currentTeam,
               newData})=>{
               if (LOCALMODE) {
                 let d = {...data};
@@ -156,9 +155,9 @@ TEAMS
                 teamsRef.doc(teamId).update(newData).then((ref)=>{ }).catch((error) => console.error("Error updating document", error));
               }
             },
-            deleteTeam:({
-              teamId=currentTeam.id
-            })=>{
+            deleteTeam:(
+              teamId=currentTeam
+            ) => {
               if (LOCALMODE) {
                 let d = {...data};
                 delete d[teamId];
@@ -166,21 +165,28 @@ TEAMS
               }
               else{
                   teamsRef.doc(teamId).delete().then((ref)=>{
-                    usersRef.doc(user.id).update({
-                      teams: user.teams.filter(t=>t!==ref.id)
+                    usersRef.doc(user).update({
+                      teams: teams.filter(teamId => teamId !== currentTeam)
                     });
+                    console.log("Deleted team with ID: ", currentTeam);
+                    setCurrentTeam(null)
                 }).catch((error) => console.error("Error deleting document", error));
               }
             },
-            setCurrentTeam:(teamId) =>setCurrentTeam(teamId),
-
+            setCurrentTeam:(teamId) => setCurrentTeam(teamId),
             /*
 
             FOLDERS
 
             */
-            createFolder: ({name="TestName"}) => { 
+            createFolder: (name="TestName") => { 
+              const folderData = {"name": name, "links": []};
+              const folderRef = teamsRef.doc(currentTeam).collection("folders");
 
+              folderRef.add(folderData).then((ref) => {
+                console.log("Added folder with ID: ", ref.id);
+                setCurrentFolder(ref.id);
+              });
             },
             updateFolder: ({
               teamId=currentTeam.id, 
@@ -197,20 +203,21 @@ TEAMS
                 }).then((ref)=>{ }).catch((error) => console.error("Error updating document", error));
               }
             },
-            deleteFolder: ({
-              teamId=currentTeam.id
-            }) => {
+            deleteFolder: (
+              teamId = currentTeam
+            ) => {
               if (LOCALMODE) {
                 let d = {...data};
                 delete d[teamId];
                 setData(d);
               }
-              else{
-                  teamsRef.doc(teamId).delete().then((ref)=>{
-                    usersRef.doc(user.id).update({
-                      teams: user.teams.filter(t=>t!==ref.id)
-                    });
-                }).catch((error) => console.error("Error deleting document", error));
+              else {
+                const folderRef = teamsRef.doc(currentTeam).collection("folders");
+                folderRef.doc(currentFolder).delete().then((ref)=>{
+                  // What should we do about links in a delete folder?
+                  console.log("Deleted folder with ID: ", currentFolder);
+                  setCurrentFolder(null)
+                }).catch((error) => console.error("Error folder document", error));
               }
             },
             currentFolder,
@@ -423,7 +430,6 @@ TEAMS
               }
             },
           }}>
-
           <div className="App__container">
             {user ? 
               <>

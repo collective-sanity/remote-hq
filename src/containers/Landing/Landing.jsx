@@ -5,19 +5,14 @@ import { NavLink } from 'react-router-dom'
 import firebase from 'firebase/app'
 import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore';
 
-const getFolders = (team, teams) => {
-  for (let i=0; i<teams.length; i++) {
-    if (team === teams[i].name) {
-      return teams[i].folders
-    }
-  }
-}
+import LeftPanel from "containers/Panels/LeftPanel";
+import RightPanel from "containers/Panels/RightPanel";
 
-const RoomCard = ({ teamId, data, setCurrentTeam }) => {
+const TeamCard = ({ teamId, data, setCurrentTeam }) => {
   let name = data["teams"][teamId].name;
 
   return (
-    <Room>
+    <Team>
       <NavLink 
         to={{
           pathname: '/team',
@@ -25,34 +20,31 @@ const RoomCard = ({ teamId, data, setCurrentTeam }) => {
         }}
         onClick={() => setCurrentTeam(teamId)}
       >
-        <RoomImage />
-        <RoomName>{name}</RoomName>
+        <TeamImage />
+        <TeamName>{name}</TeamName>
       </NavLink>
-    </Room>
+    </Team>
   )
 }
 
-const FirebaseRoomCard = ({ teamId, setCurrentTeam }) => {
-  // console.log(teamId)
+const FirebaseTeamCard = ({ teamId, setCurrentTeam }) => {
   const [value, loading, error] = useDocument(
-    firebase.firestore().doc(`teams/${teamId}`),
+    firebase.firestore().doc(`teams/${teamId.trim()}`),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
   );
 
   return (
-    <Room>
+    <Team>
       <NavLink 
-        to={{
-          pathname: '/team',
-        }}
+        to='/team'
         onClick={() => setCurrentTeam(teamId)}
       >
-        <RoomImage />
-        <RoomName>{value && value.data().name}</RoomName>
+        <TeamImage />
+        <TeamName>{value && value.data() && value.data().name}</TeamName>
       </NavLink>
-    </Room>
+    </Team>
   )
 }
 
@@ -73,23 +65,31 @@ export default function Landing () {
   if (LOCALMODE) {
     teamsList = data["users"][user]["teams"];
   }
-  
 
   return (
-    <ContentContainer>
-      <Title>Teams</Title>
-      {LOCALMODE ? (
-        <RoomsContainer>
-          {teamsList.map((teamId, i) => <RoomCard key={i} data={data} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
-        </RoomsContainer>
-      ) : (
-        <RoomsContainer>
-          {value && value.data().teams.map((teamId, i) => <FirebaseRoomCard key={i} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
-        </RoomsContainer>
-      )}
-    </ContentContainer>
+    <Row>
+      <LeftPanel />
+      <ContentContainer>
+        <Title>Teams</Title>
+        {LOCALMODE ? (
+          <TeamsContainer>
+            {teamsList.map((teamId, i) => <TeamCard key={i} data={data} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
+          </TeamsContainer>
+        ) : (
+          <TeamsContainer>
+            {value && value.data().teams.map((teamId, i) => <FirebaseTeamCard key={i} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
+          </TeamsContainer>
+        )}
+      </ContentContainer>
+      <RightPanel page="Landing" />
+    </Row>
   )
 }
+
+const Row = styled.div`
+  display: flex;
+  width: 100%;
+`
 
 const ContentContainer = styled.div`
   width: 100%;
@@ -100,26 +100,42 @@ const Title = styled.h1`
   font-size: 36px;
 `
 
-const RoomsContainer = styled.div`
+const TeamsContainer = styled.div`
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
 `
 
-const Room = styled.div`
-  width: 30%;
+const Team = styled.div`
+  width: 45%;
   height: auto;
 `
 
-const RoomImage = styled.div`
+const TeamImage = styled.div`
   width: 100%;
-  height: 250px;
+  height: 300px;
   background: #C4C4C4;
   border-radius: 5px;
   margin-top: 50px;
 `
 
-const RoomName = styled.p`
+const TeamName = styled.p`
   font-size: 18px;
   margin-top: 10px;
 `
+
+const OverlayContainer = styled.div`
+  position: relative;
+`
+
+const StarIcon = styled.img`
+  position: absolute;
+  top: 20px;
+  right: 16px;
+  height: 30px;
+  width: 30px;
+`
+
+  // .favorites-icon:hover {
+  //   cursor: pointer;
+  // }
