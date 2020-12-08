@@ -14,6 +14,7 @@ const VoiceChat = () => {
   const { transcript, resetTranscript, listening } = useSpeechRecognition();
   const [chatbotText, setChatbotText] = useState("Hi, how can I help you?");
   const [continueSession, setContinueSession] = useState("");
+  const [endOfChat, setEndOfChat] = useState(false);
 
   if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
     setChatbotText("Sorry, this browser is not supported. Please use RemoteHQ on Google Chrome");
@@ -39,15 +40,20 @@ const VoiceChat = () => {
       detectIntent(transcript, continueSession).then(({ result, sessionId }) => {
         setChatbotText(result.fulfillmentText);
         console.log("VoiceChat result: ", result);
-        if (!result.allRequiredParamsPresent) {
+        if (!result.allRequiredParamsPresent 
+           || result.intent.displayName === "Default Fallback Intent"
+           || result.intent.displayName === "Default Welcome Intent") {
           console.log("VoiceChat not finished.");
           setContinueSession(sessionId);
           SpeechRecognition.startListening();
         } else {
           setContinueSession("");
+          setChatbotText("Hi, how can I help you?");
+          setEndOfChat(true);
           setTimeout(() => {
             console.log("End of conversation!");
             setOpenVoiceChat(false);
+            setEndOfChat(false);
           }, 7000);
         }
       });
@@ -72,7 +78,7 @@ const VoiceChat = () => {
           :
             <BeatLoader
               color={"#ffffff"}
-              loading={!listening}
+              loading={!listening && !endOfChat}
             />
           }
         </div>
