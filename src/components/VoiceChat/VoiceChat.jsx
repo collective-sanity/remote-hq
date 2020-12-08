@@ -3,8 +3,11 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 import { useKeyPress } from 'hooks/useKeyPress';
 import RingLoader from "react-spinners/RingLoader";
 import BeatLoader from "react-spinners/BeatLoader";
+import useSound from 'use-sound';
 
 import { detectIntent } from 'shared/dialogflow';
+import startSound from 'assets/voice_chat_start.mp3';
+import endSound from 'assets/voice_chat_end.mp3';
 
 import './VoiceChat.scss';
 
@@ -15,6 +18,8 @@ const VoiceChat = () => {
   const [chatbotText, setChatbotText] = useState("Hi, how can I help you?");
   const [continueSession, setContinueSession] = useState("");
   const [endOfChat, setEndOfChat] = useState(false);
+  const [playStartSound] = useSound(startSound);
+  const [playEndSound] = useSound(endSound);
 
   if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
     setChatbotText("Sorry, this browser is not supported. Please use RemoteHQ on Google Chrome");
@@ -23,9 +28,10 @@ const VoiceChat = () => {
   useEffect(() => {
     if (triggerVoiceChat) {
       console.log("VoiceChat triggered!");
+      playStartSound();
       setOpenVoiceChat(prev => !prev);
     }
-  }, [triggerVoiceChat]);
+  }, [triggerVoiceChat, playStartSound]);
 
   useEffect(() => {
     resetTranscript();
@@ -39,7 +45,7 @@ const VoiceChat = () => {
     if (!listening && transcript.length > 0) {
       detectIntent(transcript, continueSession).then(({ result, sessionId }) => {
         setChatbotText(result.fulfillmentText);
-        console.log("VoiceChat result: ", result);
+
         if (!result.allRequiredParamsPresent 
            || result.intent.displayName === "Default Fallback Intent"
            || result.intent.displayName === "Default Welcome Intent") {
@@ -48,17 +54,18 @@ const VoiceChat = () => {
           SpeechRecognition.startListening();
         } else {
           setContinueSession("");
-          setChatbotText("Hi, how can I help you?");
           setEndOfChat(true);
           setTimeout(() => {
-            console.log("End of conversation!");
             setOpenVoiceChat(false);
+            setChatbotText("Hi, how can I help you?");
             setEndOfChat(false);
+            playEndSound();
           }, 7000);
         }
       });
     } else if (!listening && transcript.length === 0) {
       console.log("VoiceChat nothing said at all!");
+      playEndSound();
       setOpenVoiceChat(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
