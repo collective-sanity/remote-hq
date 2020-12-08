@@ -115,7 +115,7 @@ TEAMS
             teams,
             currentTeam,
             createTeam: ( 
-              name = "RandomTest", 
+              name = "RandomTest"
             )=>{
               const teamData = {
                 "name": name,

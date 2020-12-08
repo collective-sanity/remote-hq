@@ -56,7 +56,6 @@ export default function RightPanel ({ page, setModalOpen }) {
     if (page === "Landing") {
       return (
         <TopIconContainer>
-          {/* <Add onClick={() => createTeam()}>+</Add> */}
           <Add onClick={() => setModalOpen(true)}>+</Add>
           <TextBtn onClick={() => {}}>Edit</TextBtn>
           <TextBtn onClick={() => deleteTeam()}>Delete</TextBtn>
@@ -66,7 +65,7 @@ export default function RightPanel ({ page, setModalOpen }) {
     else if (page === "Team") {
       return (
         <TopIconContainer>
-          <Add onClick={() => createFolder()}>+</Add>
+          <Add onClick={() => setModalOpen(true)}>+</Add>
           <TextBtn onClick={() => {}}>Edit</TextBtn>
           <TextBtn onClick={() => deleteFolder()}>Delete</TextBtn>
         </TopIconContainer>
