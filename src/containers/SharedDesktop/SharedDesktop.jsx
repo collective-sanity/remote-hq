@@ -69,7 +69,6 @@ export default function SharedDesktop () {
               height="100%"
               src={getLink(currentLinkObj.linkType)}
               title={currentLinkObj.name}
-              sandbox
               allowFullScreen
           ></iframe>
           ) : (
@@ -78,7 +77,6 @@ export default function SharedDesktop () {
                 height="100%"
                 src={value && getLink(value.data().linkType, value.data().link)}
                 title={value && value.data().name}
-                sandbox
                 allowFullScreen
             ></iframe>
           )}
@@ -95,7 +93,7 @@ export default function SharedDesktop () {
             ) : (
               <DocsList>
                 {firebaseLinks && firebaseLinks.data().links.map((link) => 
-                  <GetFirebaseLinks link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
+                  <GetFirebaseLinks key={link} link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
                 )}
               </DocsList>
             )}
@@ -109,7 +107,7 @@ export default function SharedDesktop () {
     let item = data["teams"][currentTeam]["links"][link];
 
     return (
-      <Doc onClick={() => setCurrentLink(link)}>
+      <Doc key={link} onClick={() => setCurrentLink(link)}>
         <DocIcon src={getIconType(item.linkType)}></DocIcon>
         <DocTitle>{item.name}</DocTitle>
       </Doc>
@@ -181,7 +179,7 @@ flex-direction: row;
 flex-wrap: wrap;
 `
 
-const Doc = styled(Link)`
+const Doc = styled.div`
   width: 69px;
   height: 91px;
   margin-bottom: 20px;

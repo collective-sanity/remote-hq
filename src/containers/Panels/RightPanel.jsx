@@ -2,18 +2,18 @@ import React, { useContext } from "react"
 import { useHistory } from "react-router-dom"
 import styled from "styled-components"
 import ControlContext from 'shared/control-context'
-import Chat from 'components/Chat/Chat';
+// import Chat from 'components/Chat/Chat';
 
 import GoogleDocs from 'assets/Landing/google-docs.png'
 import GoogleSheets from 'assets/Landing/google-sheets.png'
 import GoogleSlides from 'assets/Landing/google-slides.png'
 import FigmaIcon from 'assets/Landing/figma.png'
-import Notification from 'assets/Landing/bell.png'
-import MentalHealth from 'assets/Landing/mental-health.png'
+// import Notification from 'assets/Landing/bell.png'
+// import MentalHealth from 'assets/Landing/mental-health.png'
 
-// TODO: pinned firebase
 // TODO: test create file
 // TODO: create link prompt
+// TODO: pinned firebase
 export default function RightPanel ({ page }) {
   const {
     LOCALMODE,
@@ -76,20 +76,20 @@ export default function RightPanel ({ page }) {
   return (
     <Panel>
       {getTopIcons(page, history)}
-      <IconSection />
+      {/* <IconSection /> */}
     </Panel>
   )
 }
 
-function IconSection () {
-  return (
-    <IconContainer>
-      <Icon src={Notification} />
-      <Icon src={Chat} />
-      <Icon src={MentalHealth} />
-    </IconContainer>
-  )
-}
+// function IconSection () {
+//   return (
+//     <IconContainer>
+//       <Icon src={Notification} />
+//       <Icon src={Chat} />
+//       <Icon src={MentalHealth} />
+//     </IconContainer>
+//   )
+// }
 
 const Panel = styled.div`
   height: 100vh;
@@ -110,12 +110,12 @@ const Add = styled.button`
   font-size: 24px;
 `
 
-const Icon = styled.img`
-  width: 100%;
-  height: auto;
-  margin-top: 40px;
-  cursor: pointer;
-`
+// const Icon = styled.img`
+//   width: 100%;
+//   height: auto;
+//   margin-top: 40px;
+//   cursor: pointer;
+// `
 const TopIcon = styled.img`
   width: auto;
   height: 40px;
@@ -132,11 +132,11 @@ const TopIconContainer = styled.div`
   align-items: center;
 `
 
-const IconContainer = styled.div`
-  position: absolute;
-  bottom: 3vh;
-  width: 40px;
-`
+// const IconContainer = styled.div`
+//   position: absolute;
+//   bottom: 3vh;
+//   width: 40px;
+// `
 
 const TextBtn = styled.button`
   width: 90%;

@@ -70,7 +70,7 @@ export default function FolderView () {
           ) : (
             <LinksList>
             {value && value.data().links.map((link, i) => (
-              <GetFirebaseLinks link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
+              <GetFirebaseLinks key={i} link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
             ))}
             </LinksList>
           )}
