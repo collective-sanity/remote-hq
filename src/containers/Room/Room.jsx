@@ -33,11 +33,12 @@ export default function Room ({ location }) {
           <NavLink to='/team'>{value && value.data().name}</NavLink></Breadcrumbs>
         <TeamSummary users={value && value.data().users} />
         <TeamBoards />
-        <ReactModal isOpen={modalOpen} >
+        <ReactModal isOpen={modalOpen} className="Modal" >
           <ModalContent 
             setModalOpen={setModalOpen} 
             createFunction={createFolder}
             labelName="New Folder Name"
+            submitName="Create New Folder"
           />
         </ReactModal>
       </RoomsContainer>

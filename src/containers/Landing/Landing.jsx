@@ -3,7 +3,7 @@ import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
 import { NavLink } from 'react-router-dom'
 import firebase from 'firebase/app'
-import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore';
+import { useDocument } from 'react-firebase-hooks/firestore';
 import ReactModal from 'react-modal'
 
 import LeftPanel from "containers/Panels/LeftPanel";
@@ -81,11 +81,12 @@ export default function Landing () {
             {value && value.data().teams.map((teamId, i) => <FirebaseTeamCard key={i} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
           </TeamsContainer>
         )}
-        <ReactModal isOpen={modalOpen} >
+        <ReactModal isOpen={modalOpen} className="Modal" >
           <ModalContent 
             setModalOpen={setModalOpen} 
             createFunction={createTeam}
             labelName="New Team Name"
+            submitName="Create New Team"
           />
         </ReactModal>
       </ContentContainer>
