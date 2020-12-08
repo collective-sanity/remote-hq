@@ -1,7 +1,8 @@
-import React, { useContext } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { useHistory } from "react-router-dom"
 import styled from "styled-components"
 import ControlContext from 'shared/control-context'
+import firebase from 'firebase/app'
 // import Chat from 'components/Chat/Chat';
 
 import GoogleDocs from 'assets/Landing/google-docs.png'
@@ -11,7 +12,6 @@ import FigmaIcon from 'assets/Landing/figma.png'
 // import Notification from 'assets/Landing/bell.png'
 // import MentalHealth from 'assets/Landing/mental-health.png'
 
-// TODO: pinned firebase
 export default function RightPanel ({ page }) {
   const {
     LOCALMODE,
@@ -25,6 +25,26 @@ export default function RightPanel ({ page }) {
   } = useContext(ControlContext);
 
   let history = useHistory();
+
+  let [pinned, setPin] = useState(false);
+  useEffect(() => {
+    if (currentLink) {
+      if (LOCALMODE) {
+        setPin(data["teams"][currentTeam]["links"][currentLink].pinned)
+      } else {
+        firebase
+          .firestore()
+          .collection("teams")
+          .doc(currentTeam)
+          .collection("links")
+          .doc(currentLink)
+          .get()
+          .then((doc) => {
+            setPin(doc.data().pinned)
+          })
+      }
+    }
+  })
 
   const getTopIcons = (page, history) => {
     if (page === "FolderView") {
@@ -41,19 +61,16 @@ export default function RightPanel ({ page }) {
       )
     }
     if (page === "SharedDesktop") {
-      let item;
-      if (LOCALMODE) {
-        item = data["teams"][currentTeam]["links"][currentLink];
-      }
+
       return (
         <TopIconContainer>
           <TextBtn onClick={ () => history.push("/folder") }>Leave</TextBtn>
           <TextBtn onClick={ () => updateLink() }>Edit</TextBtn>
 
-          {LOCALMODE && !item.pinned ? (
-            <TextBtn onClick={ () => pinLink() }>Pin</TextBtn>
+          {!pinned ? (
+              <TextBtn onClick={ () => pinLink() }>Pin</TextBtn>
           ) : (
-            <TextBtn onClick={ () => pinLink() }>Unpin</TextBtn>
+              <TextBtn onClick={ () => pinLink() }>Unpin</TextBtn>
           )}
 
           <TextBtn onClick={ () => { deleteLink(); history.push("/folder"); } }>Delete</TextBtn>

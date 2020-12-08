@@ -238,6 +238,7 @@ TEAMS
                 const linkData = {
                   "linkType": linktype,
                   "name": name,
+                  "pinned": false,
                   "createdDate": firebase.firestore.FieldValue.serverTimestamp(),
                 };
                 
@@ -382,7 +383,7 @@ TEAMS
             setCurrentLink: link => {
               setCurrentLink(link);
             },
-            pinLink: () => {
+            pinLink: async () => {
               if (LOCALMODE) {
                 let d = {...data};
                 let item = d["teams"][currentTeam]["links"][currentLink];
@@ -392,6 +393,33 @@ TEAMS
                   item.pinned = true;
                 }
                 setData(d);
+              } else {
+                  let item = await teamsRef
+                    .doc(currentTeam)
+                    .collection("links")
+                    .doc(currentLink)
+                    .get()
+                    .then((doc) => {
+                      return doc.data()
+                    });
+
+                  if (item.pinned) {
+                    teamsRef
+                    .doc(currentTeam)
+                    .collection("links")
+                    .doc(currentLink)
+                    .update({
+                      pinned: false
+                    })
+                  } else {
+                    teamsRef
+                    .doc(currentTeam)
+                    .collection("links")
+                    .doc(currentLink)
+                    .update({
+                      pinned: true
+                    })
+                  }
               }
             },
           }}>
