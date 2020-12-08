@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Switch, Route, } from "react-router-dom";
 
-import { provider, db } from 'shared/firebase';
+import { provider } from 'shared/firebase';
 import dummydata from 'shared/dummydata';
 import firebase from "firebase/app";
 import ControlContext from "shared/control-context";
 import Splash from 'containers/Splash/Splash'
 import Landing from 'containers/Landing/Landing'
-import LeftPanel from 'containers/Panels/LeftPanel'
-import RightPanel from 'containers/Panels/RightPanel'
 import Room from 'containers/Room/Room'
 import FolderView from 'containers/FolderView/FolderView'
 import SharedDesktop from 'containers/SharedDesktop/SharedDesktop'
@@ -289,7 +287,7 @@ TEAMS
                 let newDescription = d["teams"][currentTeam]["links"][currentLink].description;
                 let newLink = d["teams"][currentTeam]["links"][currentLink].link;
 
-                var name = prompt("Please enter a new name", newName);
+                let name = prompt("Please enter a new name", newName);
                 if (name === null || name === "") {
                   return;
                 } else {
@@ -306,7 +304,7 @@ TEAMS
                 setData(d);
               } else {
                   let newName;
-                  var name = prompt("Please enter a new name", '');
+                  let name = prompt("Please enter a new name", '');
                   if (name === null || name === "") {
                     return;
                   } else {

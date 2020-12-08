@@ -10,16 +10,14 @@ import FigmaIcon from '../../assets/Landing/figma.png'
 import Notification from '../../assets/Landing/bell.png'
 import Chat from '../../assets/Landing/chat.png'
 import MentalHealth from '../../assets/Landing/mental-health.png'
-import { Link } from "react-router-dom"
 
-// TODO: create link modal
 // TODO: pinned firebase
-export default function RightPanel ({ leave, page }) {
+// TODO: test create file
+// TODO: create link prompt
+export default function RightPanel ({ page }) {
   const {
     LOCALMODE,
     data,
-    user,
-    createRoom,
     currentTeam,
     currentLink,
     pinLink,
@@ -82,8 +80,6 @@ export default function RightPanel ({ leave, page }) {
     </Panel>
   )
 }
-
-
 
 function IconSection () {
   return (
