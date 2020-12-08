@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useKeyPress } from 'hooks/useKeyPress';
+// import { useKeyPress } from 'hooks/useKeyPress';
 import { BrowserRouter as Router, Switch, Route, } from "react-router-dom";
 
 import { provider, getUserData } from 'shared/firebase';
@@ -228,21 +228,31 @@ TEAMS
             /*
             Links are all the "files" in the system, they can be organized in folders and viewed in screens
             */
-            createLink: (
-              name, 
-              linktype, 
-              url
-              ) => {
+            createLink: linktype => {
+                let name = prompt("Please enter a name", '');
+                if (name === null || name === "") {
+                  return;
+                }
+
+                let url;
+                if (linktype === "figma" || linktype === "resource") {
+                  url = prompt("Please enter a URL", '');
+                  if (url === null || url === "") {
+                    return;
+                  }
+                }
+
                 const linkData = {
                   "linkType": linktype,
                   "name": name,
-                  "description": "",
+                  "pinned": false,
                   "createdDate": firebase.firestore.FieldValue.serverTimestamp(),
                 };
                 
                 if (linktype === "figma" || linktype === "resource") {
                   linkData.link = url;
                 }
+
               if (LOCALMODE) {
                 let d = {...data};
                 d["teams"][currentTeam]["links"][name] = linkData;
@@ -380,7 +390,7 @@ TEAMS
             setCurrentLink: link => {
               setCurrentLink(link);
             },
-            pinLink: () => {
+            pinLink: async () => {
               if (LOCALMODE) {
                 let d = {...data};
                 let item = d["teams"][currentTeam]["links"][currentLink];
@@ -390,6 +400,33 @@ TEAMS
                   item.pinned = true;
                 }
                 setData(d);
+              } else {
+                  let item = await teamsRef
+                    .doc(currentTeam)
+                    .collection("links")
+                    .doc(currentLink)
+                    .get()
+                    .then((doc) => {
+                      return doc.data()
+                    });
+
+                  if (item.pinned) {
+                    teamsRef
+                    .doc(currentTeam)
+                    .collection("links")
+                    .doc(currentLink)
+                    .update({
+                      pinned: false
+                    })
+                  } else {
+                    teamsRef
+                    .doc(currentTeam)
+                    .collection("links")
+                    .doc(currentLink)
+                    .update({
+                      pinned: true
+                    })
+                  }
               }
             },
           }}>

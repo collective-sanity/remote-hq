@@ -1,19 +1,17 @@
-import React, { useContext } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { useHistory } from "react-router-dom"
 import styled from "styled-components"
 import ControlContext from 'shared/control-context'
-import Chat from 'components/Chat/Chat';
+import firebase from 'firebase/app'
+// import Chat from 'components/Chat/Chat';
 
 import GoogleDocs from 'assets/Landing/google-docs.png'
 import GoogleSheets from 'assets/Landing/google-sheets.png'
 import GoogleSlides from 'assets/Landing/google-slides.png'
 import FigmaIcon from 'assets/Landing/figma.png'
-import Notification from 'assets/Landing/bell.png'
-import MentalHealth from 'assets/Landing/mental-health.png'
+// import Notification from 'assets/Landing/bell.png'
+// import MentalHealth from 'assets/Landing/mental-health.png'
 
-// TODO: pinned firebase
-// TODO: test create file
-// TODO: create link prompt
 export default function RightPanel ({ page }) {
   const {
     LOCALMODE,
@@ -33,6 +31,26 @@ export default function RightPanel ({ page }) {
   } = useContext(ControlContext);
 
   let history = useHistory();
+
+  let [pinned, setPin] = useState(false);
+  useEffect(() => {
+    if (currentLink) {
+      if (LOCALMODE) {
+        setPin(data["teams"][currentTeam]["links"][currentLink].pinned)
+      } else {
+        firebase
+          .firestore()
+          .collection("teams")
+          .doc(currentTeam)
+          .collection("links")
+          .doc(currentLink)
+          .get()
+          .then((doc) => {
+            setPin(doc.data().pinned)
+          })
+      }
+    }
+  })
 
   const getTopIcons = (page, history) => {
     if (page === "Landing") {
@@ -56,11 +74,11 @@ export default function RightPanel ({ page }) {
     else if (page === "FolderView") {
       return (
         <TopIconContainer>
-          <TopIcon src={GoogleDocs} />
-          <TopIcon src={GoogleSheets} />
-          <TopIcon src={GoogleSlides} />
-          <TopIcon src={FigmaIcon} onClick={() => createLink("test", "figma", "https://www.figma.com/file/jSPgLf0DbOKa9bdztdMngs/Mobile")} />
-          <Add onClick={() => createLink("test", "resource", "https://reddit.com")}>+</Add>
+          <TopIcon src={GoogleDocs} onClick={() => createLink("googleDoc")} />
+          <TopIcon src={GoogleSheets} onClick={() => createLink("googleSheet")} />
+          <TopIcon src={GoogleSlides} onClick={() => createLink("googleSlides")} />
+          <TopIcon src={FigmaIcon} onClick={() => createLink("figma")} />
+          <Add onClick={() => createLink("resource")}>+</Add>
           <TextBtn onClick={() => {}}>Edit</TextBtn>
           <TextBtn onClick={() => {}}>Delete</TextBtn>
         </TopIconContainer>
@@ -76,10 +94,10 @@ export default function RightPanel ({ page }) {
           <TextBtn onClick={ () => history.push("/folder") }>Leave</TextBtn>
           <TextBtn onClick={ () => updateLink() }>Edit</TextBtn>
 
-          {LOCALMODE && !item.pinned ? (
-            <TextBtn onClick={ () => pinLink() }>Pin</TextBtn>
+          {!pinned ? (
+              <TextBtn onClick={ () => pinLink() }>Pin</TextBtn>
           ) : (
-            <TextBtn onClick={ () => pinLink() }>Unpin</TextBtn>
+              <TextBtn onClick={ () => pinLink() }>Unpin</TextBtn>
           )}
 
           <TextBtn onClick={ () => { deleteLink(); history.push("/folder"); } }>Delete</TextBtn>
@@ -100,20 +118,20 @@ export default function RightPanel ({ page }) {
   return (
     <Panel>
       {getTopIcons(page, history)}
-      <IconSection />
+      {/* <IconSection /> */}
     </Panel>
   )
 }
 
-function IconSection () {
-  return (
-    <IconContainer>
-      <Icon src={Notification} />
-      <Icon src={Chat} />
-      <Icon src={MentalHealth} />
-    </IconContainer>
-  )
-}
+// function IconSection () {
+//   return (
+//     <IconContainer>
+//       <Icon src={Notification} />
+//       <Icon src={Chat} />
+//       <Icon src={MentalHealth} />
+//     </IconContainer>
+//   )
+// }
 
 const Panel = styled.div`
   height: 100vh;
@@ -134,12 +152,12 @@ const Add = styled.button`
   font-size: 24px;
 `
 
-const Icon = styled.img`
-  width: 100%;
-  height: auto;
-  margin-top: 40px;
-  cursor: pointer;
-`
+// const Icon = styled.img`
+//   width: 100%;
+//   height: auto;
+//   margin-top: 40px;
+//   cursor: pointer;
+// `
 const TopIcon = styled.img`
   width: auto;
   height: 40px;
@@ -156,11 +174,11 @@ const TopIconContainer = styled.div`
   align-items: center;
 `
 
-const IconContainer = styled.div`
-  position: absolute;
-  bottom: 3vh;
-  width: 40px;
-`
+// const IconContainer = styled.div`
+//   position: absolute;
+//   bottom: 3vh;
+//   width: 40px;
+// `
 
 const TextBtn = styled.button`
   width: 90%;

@@ -3,7 +3,7 @@ import styled from "styled-components"
 import { Link } from 'react-router-dom'
 import ControlContext from '../../shared/control-context'
 import firebase from 'firebase/app'
-import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore';
+import { useCollection } from 'react-firebase-hooks/firestore';
 
 export default function TeamBoards () {
   const context = useContext(ControlContext);
@@ -29,16 +29,16 @@ export default function TeamBoards () {
       {LOCALMODE ? (
         <BoardContainer>
         {folders.map((folder, i) => 
-          <Board>
-            <BoardLink key={i} folder={folder} data={data} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
+          <Board key={i}>
+            <BoardLink folder={folder} data={data} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
           </Board>
         )}
       </BoardContainer>
       ) : (
       <BoardContainer>
           {value && value.docs.map((folder, i) => (
-            <Board>
-              <FirebaseBoardLink key={i} id={folder.id} folder={folder.data()} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
+            <Board key={i}>
+              <FirebaseBoardLink id={folder.id} folder={folder.data()} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
             </Board>
           ))}
       </BoardContainer>
