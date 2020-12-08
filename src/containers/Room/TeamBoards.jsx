@@ -4,13 +4,15 @@ import { Link } from 'react-router-dom'
 import ControlContext from '../../shared/control-context'
 import firebase from 'firebase/app'
 import { useCollection } from 'react-firebase-hooks/firestore';
+import Trashcan from 'assets/Landing/delete.svg'
+import { OverlayContainer } from 'assets/StyledComponents/Overlay'
 
 export default function TeamBoards () {
   const context = useContext(ControlContext);
-  let { LOCALMODE, data, currentTeam, setCurrentFolder } = context;
+  let { LOCALMODE, data, currentTeam, setCurrentFolder, deleteFolder } = context;
   // console.log(currentTeam)
 
-  const [value, loading, error] = useCollection(
+  const [value] = useCollection(
     firebase.firestore().collection("teams").doc(currentTeam.trim()).collection("folders"),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
@@ -37,9 +39,12 @@ export default function TeamBoards () {
       ) : (
       <BoardContainer>
           {value && value.docs.map((folder, i) => (
-            <Board key={i}>
-              <FirebaseBoardLink id={folder.id} folder={folder.data()} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
-            </Board>
+              <Board key={i}>
+                <OverlayContainer>
+                  <TrashIcon onClick={() => deleteFolder(folder.id)} src={Trashcan} />
+                  <FirebaseBoardLink id={folder.id} folder={folder.data()} setCurrentFolder={setCurrentFolder} deleteFolder={deleteFolder} />
+                </OverlayContainer>
+              </Board>
           ))}
       </BoardContainer>
       )}
@@ -60,16 +65,7 @@ const BoardLink = ({ folder, data, currentTeam, setCurrentFolder }) => {
   )
 }
 
-const FirebaseBoardLink = ({ id, folder, currentTeam, setCurrentFolder }) => {
-  // console.log(folder)
-  // let name = data["teams"][currentTeam]["folders"][folder].name;
-  // const [value, loading, error] = useDocument(
-  //   firebase.firestore().collection("teams").doc(currentTeam).collection("folders").doc(folder),
-  //   {
-  //     snapshotListenOptions: { includeMetadataChanges: true },
-  //   }
-  // );
-
+const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder }) => {
   return (
     <NavLink 
       to='/folder'
@@ -77,7 +73,8 @@ const FirebaseBoardLink = ({ id, folder, currentTeam, setCurrentFolder }) => {
     >
       <FolderName>{folder.name}</FolderName>
       <LinkContainer>
-        {folder.links.map((i) => <LinkBox key={i}></LinkBox>)}
+        {/* Only get first 6 files */}
+        {folder.links.slice(0, 8).map((i) => <LinkBox key={i}></LinkBox>)}
       </LinkContainer>
     </NavLink>
   )
@@ -119,7 +116,7 @@ const Board = styled.div`
 
 const LinkBox = styled.div`
   height: 120px;
-  width: 30%;
+  width: 21%;
   background-color: #c4c4c4;
   margin-bottom: 20px;
 `
@@ -128,4 +125,12 @@ const LinkContainer = styled.div`
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+`
+
+const TrashIcon = styled.img`
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 30px;
+  width: 30px;
 `

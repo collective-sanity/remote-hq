@@ -114,13 +114,12 @@ TEAMS
             teams,
             currentTeam,
             createTeam: ( 
-              name = "RandomTest", 
-              users = [],
+              name = "RandomTest"
             )=>{
               const teamData = {
                 "name": name,
                 "host": user,
-                "users": [{id: user}, ...users],
+                "users": [{id: user}],
                 "folders": [],
                 "links": [],
                 "screens": [],
@@ -155,7 +154,7 @@ TEAMS
               }
             },
             deleteTeam:(
-              teamId=currentTeam
+              teamId = currentTeam
             ) => {
               if (LOCALMODE) {
                 let d = {...data};
@@ -165,7 +164,7 @@ TEAMS
               else{
                   teamsRef.doc(teamId).delete().then((ref)=>{
                     usersRef.doc(user).update({
-                      teams: teams.filter(teamId => teamId !== currentTeam)
+                      teams: teams.filter(team => team !== teamId)
                     });
                     console.log("Deleted team with ID: ", currentTeam);
                     setCurrentTeam(null)

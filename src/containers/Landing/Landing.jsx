@@ -3,31 +3,38 @@ import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
 import { NavLink } from 'react-router-dom'
 import firebase from 'firebase/app'
-import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore';
+import { useDocument } from 'react-firebase-hooks/firestore'
+import ReactModal from 'react-modal'
+import Trashcan from 'assets/Landing/delete.svg'
 
-import LeftPanel from "containers/Panels/LeftPanel";
-import RightPanel from "containers/Panels/RightPanel";
+import LeftPanel from "containers/Panels/LeftPanel"
+import RightPanel from "containers/Panels/RightPanel"
+import ModalContent from 'containers/Modal/ModalContent'
+import { OverlayContainer } from 'assets/StyledComponents/Overlay'
 
 const TeamCard = ({ teamId, data, setCurrentTeam }) => {
   let name = data["teams"][teamId].name;
 
   return (
     <Team>
-      <NavLink 
-        to={{
-          pathname: '/team',
-          search: `?name=${name}`
-        }}
-        onClick={() => setCurrentTeam(teamId)}
-      >
-        <TeamImage />
-        <TeamName>{name}</TeamName>
-      </NavLink>
+      <OverlayContainer>
+        <TrashIcon src={Trashcan} />
+        <NavLink 
+          to={{
+            pathname: '/team',
+            search: `?name=${name}`
+          }}
+          onClick={() => setCurrentTeam(teamId)}
+        >
+          <TeamImage />
+          <TeamName>{name}</TeamName>
+        </NavLink>
+      </OverlayContainer>
     </Team>
   )
 }
 
-const FirebaseTeamCard = ({ teamId, setCurrentTeam }) => {
+const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam }) => {
   const [value, loading, error] = useDocument(
     firebase.firestore().doc(`teams/${teamId.trim()}`),
     {
@@ -37,21 +44,23 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam }) => {
 
   return (
     <Team>
-      <NavLink 
-        to='/team'
-        onClick={() => setCurrentTeam(teamId)}
-      >
-        <TeamImage />
-        <TeamName>{value && value.data() && value.data().name}</TeamName>
-      </NavLink>
+      <OverlayContainer>
+        <TrashIcon onClick={() => deleteTeam(teamId)} src={Trashcan} />
+        <NavLink 
+          to='/team'
+          onClick={() => setCurrentTeam(teamId)}
+        >
+          <TeamImage />
+          <TeamName>{value && value.data() && value.data().name}</TeamName>
+        </NavLink>
+      </OverlayContainer>
     </Team>
   )
 }
 
-
-
 export default function Landing () {
-  const { LOCALMODE, data, user, setCurrentTeam } = useContext(ControlContext);
+  const { LOCALMODE, data, user, createTeam, setCurrentTeam, deleteTeam } = useContext(ControlContext);
+  const [modalOpen, setModalOpen] = useState(false)
   // const [teamsList, setTeamsList] = useState(null);
 
   const [value, loading, error] = useDocument(
@@ -77,11 +86,19 @@ export default function Landing () {
           </TeamsContainer>
         ) : (
           <TeamsContainer>
-            {value && value.data().teams.map((teamId, i) => <FirebaseTeamCard key={i} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
+            {value && value.data().teams.map((teamId, i) => <FirebaseTeamCard key={i} teamId={teamId} setCurrentTeam={setCurrentTeam} deleteTeam={deleteTeam} />)}
           </TeamsContainer>
         )}
+        <ReactModal isOpen={modalOpen} className="Modal" >
+          <ModalContent 
+            setModalOpen={setModalOpen} 
+            createFunction={createTeam}
+            labelName="New Team Name"
+            submitName="Create New Team"
+          />
+        </ReactModal>
       </ContentContainer>
-      <RightPanel page="Landing" />
+      <RightPanel page="Landing" setModalOpen={setModalOpen} />
     </Row>
   )
 }
@@ -124,18 +141,10 @@ const TeamName = styled.p`
   margin-top: 10px;
 `
 
-const OverlayContainer = styled.div`
-  position: relative;
-`
-
-const StarIcon = styled.img`
+const TrashIcon = styled.img`
   position: absolute;
-  top: 20px;
-  right: 16px;
+  top: 15px;
+  right: 15px;
   height: 30px;
   width: 30px;
 `
-
-  // .favorites-icon:hover {
-  //   cursor: pointer;
-  // }

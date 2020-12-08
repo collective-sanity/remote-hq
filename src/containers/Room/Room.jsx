@@ -1,17 +1,20 @@
-import React, { useContext } from "react"
+import React, { useContext, useState } from "react"
 import styled from "styled-components"
 import firebase from 'firebase/app'
-import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore'
+import { useDocument } from 'react-firebase-hooks/firestore'
 import ControlContext from '../../shared/control-context'
 import { NavLink } from 'react-router-dom'
+import ReactModal from 'react-modal'
 
 import TeamSummary from './TeamSummary'
 import TeamBoards from './TeamBoards'
 import LeftPanel from "containers/Panels/LeftPanel"
 import RightPanel from "containers/Panels/RightPanel"
+import ModalContent from 'containers/Modal/ModalContent'
 
 export default function Room ({ location }) {
-  const { currentTeam } = useContext(ControlContext)
+  const { currentTeam, createFolder } = useContext(ControlContext)
+  const [modalOpen, setModalOpen] = useState(false)
 
   const [value] = useDocument(
     firebase.firestore().doc(`teams/${currentTeam.trim()}`),
@@ -30,8 +33,16 @@ export default function Room ({ location }) {
           <NavLink to='/team'>{value && value.data().name}</NavLink></Breadcrumbs>
         <TeamSummary users={value && value.data().users} />
         <TeamBoards />
+        <ReactModal isOpen={modalOpen} className="Modal" >
+          <ModalContent 
+            setModalOpen={setModalOpen} 
+            createFunction={createFolder}
+            labelName="New Folder Name"
+            submitName="Create New Folder"
+          />
+        </ReactModal>
       </RoomsContainer>
-      <RightPanel page="Team" />
+      <RightPanel page="Team" setModalOpen={setModalOpen} />
     </Row>
   )
 }
