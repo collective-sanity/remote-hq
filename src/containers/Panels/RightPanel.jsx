@@ -11,8 +11,6 @@ import FigmaIcon from 'assets/Landing/figma.png'
 // import Notification from 'assets/Landing/bell.png'
 // import MentalHealth from 'assets/Landing/mental-health.png'
 
-// TODO: test create file
-// TODO: create link prompt
 // TODO: pinned firebase
 export default function RightPanel ({ page }) {
   const {
@@ -32,11 +30,11 @@ export default function RightPanel ({ page }) {
     if (page === "FolderView") {
       return (
         <TopIconContainer>
-          <TopIcon src={GoogleDocs} />
-          <TopIcon src={GoogleSheets} />
-          <TopIcon src={GoogleSlides} />
-          <TopIcon src={FigmaIcon} onClick={() => createLink("test", "figma", "https://www.figma.com/file/jSPgLf0DbOKa9bdztdMngs/Mobile")} />
-          <Add onClick={() => createLink("test", "resource", "https://reddit.com")}>+</Add>
+          <TopIcon src={GoogleDocs} onClick={() => createLink("googleDoc")} />
+          <TopIcon src={GoogleSheets} onClick={() => createLink("googleSheet")} />
+          <TopIcon src={GoogleSlides} onClick={() => createLink("googleSlides")} />
+          <TopIcon src={FigmaIcon} onClick={() => createLink("figma")} />
+          <Add onClick={() => createLink("resource")}>+</Add>
           <TextBtn onClick={() => {}}>Edit</TextBtn>
           <TextBtn onClick={() => {}}>Delete</TextBtn>
         </TopIconContainer>
