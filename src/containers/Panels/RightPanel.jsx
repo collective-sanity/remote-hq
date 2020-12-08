@@ -19,6 +19,8 @@ export default function RightPanel ({ page }) {
     LOCALMODE,
     data,
     createTeam,
+    updateTeam,
+    deleteTeam,
     currentTeam,
     currentLink,
     createFolder,
@@ -36,7 +38,7 @@ export default function RightPanel ({ page }) {
         <TopIconContainer>
           <Add onClick={() => createTeam()}>+</Add>
           <TextBtn onClick={() => {}}>Edit</TextBtn>
-          <TextBtn onClick={() => {}}>Delete</TextBtn>
+          <TextBtn onClick={() => deleteTeam()}>Delete</TextBtn>
         </TopIconContainer>
       )
     }

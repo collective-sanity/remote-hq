@@ -138,7 +138,7 @@ TEAMS
                   usersRef.doc(user).update({
                     teams: [...teams, ref.id]
                   });
-                  console.log("Added doc with ID: ", ref.id);
+                  console.log("Added team with ID: ", ref.id);
                   setCurrentTeam(ref.id);
                 });
               }
@@ -155,9 +155,9 @@ TEAMS
                 teamsRef.doc(teamId).update(newData).then((ref)=>{ }).catch((error) => console.error("Error updating document", error));
               }
             },
-            deleteTeam:({
+            deleteTeam:(
               teamId=currentTeam
-            })=>{
+            ) => {
               if (LOCALMODE) {
                 let d = {...data};
                 delete d[teamId];
@@ -165,14 +165,15 @@ TEAMS
               }
               else{
                   teamsRef.doc(teamId).delete().then((ref)=>{
-                    usersRef.doc(user.id).update({
-                      teams: user.teams.filter(t=>t!==ref.id)
+                    usersRef.doc(user).update({
+                      teams: teams.filter(teamId => teamId !== currentTeam)
                     });
+                    console.log("Deleted team with ID: ", currentTeam);
+                    setCurrentTeam(null)
                 }).catch((error) => console.error("Error deleting document", error));
               }
             },
-            setCurrentTeam:(teamId) =>setCurrentTeam(teamId),
-
+            setCurrentTeam:(teamId) => setCurrentTeam(teamId),
             /*
 
             FOLDERS

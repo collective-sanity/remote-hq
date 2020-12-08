@@ -42,7 +42,7 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam }) => {
         onClick={() => setCurrentTeam(teamId)}
       >
         <TeamImage />
-        <TeamName>{value && value.data().name}</TeamName>
+        <TeamName>{value && value.data() && value.data().name}</TeamName>
       </NavLink>
     </Team>
   )

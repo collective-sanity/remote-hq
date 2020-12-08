@@ -48,7 +48,6 @@ export default function TeamBoards () {
 }
 
 const BoardLink = ({ folder, data, currentTeam, setCurrentFolder }) => {
-  console.log(folder)
   let name = data["teams"][currentTeam]["folders"][folder].name;
 
   return (
@@ -70,8 +69,6 @@ const FirebaseBoardLink = ({ id, folder, currentTeam, setCurrentFolder }) => {
   //     snapshotListenOptions: { includeMetadataChanges: true },
   //   }
   // );
-
-  console.log(folder)
 
   return (
     <NavLink 

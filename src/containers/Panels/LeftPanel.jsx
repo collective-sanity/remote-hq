@@ -16,7 +16,7 @@ function Team ({ teamId }) {
 
   return (
     <NavLink to='/team' onClick={() => setCurrentTeam(value.id)}>
-      <TeamName>{value && value.data().name}</TeamName>
+      <TeamName>{value && value.data() && value.data().name}</TeamName>
     </NavLink>
   )
 }
