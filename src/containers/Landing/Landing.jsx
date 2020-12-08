@@ -8,6 +8,7 @@ import ReactModal from 'react-modal'
 
 import LeftPanel from "containers/Panels/LeftPanel";
 import RightPanel from "containers/Panels/RightPanel";
+import ModalContent from 'containers/Modal/ModalContent'
 
 const TeamCard = ({ teamId, data, setCurrentTeam }) => {
   let name = data["teams"][teamId].name;
@@ -49,38 +50,8 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam }) => {
   )
 }
 
-const ModalContent = ({ setModalOpen }) => {
-  const { createTeam } = useContext(ControlContext)
-  const [name, setName] = useState("")
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    createTeam(name)
-    setModalOpen(false)
-  }
-  
-  return (
-    <div>
-      <p onClick={() => setModalOpen(false)}>X</p>
-      <p>Modal Content</p>
-      <form onSubmit={handleSubmit} >
-        <label>
-          New Team Name:
-          <input 
-            type="text" 
-            name="name" 
-            onChange={event => setName(event.target.value)} 
-          />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
-    </div>
-  )
-}
-
-
 export default function Landing () {
-  const { LOCALMODE, data, user, setCurrentTeam } = useContext(ControlContext);
+  const { LOCALMODE, data, user, createTeam, setCurrentTeam } = useContext(ControlContext);
   const [modalOpen, setModalOpen] = useState(false)
   // const [teamsList, setTeamsList] = useState(null);
 
@@ -111,7 +82,11 @@ export default function Landing () {
           </TeamsContainer>
         )}
         <ReactModal isOpen={modalOpen} >
-          <ModalContent setModalOpen={setModalOpen} />
+          <ModalContent 
+            setModalOpen={setModalOpen} 
+            createFunction={createTeam}
+            labelName="New Team Name"
+          />
         </ReactModal>
       </ContentContainer>
       <RightPanel page="Landing" setModalOpen={setModalOpen} />

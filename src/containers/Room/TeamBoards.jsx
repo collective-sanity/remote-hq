@@ -10,7 +10,7 @@ export default function TeamBoards () {
   let { LOCALMODE, data, currentTeam, setCurrentFolder } = context;
   // console.log(currentTeam)
 
-  const [value, loading, error] = useCollection(
+  const [value] = useCollection(
     firebase.firestore().collection("teams").doc(currentTeam.trim()).collection("folders"),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
@@ -60,16 +60,7 @@ const BoardLink = ({ folder, data, currentTeam, setCurrentFolder }) => {
   )
 }
 
-const FirebaseBoardLink = ({ id, folder, currentTeam, setCurrentFolder }) => {
-  // console.log(folder)
-  // let name = data["teams"][currentTeam]["folders"][folder].name;
-  // const [value, loading, error] = useDocument(
-  //   firebase.firestore().collection("teams").doc(currentTeam).collection("folders").doc(folder),
-  //   {
-  //     snapshotListenOptions: { includeMetadataChanges: true },
-  //   }
-  // );
-
+const FirebaseBoardLink = ({ id, folder, setCurrentFolder }) => {
   return (
     <NavLink 
       to='/folder'
@@ -77,7 +68,8 @@ const FirebaseBoardLink = ({ id, folder, currentTeam, setCurrentFolder }) => {
     >
       <FolderName>{folder.name}</FolderName>
       <LinkContainer>
-        {folder.links.map((i) => <LinkBox key={i}></LinkBox>)}
+        {/* Only get first 6 files */}
+        {folder.links.slice(0, 8).map((i) => <LinkBox key={i}></LinkBox>)}
       </LinkContainer>
     </NavLink>
   )
@@ -119,7 +111,7 @@ const Board = styled.div`
 
 const LinkBox = styled.div`
   height: 120px;
-  width: 30%;
+  width: 21%;
   background-color: #c4c4c4;
   margin-bottom: 20px;
 `
