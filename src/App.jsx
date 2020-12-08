@@ -221,21 +221,30 @@ TEAMS
             /*
             Links are all the "files" in the system, they can be organized in folders and viewed in screens
             */
-            createLink: (
-              name, 
-              linktype, 
-              url
-              ) => {
+            createLink: linktype => {
+                let name = prompt("Please enter a name", '');
+                if (name === null || name === "") {
+                  return;
+                }
+
+                let url;
+                if (linktype === "figma" || linktype === "resource") {
+                  url = prompt("Please enter a URL", '');
+                  if (url === null || url === "") {
+                    return;
+                  }
+                }
+
                 const linkData = {
                   "linkType": linktype,
                   "name": name,
-                  "description": "",
                   "createdDate": firebase.firestore.FieldValue.serverTimestamp(),
                 };
                 
                 if (linktype === "figma" || linktype === "resource") {
                   linkData.link = url;
                 }
+
               if (LOCALMODE) {
                 let d = {...data};
                 d["teams"][currentTeam]["links"][name] = linkData;

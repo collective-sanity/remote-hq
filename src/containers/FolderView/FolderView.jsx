@@ -8,15 +8,15 @@ import ControlContext from "shared/control-context";
 // import LeftPanel from "containers/Panels/LeftPanel";
 import RightPanel from "containers/Panels/RightPanel";
 
-import doc from '../../assets/Landing/google-docs.png';
-import sheet from '../../assets/Landing/google-sheets.png';
-import slides from '../../assets/Landing/google-slides.png';
-import drive from '../../assets/Landing/google-drive.png';
-import figma from '../../assets/Landing/figma.png';
+import doc from 'assets/Landing/google-docs.png';
+import sheet from 'assets/Landing/google-sheets.png';
+import slides from 'assets/Landing/google-slides.png';
+import drive from 'assets/Landing/google-drive.png';
+import figma from 'assets/Landing/figma.png';
+import link from 'assets/Landing/link.png';
 
 // TODO: open gdrive and web links in new tab
 // TODO: pinned files
-// TODO: link icon
 // TODO: breadcrumbs
 export default function FolderView () {
   const context = useContext(ControlContext);
@@ -93,11 +93,12 @@ export default function FolderView () {
 }
 
 const getIconType = type => {
-  if (type === "googledoc") return doc;
-  if (type === "googlesheet") return sheet;
-  if (type === "googleslides") return slides;
+  if (type === "googleDoc") return doc;
+  if (type === "googleSheet") return sheet;
+  if (type === "googleSlides") return slides;
   if (type === "drive") return drive;
   if (type === "figma") return figma;
+  if (type === "resource") return link;
 }
 
 const GetFirebaseLinks = ({ link, currentTeam, currentFolder, setCurrentLink }) => {
