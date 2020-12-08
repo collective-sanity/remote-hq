@@ -116,12 +116,11 @@ TEAMS
             currentTeam,
             createTeam: ( 
               name = "RandomTest", 
-              users = [],
             )=>{
               const teamData = {
                 "name": name,
                 "host": user,
-                "users": [{id: user}, ...users],
+                "users": [{id: user}],
                 "folders": [],
                 "links": [],
                 "screens": [],

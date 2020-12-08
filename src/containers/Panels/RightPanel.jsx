@@ -12,7 +12,7 @@ import FigmaIcon from 'assets/Landing/figma.png'
 // import Notification from 'assets/Landing/bell.png'
 // import MentalHealth from 'assets/Landing/mental-health.png'
 
-export default function RightPanel ({ page }) {
+export default function RightPanel ({ page, setModalOpen }) {
   const {
     LOCALMODE,
     data,
@@ -56,7 +56,8 @@ export default function RightPanel ({ page }) {
     if (page === "Landing") {
       return (
         <TopIconContainer>
-          <Add onClick={() => createTeam()}>+</Add>
+          {/* <Add onClick={() => createTeam()}>+</Add> */}
+          <Add onClick={() => setModalOpen(true)}>+</Add>
           <TextBtn onClick={() => {}}>Edit</TextBtn>
           <TextBtn onClick={() => deleteTeam()}>Delete</TextBtn>
         </TopIconContainer>

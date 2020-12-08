@@ -4,6 +4,7 @@ import ControlContext from '../../shared/control-context'
 import { NavLink } from 'react-router-dom'
 import firebase from 'firebase/app'
 import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore';
+import ReactModal from 'react-modal'
 
 import LeftPanel from "containers/Panels/LeftPanel";
 import RightPanel from "containers/Panels/RightPanel";
@@ -48,10 +49,39 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam }) => {
   )
 }
 
+const ModalContent = ({ setModalOpen }) => {
+  const { createTeam } = useContext(ControlContext)
+  const [name, setName] = useState("")
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    createTeam(name)
+    setModalOpen(false)
+  }
+  
+  return (
+    <div>
+      <p onClick={() => setModalOpen(false)}>X</p>
+      <p>Modal Content</p>
+      <form onSubmit={handleSubmit} >
+        <label>
+          New Team Name:
+          <input 
+            type="text" 
+            name="name" 
+            onChange={event => setName(event.target.value)} 
+          />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+    </div>
+  )
+}
 
 
 export default function Landing () {
   const { LOCALMODE, data, user, setCurrentTeam } = useContext(ControlContext);
+  const [modalOpen, setModalOpen] = useState(false)
   // const [teamsList, setTeamsList] = useState(null);
 
   const [value, loading, error] = useDocument(
@@ -80,8 +110,11 @@ export default function Landing () {
             {value && value.data().teams.map((teamId, i) => <FirebaseTeamCard key={i} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
           </TeamsContainer>
         )}
+        <ReactModal isOpen={modalOpen} >
+          <ModalContent setModalOpen={setModalOpen} />
+        </ReactModal>
       </ContentContainer>
-      <RightPanel page="Landing" />
+      <RightPanel page="Landing" setModalOpen={setModalOpen} />
     </Row>
   )
 }
