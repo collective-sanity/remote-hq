@@ -11,9 +11,9 @@ import FigmaIcon from 'assets/Landing/figma.png'
 import Notification from 'assets/Landing/bell.png'
 import MentalHealth from 'assets/Landing/mental-health.png'
 
-// TODO: pinned firebase
 // TODO: test create file
 // TODO: create link prompt
+// TODO: pinned firebase
 export default function RightPanel ({ page }) {
   const {
     LOCALMODE,
