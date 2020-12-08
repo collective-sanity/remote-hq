@@ -1,12 +1,11 @@
-import React, { useState } from "react"
+import React from "react"
 import styled from "styled-components"
 
-export default function AddModalContent ({ setModalOpen, createFunction, labelName, submitName }) {
-  const [name, setName] = useState("")
+export default function DeleteModalContent ({ setModalOpen, deleteFunction, labelName, id }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    createFunction(name)
+    deleteFunction(id)
     setModalOpen(false)
   }
   
@@ -14,17 +13,11 @@ export default function AddModalContent ({ setModalOpen, createFunction, labelNa
     <div>
       <form onSubmit={handleSubmit} >
         <X onClick={() => setModalOpen(false)}>X</X>
-        <label>
-          <Title>{labelName}:</Title>
-          <Input 
-            type="text" 
-            name="name" 
-            onChange={event => setName(event.target.value)} 
-          />
-        </label>
+        <Title>{labelName}:</Title>
+        <p>This action will permanently delete everything, including nested data.</p>
         <BtnRow>
           <CancelBtn onClick={() => setModalOpen(false)}>Cancel</CancelBtn>
-          <SubmitBtn type="submit" value={submitName} />
+          <Delete type="submit" value="Delete" />
         </BtnRow>
       </form>
     </div>
@@ -39,8 +32,10 @@ const CancelBtn = styled.button`
   margin-right: 20px;
 `
 
-const SubmitBtn = styled.input`
-  border: 1px solid black; 
+const Delete = styled.input`
+  border: none;
+  background: red;
+  color: white;
   border-radius: 5px;
   padding: 5px 10px;
 `
@@ -48,6 +43,7 @@ const SubmitBtn = styled.input`
 const BtnRow = styled.div`
   display: flex;
   margin-top: 20px;
+  justify-content: center;
 `
 
 const Title = styled.h1`
@@ -62,8 +58,4 @@ const X = styled.p`
   font-weight: bold;
   margin-left: 40px;
   cursor: pointer;
-`
-
-const Input = styled.input`
-  width: 100%;
 `

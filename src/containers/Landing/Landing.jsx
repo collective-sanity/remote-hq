@@ -10,6 +10,7 @@ import Trashcan from 'assets/Landing/delete.svg'
 import LeftPanel from "containers/Panels/LeftPanel"
 import RightPanel from "containers/Panels/RightPanel"
 import ModalContent from 'containers/Modal/AddModalContent'
+import DeleteModalContent from 'containers/Modal/DeleteModalContent'
 import { OverlayContainer } from 'assets/StyledComponents/Overlay'
 
 const TeamCard = ({ teamId, data, setCurrentTeam }) => {
@@ -35,6 +36,7 @@ const TeamCard = ({ teamId, data, setCurrentTeam }) => {
 }
 
 const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam }) => {
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [value] = useDocument(
     firebase.firestore().doc(`teams/${teamId.trim()}`),
     {
@@ -45,7 +47,7 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam }) => {
   return (
     <Team>
       <OverlayContainer>
-        <TrashIcon onClick={() => deleteTeam(teamId)} src={Trashcan} />
+        <TrashIcon onClick={() => setDeleteModalOpen(true)} src={Trashcan} />
         <NavLink 
           to='/team'
           onClick={() => setCurrentTeam(teamId)}
@@ -53,6 +55,14 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam }) => {
           <TeamImage />
           <TeamName>{value && value.data() && value.data().name}</TeamName>
         </NavLink>
+        <ReactModal isOpen={deleteModalOpen} className="Modal" >
+          <DeleteModalContent 
+            setModalOpen={setDeleteModalOpen} 
+            deleteFunction={deleteTeam}
+            id={teamId}
+            labelName="Delete Team?"
+          />
+        </ReactModal>
       </OverlayContainer>
     </Team>
   )
@@ -61,7 +71,6 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam }) => {
 export default function Landing () {
   const { LOCALMODE, data, user, createTeam, setCurrentTeam, deleteTeam } = useContext(ControlContext);
   const [modalOpen, setModalOpen] = useState(false)
-  // const [teamsList, setTeamsList] = useState(null);
 
   const [value] = useDocument(
     firebase.firestore().doc(`users/${user}`),
