@@ -4,10 +4,12 @@ import { Link } from 'react-router-dom'
 import ControlContext from '../../shared/control-context'
 import firebase from 'firebase/app'
 import { useCollection } from 'react-firebase-hooks/firestore';
+import Trashcan from 'assets/Landing/delete.svg'
+import { OverlayContainer } from 'assets/StyledComponents/Overlay'
 
 export default function TeamBoards () {
   const context = useContext(ControlContext);
-  let { LOCALMODE, data, currentTeam, setCurrentFolder } = context;
+  let { LOCALMODE, data, currentTeam, setCurrentFolder, deleteFolder } = context;
   // console.log(currentTeam)
 
   const [value] = useCollection(
@@ -37,9 +39,12 @@ export default function TeamBoards () {
       ) : (
       <BoardContainer>
           {value && value.docs.map((folder, i) => (
-            <Board key={i}>
-              <FirebaseBoardLink id={folder.id} folder={folder.data()} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
-            </Board>
+              <Board key={i}>
+                <OverlayContainer>
+                  <TrashIcon onClick={() => deleteFolder(folder.id)} src={Trashcan} />
+                  <FirebaseBoardLink id={folder.id} folder={folder.data()} setCurrentFolder={setCurrentFolder} deleteFolder={deleteFolder} />
+                </OverlayContainer>
+              </Board>
           ))}
       </BoardContainer>
       )}
@@ -60,7 +65,7 @@ const BoardLink = ({ folder, data, currentTeam, setCurrentFolder }) => {
   )
 }
 
-const FirebaseBoardLink = ({ id, folder, setCurrentFolder }) => {
+const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder }) => {
   return (
     <NavLink 
       to='/folder'
@@ -120,4 +125,12 @@ const LinkContainer = styled.div`
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+`
+
+const TrashIcon = styled.img`
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 30px;
+  width: 30px;
 `

@@ -3,13 +3,14 @@ import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
 import { NavLink } from 'react-router-dom'
 import firebase from 'firebase/app'
-import { useDocument } from 'react-firebase-hooks/firestore';
+import { useDocument } from 'react-firebase-hooks/firestore'
 import ReactModal from 'react-modal'
 import Trashcan from 'assets/Landing/delete.svg'
 
-import LeftPanel from "containers/Panels/LeftPanel";
-import RightPanel from "containers/Panels/RightPanel";
+import LeftPanel from "containers/Panels/LeftPanel"
+import RightPanel from "containers/Panels/RightPanel"
 import ModalContent from 'containers/Modal/ModalContent'
+import { OverlayContainer } from 'assets/StyledComponents/Overlay'
 
 const TeamCard = ({ teamId, data, setCurrentTeam }) => {
   let name = data["teams"][teamId].name;
@@ -140,18 +141,10 @@ const TeamName = styled.p`
   margin-top: 10px;
 `
 
-const OverlayContainer = styled.div`
-  position: relative;
-`
-
 const TrashIcon = styled.img`
   position: absolute;
-  top: 20px;
-  right: 16px;
+  top: 15px;
+  right: 15px;
   height: 30px;
   width: 30px;
 `
-
-  // .favorites-icon:hover {
-  //   cursor: pointer;
-  // }
