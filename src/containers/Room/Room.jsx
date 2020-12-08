@@ -1,9 +1,9 @@
 import React, { useContext } from "react"
 import styled from "styled-components"
-import queryString from 'query-string'
 import firebase from 'firebase/app'
 import { useCollection, useCollectionData, useDocument } from 'react-firebase-hooks/firestore'
 import ControlContext from '../../shared/control-context'
+import { NavLink } from 'react-router-dom'
 
 import TeamSummary from './TeamSummary'
 import TeamBoards from './TeamBoards'
@@ -13,7 +13,7 @@ import RightPanel from "containers/Panels/RightPanel"
 export default function Room ({ location }) {
   const { currentTeam } = useContext(ControlContext)
 
-  const [value, loading, error] = useDocument(
+  const [value] = useDocument(
     firebase.firestore().doc(`teams/${currentTeam.trim()}`),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
@@ -24,7 +24,10 @@ export default function Room ({ location }) {
     <Row>
       <LeftPanel />
       <RoomsContainer>
-        <Breadcrumbs>{`Teams > ${value && value.data().name}`}</Breadcrumbs>
+        <Breadcrumbs>
+          <NavLink to='/'>Teams</NavLink>
+          <Arrow> &gt; </Arrow>
+          <NavLink to='/team'>{value && value.data().name}</NavLink></Breadcrumbs>
         <TeamSummary users={value && value.data().users} />
         <TeamBoards />
       </RoomsContainer>
@@ -46,4 +49,9 @@ const RoomsContainer = styled.div`
 const Breadcrumbs = styled.div`
   font-size: 24px;
   margin-bottom: 30px;
+  display: flex;
+`
+
+const Arrow = styled.p`
+  margin: 0 10px 0 10px;
 `
