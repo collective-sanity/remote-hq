@@ -81,7 +81,7 @@ export default function Landing () {
           </TeamsContainer>
         )}
       </ContentContainer>
-      <RightPanel />
+      <RightPanel page="Landing" />
     </Row>
   )
 }

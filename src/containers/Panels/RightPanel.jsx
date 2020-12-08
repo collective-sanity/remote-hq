@@ -18,6 +18,7 @@ export default function RightPanel ({ page }) {
   const {
     LOCALMODE,
     data,
+    createTeam,
     currentTeam,
     currentLink,
     pinLink,
@@ -29,6 +30,15 @@ export default function RightPanel ({ page }) {
   let history = useHistory();
 
   const getTopIcons = (page, history) => {
+    if (page === "Landing") {
+      return (
+        <TopIconContainer>
+          <Add onClick={() => createTeam()}>+</Add>
+          <TextBtn onClick={() => {}}>Edit</TextBtn>
+          <TextBtn onClick={() => {}}>Delete</TextBtn>
+        </TopIconContainer>
+      )
+    }
     if (page === "FolderView") {
       return (
         <TopIconContainer>

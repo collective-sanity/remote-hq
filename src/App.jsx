@@ -71,6 +71,7 @@ const App = () => {
                       // Add listener to keep track of changes and update state
                       userListener = userRef.onSnapshot(function (doc) {
                         console.log("Current data: ", doc.data());
+                          
                         setUser(doc.id);
                         setTeams(doc.teams);
                       });
@@ -110,15 +111,14 @@ TEAMS
 */
             teams,
             currentTeam,
-            createTeam: ({ 
+            createTeam: ( 
               name = "RandomTest", 
               users = [],
-
-            })=>{
+            )=>{
               const teamData = {
                 "name": name,
-                "host": user.id,
-                "users": [user.id, ...users],
+                "host": user,
+                "users": [user, ...users],
                 "folders": [],
                 "links": [],
                 "screens": [],
@@ -129,16 +129,15 @@ TEAMS
                 d[name]=teamData;
               }
               else{
-                  
-                  // Add Room
-                  teamsRef.add(teamData).then((ref) => {
-                    // Update User -- TODO update all users
-                    usersRef.doc(user.id).update({
-                      teams: [...user.teams, ref.id]
-                    });
-                    console.log("Added doc with ID: ", ref.id);
-                  });
-                  setCurrentTeam(teamData);
+                // Add Room
+                teamsRef.add(teamData).then((ref) => {
+                  // Update User -- TODO update all users
+                  // usersRef.doc(user.id).update({
+                  //   teams: [...user.teams, ref.id]
+                  // });
+                  console.log("Added doc with ID: ", ref.id);
+                });
+                setCurrentTeam(teamData);
               }
             },
             updateTeam:({
@@ -383,7 +382,6 @@ TEAMS
               }
             },
           }}>
-
           <div className="App__container">
             <Switch>
               <Route path="/team" component={Room}/>
