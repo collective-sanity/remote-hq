@@ -1,11 +1,11 @@
 import React, { useContext, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
 import firebase from 'firebase/app';
 import { useDocument } from 'react-firebase-hooks/firestore';
 import ControlContext from "shared/control-context";
 
-// import LeftPanel from "containers/Panels/LeftPanel";
+import LeftPanel from "containers/Panels/LeftPanel";
 import RightPanel from "containers/Panels/RightPanel";
 
 import doc from 'assets/Landing/google-docs.png';
@@ -15,7 +15,6 @@ import drive from 'assets/Landing/google-drive.png';
 import figma from 'assets/Landing/figma.png';
 import link from 'assets/Landing/link.png';
 
-// TODO: breadcrumbs
 export default function FolderView () {
   const context = useContext(ControlContext);
   const { LOCALMODE, data, currentTeam, currentFolder, setCurrentLink } = context;
@@ -26,8 +25,15 @@ export default function FolderView () {
     links = data["teams"][currentTeam]["folders"][currentFolder]["links"];
   }
 
-  const [value, loading, error] = useDocument(
+  const [value] = useDocument(
     firebase.firestore().collection("teams").doc(currentTeam.trim()).collection("folders").doc(currentFolder),
+    {
+      snapshotListenOptions: { includeMetadataChanges: true },
+    }
+  );
+
+  const [teamName] = useDocument(
+    firebase.firestore().doc(`teams/${currentTeam.trim()}`),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
@@ -39,9 +45,15 @@ export default function FolderView () {
 
   return (
     <Row>
-      {/* <LeftPanel /> */}
+      <LeftPanel />
       <Links>
-        <Breadcrumbs>{currentTeam.name} {'>'} {currentFolder.name}</Breadcrumbs>
+        <Breadcrumbs>
+          <NavLink to='/'>Teams</NavLink>
+          <Arrow> &gt; </Arrow>
+          <NavLink to='/team'>{teamName && teamName.data().name}</NavLink>
+          <Arrow> &gt; </Arrow>
+          <NavLink to='/folder'>{value && value.data().name}</NavLink>
+        </Breadcrumbs>
         <LinkListContainer>
           <LinkListContainerTitle>Pinned Files</LinkListContainerTitle>
           {LOCALMODE ? (
@@ -180,6 +192,7 @@ const Links = styled.div`
 const Breadcrumbs = styled.div`
   font-size: 24px;
   margin-bottom: 30px;
+  display: flex;
 `
 
 const LinkListContainer = styled.div`
@@ -233,6 +246,10 @@ const HeaderContainerWithDropdown = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
+`
+
+const Arrow = styled.p`
+  margin: 0 10px 0 10px;
 `
 
 // const FilesDropdown = styled.select`
