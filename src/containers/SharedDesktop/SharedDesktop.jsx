@@ -1,21 +1,20 @@
 import React, { useContext, useEffect } from "react"
 import styled from "styled-components"
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import firebase from 'firebase/app';
 import { useDocument } from 'react-firebase-hooks/firestore';
 import ControlContext from "shared/control-context";
 
-// import LeftPanel from "containers/Panels/LeftPanel";
+import LeftPanel from "containers/Panels/LeftPanel";
 import RightPanel from "containers/Panels/RightPanel";
 
-import doc from '../../assets/Landing/google-docs.png';
-import sheet from '../../assets/Landing/google-sheets.png';
-import slides from '../../assets/Landing/google-slides.png';
-import drive from '../../assets/Landing/google-drive.png';
-import figma from '../../assets/Landing/figma.png';
+import doc from 'assets/Landing/google-docs.png';
+import sheet from 'assets/Landing/google-sheets.png';
+import slides from 'assets/Landing/google-slides.png';
+import drive from 'assets/Landing/google-drive.png';
+import figma from 'assets/Landing/figma.png';
+import link from 'assets/Landing/link.png';
 
-// TODO: open gdrive and web links in new tab
-// TODO: link icon
 export default function SharedDesktop () {
   const context = useContext(ControlContext);
   const { LOCALMODE, data, currentTeam, currentFolder, setCurrentLink, currentLink } = context;
@@ -61,7 +60,7 @@ export default function SharedDesktop () {
 
     return (
       <Row>
-        {/* <LeftPanel /> */}
+        <LeftPanel />
         <Desktop>
           {LOCALMODE ? (
             <iframe 
@@ -69,7 +68,6 @@ export default function SharedDesktop () {
               height="100%"
               src={getLink(currentLinkObj.linkType)}
               title={currentLinkObj.name}
-              sandbox
               allowFullScreen
           ></iframe>
           ) : (
@@ -78,7 +76,6 @@ export default function SharedDesktop () {
                 height="100%"
                 src={value && getLink(value.data().linkType, value.data().link)}
                 title={value && value.data().name}
-                sandbox
                 allowFullScreen
             ></iframe>
           )}
@@ -89,13 +86,13 @@ export default function SharedDesktop () {
             {LOCALMODE ? (
               <DocsList>
                 {links.map((link) => 
-                  getLinks(link, data, currentTeam, currentFolder, setCurrentLink)
+                  <GetLinks link={link} data={data} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
                 )}
               </DocsList>
             ) : (
               <DocsList>
                 {firebaseLinks && firebaseLinks.data().links.map((link) => 
-                  <GetFirebaseLinks link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
+                  <GetFirebaseLinks key={link} link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
                 )}
               </DocsList>
             )}
@@ -105,44 +102,61 @@ export default function SharedDesktop () {
     )
   }
 
-  const getLinks = (link, data, currentTeam, setCurrentLink) => {
-    let item = data["teams"][currentTeam]["links"][link];
+const GetLinks = ({link, data, currentTeam, setCurrentLink}) => {
+  let item = data["teams"][currentTeam]["links"][link];
 
-    return (
-      <Doc onClick={() => setCurrentLink(link)}>
-        <DocIcon src={getIconType(item.linkType)}></DocIcon>
-        <DocTitle>{item.name}</DocTitle>
-      </Doc>
-    )
-  }
-
-  const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink }) => {
-    const [value] = useDocument(
-      firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(link),
-      {
-        snapshotListenOptions: { includeMetadataChanges: true },
+  return (
+    <div>
+      {item.linkType !== "resource" &&
+        <Doc key={link} onClick={() => setCurrentLink(link)}>
+          <DocIcon src={getIconType(item.linkType)}></DocIcon>
+          <DocTitle>{item.name}</DocTitle>
+        </Doc>
       }
-    );
+      {item.linkType === "resource" &&
+        <WebDoc href={item.link} target="_blank" key={link} onClick={() => setCurrentLink(link)}>
+          <DocIcon src={getIconType(item.linkType)}></DocIcon>
+          <DocTitle>{item.name}</DocTitle>
+        </WebDoc>
+      }
+    </div>
+  )
+}
 
-    return (
-      <div>
-        {value && 
-          <Doc onClick={() => setCurrentLink(value.id)}>
-            <DocIcon src={getIconType(value.data().linkType)}></DocIcon>
-            <DocTitle>{value.data().name}</DocTitle>
-          </Doc>
-        }
-      </div>
-    )
-  }
+const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink }) => {
+  const [value] = useDocument(
+    firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(link),
+    {
+      snapshotListenOptions: { includeMetadataChanges: true },
+    }
+  );
 
-  const getIconType = type => {
-    if (type === "googledoc") return doc;
-    if (type === "googlesheet") return sheet;
-    if (type === "googleslides") return slides;
-    if (type === "drive") return drive;
-    if (type === "figma") return figma;
-  }
+  return (
+    <div>
+      {value && value.data().linkType !== "resource" &&
+        <Doc onClick={() => setCurrentLink(value.id)}>
+          <DocIcon src={getIconType(value.data().linkType)}></DocIcon>
+          <DocTitle>{value.data().name}</DocTitle>
+        </Doc>
+      }
+      {value && value.data().linkType === "resource" &&
+        <WebDoc href={value.data().link} target="_blank" onClick={() => setCurrentLink(value.id)}>
+          <DocIcon src={getIconType(value.data().linkType)}></DocIcon>
+          <DocTitle>{value.data().name}</DocTitle>
+        </WebDoc>
+      }
+    </div>
+  )
+}
+
+const getIconType = type => {
+  if (type === "googleDoc") return doc;
+  if (type === "googleSheet") return sheet;
+  if (type === "googleSlides") return slides;
+  if (type === "drive") return drive;
+  if (type === "figma") return figma;
+  if (type === "resource") return link;
+}
 
 const Row = styled.div`
   display: flex;
@@ -181,7 +195,19 @@ flex-direction: row;
 flex-wrap: wrap;
 `
 
-const Doc = styled(Link)`
+const Doc = styled.div`
+  width: 69px;
+  height: 91px;
+  margin-bottom: 20px;
+  margin-right: 20px;
+  background-color: #c4c4c4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`
+
+const WebDoc = styled.a`
   width: 69px;
   height: 91px;
   margin-bottom: 20px;

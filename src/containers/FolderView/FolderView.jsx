@@ -1,27 +1,24 @@
 import React, { useContext, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
 import firebase from 'firebase/app';
 import { useDocument } from 'react-firebase-hooks/firestore';
 import ControlContext from "shared/control-context";
 
-// import LeftPanel from "containers/Panels/LeftPanel";
+import LeftPanel from "containers/Panels/LeftPanel";
 import RightPanel from "containers/Panels/RightPanel";
 
-import doc from '../../assets/Landing/google-docs.png';
-import sheet from '../../assets/Landing/google-sheets.png';
-import slides from '../../assets/Landing/google-slides.png';
-import drive from '../../assets/Landing/google-drive.png';
-import figma from '../../assets/Landing/figma.png';
+import doc from 'assets/Landing/google-docs.png';
+import sheet from 'assets/Landing/google-sheets.png';
+import slides from 'assets/Landing/google-slides.png';
+import drive from 'assets/Landing/google-drive.png';
+import figma from 'assets/Landing/figma.png';
+import link from 'assets/Landing/link.png';
 
-// TODO: open gdrive and web links in new tab
-// TODO: pinned files
-// TODO: link icon
-// TODO: breadcrumbs
 export default function FolderView () {
   const context = useContext(ControlContext);
   const { LOCALMODE, data, currentTeam, currentFolder, setCurrentLink } = context;
-  // console.log(currentFolder)
+  // console.log(currentTeam)
 
   let links;
   if (LOCALMODE) {
@@ -29,7 +26,14 @@ export default function FolderView () {
   }
 
   const [value] = useDocument(
-    firebase.firestore().collection("teams").doc(currentTeam).collection("folders").doc(currentFolder),
+    firebase.firestore().collection("teams").doc(currentTeam.trim()).collection("folders").doc(currentFolder),
+    {
+      snapshotListenOptions: { includeMetadataChanges: true },
+    }
+  );
+
+  const [teamName] = useDocument(
+    firebase.firestore().doc(`teams/${currentTeam.trim()}`),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
@@ -39,38 +43,29 @@ export default function FolderView () {
     // console.log(context);
   })
 
-  const getLinks = (link, data, currentTeam, currentFolder) => {
-    let item = data["teams"][currentTeam]["links"][link];
-
-    return (
-      <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
-        <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
-        <LinkContainerTitle>{item.name}</LinkContainerTitle>
-      </LinkContainer>
-      // <LinkContainer href={item.link} target="_blank">
-      //   <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
-      //   <LinkContainerTitle>{item.name}</LinkContainerTitle>
-      // </LinkContainer>
-    )
-  }
-
   return (
     <Row>
-      {/* <LeftPanel /> */}
+      <LeftPanel />
       <Links>
-        <Breadcrumbs>{currentTeam.name} {'>'} {currentFolder.name}</Breadcrumbs>
+        <Breadcrumbs>
+          <NavLink to='/'>Teams</NavLink>
+          <Arrow> &gt; </Arrow>
+          <NavLink to='/team'>{teamName && teamName.data().name}</NavLink>
+          <Arrow> &gt; </Arrow>
+          <NavLink to='/folder'>{value && value.data().name}</NavLink>
+        </Breadcrumbs>
         <LinkListContainer>
           <LinkListContainerTitle>Pinned Files</LinkListContainerTitle>
           {LOCALMODE ? (
             <LinksList>
               {links.map((link) => 
-                getLinks(link, data, currentTeam, currentFolder)
+                <GetLinks link={link} data={data} currentTeam={currentTeam} currentFolder={currentFolder} pinned={true} setCurrentLink={setCurrentLink} />
               )}
             </LinksList>
           ) : (
             <LinksList>
             {value && value.data().links.map((link, i) => (
-              <GetFirebaseLinks link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
+              <GetFirebaseLinks key={i} pinned={true} link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
             ))}
             </LinksList>
           )}
@@ -83,8 +78,19 @@ export default function FolderView () {
               <option value="Recently Viewed">Recently Viewed</option>
             </FilesDropdown> */}
           </HeaderContainerWithDropdown>
-          <LinksList>
-          </LinksList>
+          {LOCALMODE ? (
+            <LinksList>
+              {links.map((link) => 
+                <GetLinks link={link} data={data} currentTeam={currentTeam} currentFolder={currentFolder} pinned={false} setCurrentLink={setCurrentLink} />
+              )}
+            </LinksList>
+          ) : (
+            <LinksList>
+            {value && value.data().links.map((link, i) => (
+              <GetFirebaseLinks key={i} pinned={false} link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
+            ))}
+            </LinksList>
+          )}
         </LinkListContainer>
       </Links>
       <RightPanel page={"FolderView"} />
@@ -93,14 +99,15 @@ export default function FolderView () {
 }
 
 const getIconType = type => {
-  if (type === "googledoc") return doc;
-  if (type === "googlesheet") return sheet;
-  if (type === "googleslides") return slides;
+  if (type === "googleDoc") return doc;
+  if (type === "googleSheet") return sheet;
+  if (type === "googleSlides") return slides;
   if (type === "drive") return drive;
   if (type === "figma") return figma;
+  if (type === "resource") return link;
 }
 
-const GetFirebaseLinks = ({ link, currentTeam, currentFolder, setCurrentLink }) => {
+const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
   const [value] = useDocument(
     firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(link),
     {
@@ -110,19 +117,59 @@ const GetFirebaseLinks = ({ link, currentTeam, currentFolder, setCurrentLink }) 
 
   return (
     <div>
-      {/* {value && <span>Document: {JSON.stringify(value.data())}</span>} */}
-      {value && 
+      {value && value.data().pinned === pinned &&
         <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(value.id)}>
           <LinkContainerType src={getIconType(value.data().linkType)}></LinkContainerType>
           <LinkContainerTitle>{value.data().name}</LinkContainerTitle>
         </LinkContainer>
       }
-
-      {/* <LinkContainer href={item.link} target="_blank">
-        <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
-        <LinkContainerTitle>{item.name}</LinkContainerTitle>
-      </LinkContainer> */}
     </div>
+    // <div>
+    //   {value && value.data().pinned === pinned && value.data().linkType !== "resource" &&
+    //     <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(value.id)}>
+    //       <LinkContainerType src={getIconType(value.data().linkType)}></LinkContainerType>
+    //       <LinkContainerTitle>{value.data().name}</LinkContainerTitle>
+    //     </LinkContainer>
+    //   }
+
+    //   {value && value.data().pinned === pinned && value.data().linkType === "resource" &&
+    //     <WebLinkContainer href={value.data().link} target="_blank">
+    //       <LinkContainerType src={getIconType(value.data().linkType)}></LinkContainerType>
+    //       <LinkContainerTitle>{value.data().name}</LinkContainerTitle>
+    //     </WebLinkContainer>
+    //   }
+    // </div>
+  )
+}
+
+const GetLinks = ({link, data, currentTeam, pinned, setCurrentLink}) => {
+  let item = data["teams"][currentTeam]["links"][link];
+  // console.log(item.pinned === pinned && item.linkType !== "resource")
+
+  return (
+    <div>
+      {item && item.pinned === pinned &&
+        <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
+          <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
+          <LinkContainerTitle>{item.name}</LinkContainerTitle>
+        </LinkContainer>
+      }
+    </div>
+    // <div>
+    //   {item && item.pinned === pinned && item.linkType !== "resource" &&
+    //     <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
+    //       <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
+    //       <LinkContainerTitle>{item.name}</LinkContainerTitle>
+    //     </LinkContainer>
+    //   }
+
+    //   {item && item.pinned === pinned && item.linkType === "resource" &&
+    //     <WebLinkContainer href={item.link} target="_blank">
+    //       <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
+    //       <LinkContainerTitle>{item.name}</LinkContainerTitle>
+    //     </WebLinkContainer>
+    //   }
+    // </div>
   )
 }
 
@@ -145,6 +192,7 @@ const Links = styled.div`
 const Breadcrumbs = styled.div`
   font-size: 24px;
   margin-bottom: 30px;
+  display: flex;
 `
 
 const LinkListContainer = styled.div`
@@ -173,6 +221,19 @@ const LinkContainer = styled(Link)`
   align-items: center;
   flex-direction: column;
 `
+
+const WebLinkContainer = styled.a`
+  height: 160px;
+  width: 120px;
+  background-color: #c4c4c4;
+  margin-right: 40px;
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`
+
 const LinkContainerType = styled.img`
   height: 50%;
 `
@@ -185,6 +246,10 @@ const HeaderContainerWithDropdown = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
+`
+
+const Arrow = styled.p`
+  margin: 0 10px 0 10px;
 `
 
 // const FilesDropdown = styled.select`
