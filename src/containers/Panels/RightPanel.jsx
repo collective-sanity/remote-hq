@@ -1,15 +1,15 @@
 import React, { useContext } from "react"
 import { useHistory } from "react-router-dom"
 import styled from "styled-components"
-import ControlContext from '../../shared/control-context'
+import ControlContext from 'shared/control-context'
+import Chat from 'components/Chat/Chat';
 
-import GoogleDocs from '../../assets/Landing/google-docs.png'
-import GoogleSheets from '../../assets/Landing/google-sheets.png'
-import GoogleSlides from '../../assets/Landing/google-slides.png'
-import FigmaIcon from '../../assets/Landing/figma.png'
-import Notification from '../../assets/Landing/bell.png'
-import Chat from '../../assets/Landing/chat.png'
-import MentalHealth from '../../assets/Landing/mental-health.png'
+import GoogleDocs from 'assets/Landing/google-docs.png'
+import GoogleSheets from 'assets/Landing/google-sheets.png'
+import GoogleSlides from 'assets/Landing/google-slides.png'
+import FigmaIcon from 'assets/Landing/figma.png'
+import Notification from 'assets/Landing/bell.png'
+import MentalHealth from 'assets/Landing/mental-health.png'
 
 // TODO: pinned firebase
 // TODO: test create file

@@ -1,9 +1,12 @@
 const functions = require('firebase-functions');
 const { google } = require('googleapis');
-
-
-
+const cors = require('cors')({ origin: true});
 const admin = require('firebase-admin');
+const { SessionsClient } = require('dialogflow');
+
+const firebaseCredentials = require('./credentials.json');
+const dialogflowCredentials = require('./dialogflowCredentials.json');
+
 admin.initializeApp();
 const db = admin.firestore();
 // TODO Return Promise
@@ -31,6 +34,7 @@ const credentials = {
     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/main-account%40remote-hq.iam.gserviceaccount.com"
 }
+
 
 const mimeTypes = {
     "googleDoc": 'application/vnd.google-apps.document',
@@ -162,3 +166,35 @@ exports.createLink = functions.firestore
                
     });
    
+
+var audioBufferStrToArrayBuffer = (json) => {
+	var ret = new Uint8Array(Object.keys(json).length);
+	for (var i = 0; i < Object.keys(json).length; i++) {
+		ret[i] = json[i.toString()];
+	}
+	return ret
+};
+
+exports.dialogflowGateway = functions.https.onRequest((request, response) => {
+    cors(request, response, async () => {
+        const { queryInput, sessionId, inputAudio } = request.body;
+    
+        // console.log(request.body);
+        console.log(queryInput, sessionId);
+
+        const sessionClient = new SessionsClient({ credentials: dialogflowCredentials  });
+        const session = sessionClient.sessionPath('remotehq-297119', sessionId);
+
+        let dfRequest = { session, queryInput };
+
+        console.log(dfRequest);
+        const responses = await sessionClient.detectIntent(dfRequest);
+        console.log(responses);
+        const result = responses[0].queryResult;
+        console.log("RESULT: ")
+        console.log(result);
+
+        response.send(result);
+    });
+});
+
