@@ -58,7 +58,7 @@ export default function RightPanel ({ page, setModalOpen }) {
         <TopIconContainer>
           <Add onClick={() => setModalOpen(true)}>+</Add>
           <TextBtn onClick={() => {}}>Edit</TextBtn>
-          <TextBtn onClick={() => deleteTeam()}>Delete</TextBtn>
+          {/* <TextBtn onClick={() => deleteTeam()}>Delete</TextBtn> */}
         </TopIconContainer>
       )
     }
