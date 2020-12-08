@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import styled from "styled-components"
 
-export default function ModalContent ({ setModalOpen, createFunction, labelName, submitName }) {
+export default function AddModalContent ({ setModalOpen, createFunction, labelName, submitName }) {
   const [name, setName] = useState("")
 
   const handleSubmit = (event) => {

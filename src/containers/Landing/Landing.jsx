@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react"
+import React, { useContext, useState } from "react"
 import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
 import { NavLink } from 'react-router-dom'
@@ -9,7 +9,7 @@ import Trashcan from 'assets/Landing/delete.svg'
 
 import LeftPanel from "containers/Panels/LeftPanel"
 import RightPanel from "containers/Panels/RightPanel"
-import ModalContent from 'containers/Modal/ModalContent'
+import ModalContent from 'containers/Modal/AddModalContent'
 import { OverlayContainer } from 'assets/StyledComponents/Overlay'
 
 const TeamCard = ({ teamId, data, setCurrentTeam }) => {
@@ -35,7 +35,7 @@ const TeamCard = ({ teamId, data, setCurrentTeam }) => {
 }
 
 const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam }) => {
-  const [value, loading, error] = useDocument(
+  const [value] = useDocument(
     firebase.firestore().doc(`teams/${teamId.trim()}`),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
@@ -63,7 +63,7 @@ export default function Landing () {
   const [modalOpen, setModalOpen] = useState(false)
   // const [teamsList, setTeamsList] = useState(null);
 
-  const [value, loading, error] = useDocument(
+  const [value] = useDocument(
     firebase.firestore().doc(`users/${user}`),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
