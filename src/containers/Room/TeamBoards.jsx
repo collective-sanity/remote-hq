@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useContext, useState } from "react"
 import styled from "styled-components"
 import { Link } from 'react-router-dom'
 import ControlContext from '../../shared/control-context'
@@ -6,9 +6,12 @@ import firebase from 'firebase/app'
 import { useCollection } from 'react-firebase-hooks/firestore';
 import Trashcan from 'assets/Landing/delete.svg'
 import { OverlayContainer } from 'assets/StyledComponents/Overlay'
+import ReactModal from 'react-modal'
+import DeleteModalContent from 'containers/Modal/DeleteModalContent'
 
 export default function TeamBoards () {
   const context = useContext(ControlContext);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   let { LOCALMODE, data, currentTeam, setCurrentFolder, deleteFolder } = context;
   // console.log(currentTeam)
 
@@ -41,8 +44,16 @@ export default function TeamBoards () {
           {value && value.docs.map((folder, i) => (
               <Board key={i}>
                 <OverlayContainer>
-                  <TrashIcon onClick={() => deleteFolder(folder.id)} src={Trashcan} />
+                  <TrashIcon onClick={() => setDeleteModalOpen(true)} src={Trashcan} />
                   <FirebaseBoardLink id={folder.id} folder={folder.data()} setCurrentFolder={setCurrentFolder} deleteFolder={deleteFolder} />
+                  <ReactModal isOpen={deleteModalOpen} className="Modal" >
+                    <DeleteModalContent 
+                      setModalOpen={setDeleteModalOpen} 
+                      deleteFunction={deleteFolder}
+                      id={folder.id}
+                      labelName="Delete Folder?"
+                    />
+                  </ReactModal>
                 </OverlayContainer>
               </Board>
           ))}
@@ -133,4 +144,5 @@ const TrashIcon = styled.img`
   right: 0;
   height: 30px;
   width: 30px;
+  cursor: pointer;
 `

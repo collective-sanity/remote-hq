@@ -10,7 +10,7 @@ import TeamSummary from './TeamSummary'
 import TeamBoards from './TeamBoards'
 import LeftPanel from "containers/Panels/LeftPanel"
 import RightPanel from "containers/Panels/RightPanel"
-import ModalContent from 'containers/Modal/ModalContent'
+import ModalContent from 'containers/Modal/AddModalContent'
 
 export default function Room ({ location }) {
   const { currentTeam, createFolder } = useContext(ControlContext)
