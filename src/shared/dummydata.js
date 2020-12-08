@@ -57,7 +57,8 @@ const dummydata = {
                     "createdDate": "2020-011-03T07:22Z",
                     "lastModifiedDate": "2020-11-19T07:22Z",
                     "link": "https://www.figma.com/file/SLqyt8cQoYxRzY5XBoLOxN/SSUI-Project?node-id=42%3A2",
-                    "connectedLinks": []
+                    "connectedLinks": [],
+                    "pinned": false
                 },
                 "linkid2": {
                     "linkType": "drive",
@@ -66,25 +67,28 @@ const dummydata = {
                     "createdDate": "2020-011-03T07:22Z",
                     "lastModifiedDate": "2020-11-19T07:22Z",
                     "link": "https://drive.google.com/drive/folders/1o42xhoveHJbLQN5FuGpFAcPVIUHP7bTq?usp=sharing",
-                    "connectedLinks": ["linkid3"]
+                    "connectedLinks": ["linkid3"],
+                    "pinned": true
                 },
                 "linkid3": {
-                    "linkType": "googledoc",
+                    "linkType": "googleDoc",
                     "name": "Proposal",
                     "description": "proposal",
                     "createdDate": "2020-011-03T07:22Z",
                     "lastModifiedDate": "2020-11-19T07:22Z",
                     "link": "https://docs.google.com/document/d/1QqmPSPdQtVxpHPOjabcbN3WaHFdbTPKBbwfVKuBSVWE/edit?usp=sharing",
-                    "connectedLinks": ["linkid2", "linkid5", "linkid6"]
+                    "connectedLinks": ["linkid2", "linkid5", "linkid6"],
+                    "pinned": false
                 },
                 "linkid4": {
-                    "linkType": "googledoc",
+                    "linkType": "googleDoc",
                     "name": "Proposal Notes",
                     "description": "",
                     "createdDate": "2020-011-03T07:22Z",
                     "lastModifiedDate": "2020-11-19T07:22Z",
                     "link": "https://docs.google.com/document/d/1AqYkYBaBsueyWFtj7IYqZLY3dQgvkVsBV7vnywYcF74/edit?usp=sharing",
-                    "connectedLinks": ["linkid2"]
+                    "connectedLinks": ["linkid2"],
+                    "pinned": false
                 },
                 "linkid5": {
                     "linkType": "resource",
@@ -93,7 +97,8 @@ const dummydata = {
                     "createdDate": "2020-011-03T07:22Z",
                     "lastModifiedDate": "2020-11-19T07:22Z",
                     "link": "https://cloud.google.com/dialogflow",
-                    "connectedLinks": ["linkid3"]
+                    "connectedLinks": ["linkid3"],
+                    "pinned": true
                 },
             }
         },
@@ -116,7 +121,8 @@ const dummydata = {
                     "createdDate": "2020-011-03T07:22Z",
                     "lastModifiedDate": "2020-11-19T07:22Z",
                     "link": "https://uxdesign.cc/how-to-do-paper-prototyping-719173215a7e",
-                    "connectedLinks": ["linkid3"]
+                    "connectedLinks": ["linkid3"],
+                    "pinned": false
                 },
                 "linkid7": {
                     "linkType": "resource",
@@ -125,7 +131,8 @@ const dummydata = {
                     "description": "",
                     "createdDate": "2020-011-03T07:22Z",
                     "lastModifiedDate": "2020-11-19T07:22Z",
-                    "link": "https://www.cs.cmu.edu/~bam/uicourse/05631fall2020/FinalProject/index.html"
+                    "link": "https://www.cs.cmu.edu/~bam/uicourse/05631fall2020/FinalProject/index.html",
+                    "pinned": false
                 },
                 "linkid8": {
                     "linkType": "resource",
@@ -134,7 +141,8 @@ const dummydata = {
                     "description": "",
                     "createdDate": "2020-011-03T07:22Z",
                     "lastModifiedDate": "2020-11-19T07:22Z",
-                    "link": "https://console.firebase.google.com/u/2/project/remote-hq/overview"
+                    "link": "https://console.firebase.google.com/u/2/project/remote-hq/overview",
+                    "pinned": false
                 }
             }
         },
@@ -159,7 +167,8 @@ const dummydata = {
                         "createdDate": "2020-011-03T07:22Z",
                         "lastModifiedDate": "2020-11-19T07:22Z",
                         "link": "https://uxdesign.cc/how-to-do-paper-prototyping-719173215a7e",
-                        "connectedLinks": ["linkid3"]
+                        "connectedLinks": ["linkid3"],
+                        "pinned": false
                     },
                     "linkid7": {
                         "linkType": "resource",
@@ -168,7 +177,8 @@ const dummydata = {
                         "description": "",
                         "createdDate": "2020-011-03T07:22Z",
                         "lastModifiedDate": "2020-11-19T07:22Z",
-                        "link": "https://www.cs.cmu.edu/~bam/uicourse/05631fall2020/FinalProject/index.html"
+                        "link": "https://www.cs.cmu.edu/~bam/uicourse/05631fall2020/FinalProject/index.html",
+                        "pinned": false
                     },
                     "linkid8": {
                         "linkType": "resource",
@@ -177,7 +187,8 @@ const dummydata = {
                         "description": "",
                         "createdDate": "2020-011-03T07:22Z",
                         "lastModifiedDate": "2020-11-19T07:22Z",
-                        "link": "https://console.firebase.google.com/u/2/project/remote-hq/overview"
+                        "link": "https://console.firebase.google.com/u/2/project/remote-hq/overview",
+                        "pinned": false
                     }
                 }
             }

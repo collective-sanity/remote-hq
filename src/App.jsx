@@ -16,7 +16,7 @@ import Chat from 'components/Chat/Chat'
 import './App.scss';
 import VoiceChat from "components/VoiceChat/VoiceChat";
 
-const LOCALMODE = false;
+const LOCALMODE = true;
 
 const App = () => {
   const [data, setData] = useState(dummydata);
