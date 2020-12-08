@@ -112,7 +112,7 @@ function IconSection () {
 }
 
 const Panel = styled.div`
-  height: 100vh;
+  height: 100%;
   width: 8%;
   border-left: 1px solid black;
   overflow: auto;

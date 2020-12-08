@@ -71,15 +71,26 @@ const FirebaseBoardLink = ({ id, folder, currentTeam, setCurrentFolder }) => {
   //   }
   // );
 
+  console.log(folder)
+
   return (
     <NavLink 
       to='/folder'
       onClick={() => setCurrentFolder(id)}
     >
-      {folder.name}
+      <FolderName>{folder.name}</FolderName>
+      <LinkContainer>
+        {folder.links.map((i) => <LinkBox key={i}></LinkBox>)}
+      </LinkContainer>
     </NavLink>
   )
 }
+
+const FolderName = styled.h2`
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 30px;
+`
 
 const TeamContainer = styled.div`
   margin-top: 50px;
@@ -107,4 +118,17 @@ const Board = styled.div`
   margin-top: 30px;
   padding: 30px;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.25);
+`
+
+const LinkBox = styled.div`
+  height: 120px;
+  width: 30%;
+  background-color: #c4c4c4;
+  margin-bottom: 20px;
+`
+
+const LinkContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
 `

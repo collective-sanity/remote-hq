@@ -53,7 +53,7 @@ export default function LeftPanel () {
 }
 
 const Panel = styled.div`
-  height: 100vh;
+  height: 100%;
   width: 10%;
   border-right: 1px solid black;
   overflow: auto;
