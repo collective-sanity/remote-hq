@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
+import { useSpeechSynthesis } from 'react-speech-kit';
 import { useKeyPress } from 'hooks/useKeyPress';
 import RingLoader from "react-spinners/RingLoader";
 import BeatLoader from "react-spinners/BeatLoader";
@@ -21,13 +22,18 @@ const VoiceChat = () => {
   const [playStartSound] = useSound(startSound);
   const [playEndSound] = useSound(endSound);
 
+  const onSpeakingEnd = () => {
+    SpeechRecognition.startListening();
+  }
+  const { speak, voices } = useSpeechSynthesis({onEnd: onSpeakingEnd});
+  const { speak: speakEnd } = useSpeechSynthesis();
+
   if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
     setChatbotText("Sorry, this browser is not supported. Please use RemoteHQ on Google Chrome");
   }
 
   useEffect(() => {
     if (triggerVoiceChat) {
-      console.log("VoiceChat triggered!");
       playStartSound();
       setOpenVoiceChat(prev => !prev);
     }
@@ -40,19 +46,23 @@ const VoiceChat = () => {
     }
   }, [openVoiceChat, resetTranscript]);
 
+  
   // On listening stop
   useEffect(() => {
     if (!listening && transcript.length > 0) {
       detectIntent(transcript, continueSession).then(({ result, sessionId }) => {
         setChatbotText(result.fulfillmentText);
+        
 
         if (!result.allRequiredParamsPresent 
            || result.intent.displayName === "Default Fallback Intent"
            || result.intent.displayName === "Default Welcome Intent") {
-          console.log("VoiceChat not finished.");
+          
+          speak({ text: result.fulfillmentText, voice: voices[7] })
           setContinueSession(sessionId);
-          SpeechRecognition.startListening();
+          // Will start listening from the speak end function!
         } else {
+          speakEnd({ text: result.fulfillmentText, voice: voices[7] })
           setContinueSession("");
           setEndOfChat(true);
           setTimeout(() => {
