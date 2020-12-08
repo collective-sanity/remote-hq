@@ -13,7 +13,7 @@ export default function DeleteModalContent ({ setModalOpen, deleteFunction, labe
     <div>
       <form onSubmit={handleSubmit} >
         <X onClick={() => setModalOpen(false)}>X</X>
-        <Title>{labelName}:</Title>
+        <Title>{labelName}</Title>
         <p>This action will permanently delete everything, including nested data.</p>
         <BtnRow>
           <CancelBtn onClick={() => setModalOpen(false)}>Cancel</CancelBtn>
