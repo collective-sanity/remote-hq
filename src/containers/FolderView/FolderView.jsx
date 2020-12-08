@@ -15,13 +15,11 @@ import drive from 'assets/Landing/google-drive.png';
 import figma from 'assets/Landing/figma.png';
 import link from 'assets/Landing/link.png';
 
-// TODO: open gdrive and web links in new tab
-// TODO: pinned files
 // TODO: breadcrumbs
 export default function FolderView () {
   const context = useContext(ControlContext);
   const { LOCALMODE, data, currentTeam, currentFolder, setCurrentLink } = context;
-  // console.log(currentFolder)
+  // console.log(currentTeam)
 
   let links;
   if (LOCALMODE) {
@@ -39,21 +37,6 @@ export default function FolderView () {
     // console.log(context);
   })
 
-  const getLinks = (link, data, currentTeam, currentFolder) => {
-    let item = data["teams"][currentTeam]["links"][link];
-
-    return (
-      <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
-        <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
-        <LinkContainerTitle>{item.name}</LinkContainerTitle>
-      </LinkContainer>
-      // <LinkContainer href={item.link} target="_blank">
-      //   <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
-      //   <LinkContainerTitle>{item.name}</LinkContainerTitle>
-      // </LinkContainer>
-    )
-  }
-
   return (
     <Row>
       {/* <LeftPanel /> */}
@@ -64,14 +47,13 @@ export default function FolderView () {
           {LOCALMODE ? (
             <LinksList>
               {links.map((link) => 
-                getLinks(link, data, currentTeam, currentFolder)
+                <GetLinks link={link} data={data} currentTeam={currentTeam} currentFolder={currentFolder} pinned={true} setCurrentLink={setCurrentLink} />
               )}
             </LinksList>
           ) : (
             <LinksList>
             {value && value.data().links.map((link, i) => (
-              <GetFirebaseLinks key={i} link={link} currentTeam={currentTeam.trim()} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
-
+              <GetFirebaseLinks key={i} pinned={true} link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
             ))}
             </LinksList>
           )}
@@ -84,8 +66,19 @@ export default function FolderView () {
               <option value="Recently Viewed">Recently Viewed</option>
             </FilesDropdown> */}
           </HeaderContainerWithDropdown>
-          <LinksList>
-          </LinksList>
+          {LOCALMODE ? (
+            <LinksList>
+              {links.map((link) => 
+                <GetLinks link={link} data={data} currentTeam={currentTeam} currentFolder={currentFolder} pinned={false} setCurrentLink={setCurrentLink} />
+              )}
+            </LinksList>
+          ) : (
+            <LinksList>
+            {value && value.data().links.map((link, i) => (
+              <GetFirebaseLinks key={i} pinned={false} link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
+            ))}
+            </LinksList>
+          )}
         </LinkListContainer>
       </Links>
       <RightPanel page={"FolderView"} />
@@ -102,7 +95,7 @@ const getIconType = type => {
   if (type === "resource") return link;
 }
 
-const GetFirebaseLinks = ({ link, currentTeam, currentFolder, setCurrentLink }) => {
+const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
   const [value] = useDocument(
     firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(link),
     {
@@ -112,19 +105,59 @@ const GetFirebaseLinks = ({ link, currentTeam, currentFolder, setCurrentLink }) 
 
   return (
     <div>
-      {/* {value && <span>Document: {JSON.stringify(value.data())}</span>} */}
-      {value && 
+      {value && value.data().pinned === pinned &&
         <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(value.id)}>
           <LinkContainerType src={getIconType(value.data().linkType)}></LinkContainerType>
           <LinkContainerTitle>{value.data().name}</LinkContainerTitle>
         </LinkContainer>
       }
-
-      {/* <LinkContainer href={item.link} target="_blank">
-        <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
-        <LinkContainerTitle>{item.name}</LinkContainerTitle>
-      </LinkContainer> */}
     </div>
+    // <div>
+    //   {value && value.data().pinned === pinned && value.data().linkType !== "resource" &&
+    //     <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(value.id)}>
+    //       <LinkContainerType src={getIconType(value.data().linkType)}></LinkContainerType>
+    //       <LinkContainerTitle>{value.data().name}</LinkContainerTitle>
+    //     </LinkContainer>
+    //   }
+
+    //   {value && value.data().pinned === pinned && value.data().linkType === "resource" &&
+    //     <WebLinkContainer href={value.data().link} target="_blank">
+    //       <LinkContainerType src={getIconType(value.data().linkType)}></LinkContainerType>
+    //       <LinkContainerTitle>{value.data().name}</LinkContainerTitle>
+    //     </WebLinkContainer>
+    //   }
+    // </div>
+  )
+}
+
+const GetLinks = ({link, data, currentTeam, pinned, setCurrentLink}) => {
+  let item = data["teams"][currentTeam]["links"][link];
+  // console.log(item.pinned === pinned && item.linkType !== "resource")
+
+  return (
+    <div>
+      {item && item.pinned === pinned &&
+        <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
+          <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
+          <LinkContainerTitle>{item.name}</LinkContainerTitle>
+        </LinkContainer>
+      }
+    </div>
+    // <div>
+    //   {item && item.pinned === pinned && item.linkType !== "resource" &&
+    //     <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
+    //       <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
+    //       <LinkContainerTitle>{item.name}</LinkContainerTitle>
+    //     </LinkContainer>
+    //   }
+
+    //   {item && item.pinned === pinned && item.linkType === "resource" &&
+    //     <WebLinkContainer href={item.link} target="_blank">
+    //       <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
+    //       <LinkContainerTitle>{item.name}</LinkContainerTitle>
+    //     </WebLinkContainer>
+    //   }
+    // </div>
   )
 }
 
@@ -175,6 +208,19 @@ const LinkContainer = styled(Link)`
   align-items: center;
   flex-direction: column;
 `
+
+const WebLinkContainer = styled.a`
+  height: 160px;
+  width: 120px;
+  background-color: #c4c4c4;
+  margin-right: 40px;
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`
+
 const LinkContainerType = styled.img`
   height: 50%;
 `
