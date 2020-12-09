@@ -1,3 +1,16 @@
+export const STATES = {
+  "goToLink": [
+    {name: "START"},
+    {name: "GET_TEAM_NAME", skip: "currentTeam", prompt: "What team is the link in?"},
+    {name: "GET_FOLDER_NAME", skip: "currentFolder", prompt: "What folder is the link in?"},
+    {name: "GET_LINK_NAME", skip: "currentLink", prompt: "What is the name of the link?"},
+    {name: "END", prompt: "Here is the file!"},
+  ]
+}
+export const parseIntent = (intent, parameters, createFolder, createLink) => {
+  console.log(intent, parameters);
+}
+
 export const detectIntent = async (inputText, prevSessionId) => {
   let sessionId = Math.random().toString(36).slice(-5);
 
