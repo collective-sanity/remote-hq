@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Switch, Route, } from "react-router-dom";
 
-import { provider, getUserData } from 'shared/firebase';
+import { provider, getTeamUsers } from 'shared/firebase';
 import dummydata from 'shared/dummydata';
 import firebase from "firebase/app";
 import ControlContext from "shared/control-context";
@@ -73,7 +73,6 @@ const App = () => {
                       // Add listener to keep track of changes and update state
                       userListener = userRef.onSnapshot(function (doc) {
                         console.log("Current data: ", doc.data());
-                          
                         setUser(doc.id);
                         setTeams(doc.data().teams);
                       });
@@ -152,6 +151,13 @@ TEAMS
               else{
                 teamsRef.doc(teamId).update(newData).then((ref)=>{ }).catch((error) => console.error("Error updating document", error));
               }
+            },
+            addTeamMember: (id) => {
+              teamsRef.doc(currentTeam)
+                .update({
+                  users: [{id: id}] // need to spread current users
+                })
+                .catch((error) => console.error("Error adding team member to team", error));
             },
             deleteTeam:(
               teamId = currentTeam

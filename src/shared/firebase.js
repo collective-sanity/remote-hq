@@ -22,4 +22,8 @@ export async function getUserData(userId) {
     let db = await firebase.firestore().collection("users").doc(userId).get() 
     return db.data()
 }
-//export const db = firebase.firestore();
+
+export async function getUsers() {
+    let db = await firebase.firestore().collection("users").get() 
+    return db.data()
+}
