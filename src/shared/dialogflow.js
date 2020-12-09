@@ -11,6 +11,11 @@ export const STATES = {
     {name: "GET_TEAM_NAME", skip: "currentTeam", prompt: "What team is the folder in?"},
     {name: "GET_FOLDER_NAME", skip: "currentFolder", prompt: "What is the name of the folder?"},
     {name: "END", prompt: "Here is the folder!"},
+  ],
+  "goToTeam": [
+    {name: "START"},
+    {name: "GET_TEAM_NAME", skip: "currentTeam", prompt: "What is the name of the team?"},
+    {name: "END", prompt: "Here is the team!"},
   ]
 }
 export const parseIntent = (intent, parameters, createFolder, createLink) => {
