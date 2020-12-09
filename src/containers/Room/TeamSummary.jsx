@@ -1,7 +1,10 @@
-import React from "react"
+import React, { useState, useContext } from "react"
 import styled from "styled-components"
 import firebase from 'firebase/app'
-import { useDocument } from 'react-firebase-hooks/firestore';
+import { useDocument, useCollection } from 'react-firebase-hooks/firestore'
+import ReactModal from 'react-modal'
+import ControlContext from "shared/control-context"
+import ModalContent from 'containers/Modal/AddModalContent'
 
 const Person = ({ user }) => {
   const [value] = useDocument(
@@ -20,12 +23,26 @@ const Person = ({ user }) => {
 }
 
 export default function Room ({ users }) {
+  const [modalOpen, setModalOpen] = useState(false)
+  const { addTeamMember } = useContext(ControlContext);
+
   return (
     <TeamContainer>
-      <Title>Team Summary</Title>
+      <Row>
+        <Title>Team Summary</Title>
+        <AddBtn onClick={() => setModalOpen(true)} >Add a Team Member</AddBtn>
+      </Row>
       <TeamCard>
         {users && users.map((user, i) => <Person user={user} key={i} />)}
       </TeamCard>
+      <ReactModal isOpen={modalOpen} className="Modal" >
+        <ModalContent 
+          setModalOpen={setModalOpen} 
+          createFunction={addTeamMember}
+          labelName="Enter Member Email"
+          submitName="Add Team Member"
+        />
+      </ReactModal>
     </TeamContainer>
   )
 }
@@ -68,4 +85,17 @@ const PersonCard = styled.div`
   background: #C4C4C4;
   border-radius: 5px;
   display: inline-block;
+`
+
+const Row = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+`
+
+const AddBtn = styled.button`
+  border-radius: 5px;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
 `
