@@ -16,6 +16,11 @@ export const STATES = {
     {name: "START"},
     {name: "GET_TEAM_NAME", skip: "currentTeam", prompt: "What is the name of the team?"},
     {name: "END", prompt: "Here is the team!"},
+  ],
+  "createTeam": [
+    {name: "START"},
+    {name: "CREATE_TEAM_NAME", skip: "createTeam", prompt: "What do you want the name of the team to be?"},
+    {name: "END", prompt: "The team has been created!"},
   ]
 }
 export const getVoices = () => {

@@ -52,7 +52,7 @@ const VoiceChat = () => {
   
   // On listening stop
   useEffect(() => {
-    if (!listening && transcript.length > 0) {
+    if (!listening && transcript.length > 0 && openVoiceChat) {
       runStateMachine(transcript, continueSession).then((result) => {
         if (result.continueSession) {
           setContinueSession(result.sessionId);
@@ -98,7 +98,7 @@ const VoiceChat = () => {
       //     }, 7000);
       //   }
       // });
-    } else if (!listening && transcript.length === 0) {
+    } else if (!listening && transcript.length === 0 && openVoiceChat) {
       console.log("VoiceChat nothing said at all!");
       playEndSound();
       setOpenVoiceChat(false);

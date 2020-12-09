@@ -15,6 +15,9 @@ export const useStateMachine = () => {
     setCurrentTeam,
     setCurrentFolder,
     setCurrentLink,
+    createTeam,
+    createFolder,
+    createLink,
   } = useContext(ControlContext);
   const teamsRef = firebase.firestore().collection("teams");
   let history = useHistory();
@@ -101,6 +104,9 @@ export const useStateMachine = () => {
             });
           });
           break;
+        case "createTeam":
+          createTeam(newMessage);
+          resolve({key: "createdTeam", val: newMessage});
       }
     })
     return funcPromise;
@@ -152,6 +158,7 @@ export const useStateMachine = () => {
         result.responseText = newState.prompt;
       }
     } else {
+      // Validate and perform state action
       let validKey = await checkIfMessageIsValid(newMessage);
 
       if (validKey !== "") {
