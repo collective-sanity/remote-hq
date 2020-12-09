@@ -9,6 +9,7 @@ export const useStateMachine = () => {
   const [currentIntent, setCurrentIntent] = useState({});
   const [currentParams, setCurrentParams] = useState({});
   const { 
+    user,
     currentTeam,
     currentFolder,
     currentLink,
@@ -20,6 +21,7 @@ export const useStateMachine = () => {
     createLink,
   } = useContext(ControlContext);
   const teamsRef = firebase.firestore().collection("teams");
+  const usersRef = firebase.firestore().collection("users");
   let history = useHistory();
 
   const getNewState = (intent) => {
@@ -68,12 +70,19 @@ export const useStateMachine = () => {
         case "currentTeam":
           // TODO: Don't use teamsRef, use usersRef and check teams
           // array for team since teamsRef has ALL teams.
-          teamsRef.where("name", "==", newMessage).get().then((s) => {
-            s.forEach((doc) => {
-              resolve({key: "teamId", val: doc.id});
+          usersRef.doc(user).get().then((ss) => {
+            let teamsUserIsIn = ss.data().teams;
+            teamsRef.where("name", "==", newMessage).get().then((s) => {
+              s.forEach((doc) => {
+                if (teamsUserIsIn.includes(doc.id)) {
+                  console.log("BANZAI!", doc.data().name);
+                  resolve({key: "teamId", val: doc.id});
+                }
+              });
+              resolve("");
             });
-            resolve("");
           });
+          
           break;
         case "currentFolder":
           teamsRef.doc(currentTeam).collection("folders").get().then((s) => {
@@ -107,6 +116,15 @@ export const useStateMachine = () => {
         case "createTeam":
           createTeam(newMessage);
           resolve({key: "createdTeam", val: newMessage});
+          break;
+        case "createFolder":
+          createFolder(newMessage);
+          resolve({key: "createdFolder", val: newMessage});
+          break;
+        // case "createLink":
+        //   createLink(currentParams.fields.filetype.kind, newMessage);
+        //   resolve({key: "createdLink", val: newMessage});
+        //   break;
       }
     })
     return funcPromise;
