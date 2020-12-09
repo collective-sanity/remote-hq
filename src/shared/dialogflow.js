@@ -5,6 +5,12 @@ export const STATES = {
     {name: "GET_FOLDER_NAME", skip: "currentFolder", prompt: "What folder is the link in?"},
     {name: "GET_LINK_NAME", skip: "currentLink", prompt: "What is the name of the link?"},
     {name: "END", prompt: "Here is the file!"},
+  ],
+  "goToFolder": [
+    {name: "START"},
+    {name: "GET_TEAM_NAME", skip: "currentTeam", prompt: "What team is the folder in?"},
+    {name: "GET_FOLDER_NAME", skip: "currentFolder", prompt: "What is the name of the folder?"},
+    {name: "END", prompt: "Here is the folder!"},
   ]
 }
 export const parseIntent = (intent, parameters, createFolder, createLink) => {
