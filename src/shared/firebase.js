@@ -15,15 +15,37 @@ const firebaseConfig = {
 }
 
 firebase.initializeApp(firebaseConfig);
-
+const db = firebase.firestore();
 export const provider = new firebase.auth.GoogleAuthProvider();
 
+
+export function getUserRef(userId){return db.collection("users").doc(userId);}
+ 
 export async function getUserData(userId) {
-    let db = await firebase.firestore().collection("users").doc(userId).get() 
-    return db.data()
+    let res = await getUserRef(userId).get() 
+    return (res.exists)? res.data(): false;
 }
 
+export async function setUserData(userId, data) {
+    await getUserRef(userId).set(data);
+}
+export async function updateUserData(userId, data) {
+    await getUserRef(userId).update(data);
+}
 export async function getUsers() {
-    let db = await firebase.firestore().collection("users").get() 
-    return db.data()
+    let ref = await db.collection("users").get() 
+    return ref.data()
+}
+
+export async function createNewUser(result) {
+    let data ={
+        "id": result.user.uid,
+        "displayName": result.user.displayName,
+        "photoUrl": result.user.photoURL,
+        "email": result.user.email,
+        "createdAt": firebase.firestore.FieldValue.serverTimestamp(),
+        "teams": [],
+    };
+    await setUserData(result.user.uid, data);
+    return data;
 }

@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Switch, Route, } from "react-router-dom";
 
-import { provider, getTeamUsers } from 'shared/firebase';
+import { 
+  provider, 
+  getTeamUsers, 
+  getUserData, 
+  setUserData, 
+  createNewUser,
+  getUserRef,
+  updateUserData
+ } from 'shared/firebase';
 import dummydata from 'shared/dummydata';
 import firebase from "firebase/app";
 import ControlContext from "shared/control-context";
@@ -41,45 +49,32 @@ const App = () => {
             LOCALMODE,
             data,
             user,
-            loginUser: () => {
+            loginUser: async () => {
               if (LOCALMODE) {
                 setUser("uid1");
                 setTeams(data["users"]["uid1"]["teams"]);
               }
               else {
+      
                 // Authenticate and get User Info
-                firebase.auth().signInWithPopup(provider).then(function (result) {
-                  let userRef = usersRef.doc(result.user.uid);
-                  // Next . . . load user info
-                  userRef.get()
-                    .then(async (doc) => {
-                      // Set Data
-                      let data;
-                      if (!doc.exists) {
-                        data = {
-                          "id": result.user.uid,
-                          "displayName": result.user.displayName,
-                          "photoUrl": result.user.photoURL,
-                          "email": result.user.email,
-                          "createdAt": firebase.firestore.FieldValue.serverTimestamp(),
-                          "teams": [],
-                        };
-                        userRef.set(data);
-                      } else {
-                        data = { id: doc.id, ...doc.data(), }
-                        setUser(doc.id);
-                        setTeams(doc.data().teams);
-                      }
-                      // Add listener to keep track of changes and update state
-                      userListener = userRef.onSnapshot(function (doc) {
-                        console.log("Current data: ", doc.data());
-                        setUser(doc.id);
-                        setTeams(doc.data().teams);
-                      });
-                      // Get Rooms and set them
-                      // Add room listener
-                    })
-                })
+                let result = await firebase.auth().signInWithPopup(provider);
+                //firebase.auth().signInWithPopup(provider).then(function (result) {
+                  let userId = result.user.uid;
+                let userData = await getUserData(userId);
+                let data;
+                if (!userData) data = await createNewUser(result);
+                else  data = { id: userId, ...userData, }
+                
+                setUser(userId);
+                setTeams(userData.teams);
+                // Add listener to keep track of changes and update state
+                userListener =getUserRef().onSnapshot(function (doc) {
+                  console.log("Current data: ", doc.data());
+                 // setUser(doc.id);
+                  //setTeams(doc.data().teams);
+                });
+                // Get Rooms and set them
+                
               }
             },
             logoutUser: () => {
@@ -112,7 +107,7 @@ TEAMS
 */
             teams,
             currentTeam,
-            createTeam: ( 
+            createTeam: async ( 
               name = "RandomTest"
             )=>{
               const teamData = {
@@ -130,14 +125,15 @@ TEAMS
               }
               else{
                 // Add team
-                teamsRef.add(teamData).then((ref) => {
+                let ref = await teamsRef.add(teamData);
                   // Update User -- TODO update all users
-                  usersRef.doc(user).update({
-                    teams: [...teams, ref.id]
-                  });
-                  console.log("Added team with ID: ", ref.id);
+                 console.log(user);
+                let userData = await getUserData(user);
+                
+                updateUserData(user, { teams: [...userData.teams, ref.id]});
+                  console.log("Added team with ID: ", ref.id,userData );
                   setCurrentTeam(ref.id);
-                });
+              
               }
             },
             updateTeam:({
@@ -186,7 +182,6 @@ TEAMS
             createFolder: (name="TestName") => { 
               const folderData = {"name": name, "links": []};
               const folderRef = teamsRef.doc(currentTeam).collection("folders");
-
               folderRef.add(folderData).then((ref) => {
                 console.log("Added folder with ID: ", ref.id);
                 setCurrentFolder(ref.id);
