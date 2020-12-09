@@ -20,7 +20,7 @@ const CONFIG_PRIVATE_KEY_ID = functions.config().serviceaccount.private_key_id;
 const CONFIG_PRIVATE_KEY = functions.config().serviceaccount.private_key.replace(/\\n/g, '\n');
 const CONFIG_CLIENT_EMAIL = functions.config().serviceaccount.client_email;
 const SHARED_FOLDER_ID = "1oqA_hVthtNjntFnDavFneTtorouDvlcN";
-//let serviceAccount = require("./credentials.json");
+// let serviceAccount = require("./credentials.json");
 
 const credentials = {
     "type": "service_account",
