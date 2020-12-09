@@ -18,8 +18,8 @@ export const STATES = {
     {name: "END", prompt: "Here is the team!"},
   ]
 }
-export const parseIntent = (intent, parameters, createFolder, createLink) => {
-  console.log(intent, parameters);
+export const getVoices = () => {
+  return window.speechSynthesis.getVoices();
 }
 
 export const detectIntent = async (inputText, prevSessionId) => {

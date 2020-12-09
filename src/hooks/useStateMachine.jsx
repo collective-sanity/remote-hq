@@ -27,7 +27,7 @@ export const useStateMachine = () => {
     }
 
     // TODO: Check if we really need to skip any steps.
-    
+
     // let offset = 1;
     // while (true) {
     //   if (STATES[intent][currIdx + offset].name === "END") {
@@ -127,11 +127,14 @@ export const useStateMachine = () => {
     let result = {
       "continueSession": false,
       "responseText": "",
+      "conversationEnd": false,
     }
     if (state.name === "START") {
       let { result: resultJSON, sessionId } = await detectIntent(newMessage, prevSessionId);
       console.log("runStateMachine resultJSON", resultJSON);
-      if (!resultJSON.allRequiredParamsPresent) {
+      if (!resultJSON.allRequiredParamsPresent 
+        || resultJSON.intent.displayName === "Default Fallback Intent"
+        || resultJSON.intent.displayName === "Default Welcome Intent") {
         result.responseText = resultJSON.fulfillmentText;
         result.continueSession = true;
         result.sessionId = sessionId;
@@ -141,6 +144,7 @@ export const useStateMachine = () => {
         let newState = getNewState(resultJSON.intent.displayName);
         if (newState.name === "END") {
           result.responseText = newState.prompt;
+          result.conversationEnd = true;
           clearStateVariables();
         } else {
           setState(newState);
@@ -159,6 +163,7 @@ export const useStateMachine = () => {
         let newState = getNewState(currentIntent.displayName);
         if (newState.name === "END") {
           result.responseText = newState.prompt;
+          result.conversationEnd = true;
           clearStateVariables();
         } else {
           setState(newState);
@@ -166,6 +171,7 @@ export const useStateMachine = () => {
         result.responseText = newState.prompt;
       } else {
         result.responseText = "Sorry, I couldn't find it. Please try again.";
+        result.conversationEnd = true;
         clearStateVariables();
       }
     }

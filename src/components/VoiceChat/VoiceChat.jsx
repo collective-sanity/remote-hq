@@ -5,8 +5,9 @@ import { useKeyPress } from 'hooks/useKeyPress';
 import RingLoader from "react-spinners/RingLoader";
 import BeatLoader from "react-spinners/BeatLoader";
 import useSound from 'use-sound';
+import { useStateMachine } from 'hooks/useStateMachine';
 
-import { detectIntent } from 'shared/dialogflow';
+import { getVoices } from 'shared/dialogflow'
 import startSound from 'assets/voice_chat_start.mp3';
 import endSound from 'assets/voice_chat_end.mp3';
 
@@ -21,12 +22,14 @@ const VoiceChat = () => {
   const [endOfChat, setEndOfChat] = useState(false);
   const [playStartSound] = useSound(startSound);
   const [playEndSound] = useSound(endSound);
+  const { runStateMachine } = useStateMachine();
 
   const onSpeakingEnd = () => {
     SpeechRecognition.startListening();
   }
-  const { speak, voices } = useSpeechSynthesis({onEnd: onSpeakingEnd});
+  const { speak } = useSpeechSynthesis({onEnd: onSpeakingEnd});
   const { speak: speakEnd } = useSpeechSynthesis();
+  const speechVoice = getVoices()[6];
 
   if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
     setChatbotText("Sorry, this browser is not supported. Please use RemoteHQ on Google Chrome");
@@ -50,19 +53,18 @@ const VoiceChat = () => {
   // On listening stop
   useEffect(() => {
     if (!listening && transcript.length > 0) {
-      detectIntent(transcript, continueSession).then(({ result, sessionId }) => {
-        setChatbotText(result.fulfillmentText);
-        
-
-        if (!result.allRequiredParamsPresent 
-           || result.intent.displayName === "Default Fallback Intent"
-           || result.intent.displayName === "Default Welcome Intent") {
-          
-          speak({ text: result.fulfillmentText, voice: voices[7] })
-          setContinueSession(sessionId);
-          // Will start listening from the speak end function!
+      runStateMachine(transcript, continueSession).then((result) => {
+        if (result.continueSession) {
+          setContinueSession(result.sessionId);
         } else {
-          speakEnd({ text: result.fulfillmentText, voice: voices[7] })
+          setContinueSession("");
+        }
+        setChatbotText(result.responseText);
+
+        if (!result.conversationEnd) {
+          speak({ text: result.responseText, voice: speechVoice });
+        } else {
+          speakEnd({ text: result.responseText, voice: speechVoice });
           setContinueSession("");
           setEndOfChat(true);
           setTimeout(() => {
@@ -72,7 +74,30 @@ const VoiceChat = () => {
             playEndSound();
           }, 7000);
         }
+        
       });
+      // detectIntent(transcript, continueSession).then(({ result, sessionId }) => {
+      //   setChatbotText(result.fulfillmentText);
+        
+      //   if (!result.allRequiredParamsPresent 
+      //      || result.intent.displayName === "Default Fallback Intent"
+      //      || result.intent.displayName === "Default Welcome Intent") {
+          
+      //     speak({ text: result.fulfillmentText, voice: voices[7] })
+      //     setContinueSession(sessionId);
+      //     // Will start listening from the speak end function!
+      //   } else {
+      //     speakEnd({ text: result.fulfillmentText, voice: voices[7] })
+      //     setContinueSession("");
+      //     setEndOfChat(true);
+      //     setTimeout(() => {
+      //       setOpenVoiceChat(false);
+      //       setChatbotText("Hi, how can I help you?");
+      //       setEndOfChat(false);
+      //       playEndSound();
+      //     }, 7000);
+      //   }
+      // });
     } else if (!listening && transcript.length === 0) {
       console.log("VoiceChat nothing said at all!");
       playEndSound();
