@@ -1,4 +1,5 @@
-import React, { useContext, useState } from "react"
+import React, { useEffect, useContext, useState } from "react"
+import { Button, Input } from 'reactstrap';
 import styled from "styled-components"
 import { Link } from 'react-router-dom'
 import ControlContext from '../../shared/control-context'
@@ -8,11 +9,14 @@ import Trashcan from 'assets/Landing/delete.svg'
 import { OverlayContainer } from 'assets/StyledComponents/Overlay'
 import ReactModal from 'react-modal'
 import DeleteModalContent from 'containers/Modal/DeleteModalContent'
+import './TeamBoards.scss';
 
 export default function TeamBoards () {
   const context = useContext(ControlContext);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   let { LOCALMODE, data, currentTeam, setCurrentFolder, deleteFolder } = context;
+  const [firebaseFolders, setFirebaseFolders] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
   // console.log(currentTeam)
 
   const [value] = useCollection(
@@ -21,6 +25,15 @@ export default function TeamBoards () {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
   );
+  useEffect(() => {
+    if (value) {
+      setFirebaseFolders(value.docs.map((e) => {
+        let val = e.data();
+        val.id = e.id;
+        return val;
+      }));
+    }
+  }, [value]);
 
   let folders;
   if (LOCALMODE) {
@@ -28,9 +41,39 @@ export default function TeamBoards () {
     folders = Object.keys(foldersObj);
   }
 
+  useEffect(() => {
+    let newList = [];
+    if (!value) {
+      return;
+    }
+    for(let folder of value.docs) {
+      if (folder.data().name.toLowerCase().indexOf(searchValue.toLowerCase()) > -1) {
+        let newItem = folder.data();
+        newItem.id = folder.id;
+        newList.push(newItem);
+      }
+    }
+    setFirebaseFolders(newList);
+  }, [searchValue]);
+
+  const sortAZ = () => {
+    let fbFolders = [...firebaseFolders];
+    fbFolders.sort((a, b) => {
+      if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+      if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+      return 0;
+    });
+    setFirebaseFolders(fbFolders);
+  }
+
+
   return (
     <TeamContainer>
       <Title>Team Folders</Title>
+      <div className="TeamBoards__view_options">
+        <Button color="primary" onClick={sortAZ}>Sort A-Z</Button>
+        <Input placeholder="Search" value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+      </div>
       {LOCALMODE ? (
         <BoardContainer>
         {folders.map((folder, i) => 
@@ -41,11 +84,11 @@ export default function TeamBoards () {
       </BoardContainer>
       ) : (
       <BoardContainer>
-          {value && value.docs.map((folder, i) => (
+          {firebaseFolders && firebaseFolders.map((folder, i) => (
               <Board key={i}>
                 <OverlayContainer>
                   <TrashIcon onClick={() => setDeleteModalOpen(true)} src={Trashcan} />
-                  <FirebaseBoardLink id={folder.id} folder={folder.data()} setCurrentFolder={setCurrentFolder} deleteFolder={deleteFolder} />
+                  <FirebaseBoardLink id={folder.id} folder={folder} setCurrentFolder={setCurrentFolder} deleteFolder={deleteFolder} />
                   <ReactModal isOpen={deleteModalOpen} className="Modal" >
                     <DeleteModalContent 
                       setModalOpen={setDeleteModalOpen} 
