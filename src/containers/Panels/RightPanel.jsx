@@ -3,7 +3,6 @@ import { useHistory } from "react-router-dom"
 import styled from "styled-components"
 import ControlContext from 'shared/control-context'
 import firebase from 'firebase/app'
-// import Chat from 'components/Chat/Chat';
 
 import GoogleDocs from 'assets/Landing/google-docs.png'
 import GoogleSheets from 'assets/Landing/google-sheets.png'

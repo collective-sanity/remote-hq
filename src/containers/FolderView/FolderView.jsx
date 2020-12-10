@@ -4,7 +4,8 @@ import styled from "styled-components";
 import firebase from 'firebase/app';
 import { useDocument } from 'react-firebase-hooks/firestore';
 import ControlContext from "shared/control-context";
-import { Button } from 'reactstrap';
+import { Button, Input } from 'reactstrap';
+import './FolderView.scss';
 
 import LeftPanel from "containers/Panels/LeftPanel";
 import RightPanel from "containers/Panels/RightPanel";
@@ -20,6 +21,8 @@ export default function FolderView () {
   const context = useContext(ControlContext);
   const { LOCALMODE, data, currentTeam, currentFolder, setCurrentLink } = context;
   const [firebaseLinks, setFirebaseLinks] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [linkNamesToId, setLinkNamesToId] = useState([]);
 
   let links;
   if (LOCALMODE) {
@@ -36,6 +39,19 @@ export default function FolderView () {
   useEffect(() => {
     if (value) {
       setFirebaseLinks(value.data().links);
+
+      async function getNewLinkNames() {
+        let newLinkNamesToId = {};
+        for (let linkId of value.data().links) {
+          let linkName = await firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(linkId).get();
+          linkName = linkName.data().name;
+          newLinkNamesToId[linkName] = linkId;
+        }
+        return newLinkNamesToId;
+      }
+      getNewLinkNames().then((result) => {
+        setLinkNamesToId(result);
+      })
     }
   }, [value]);
 
@@ -50,15 +66,18 @@ export default function FolderView () {
     // console.log(context);
   })
 
-  const sortAZ = async () => {
-    let linkNamesToId = {};
-    let linkNames = []
-    for (let linkId of firebaseLinks) {
-      let linkName = await firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(linkId).get();
-      linkName = linkName.data().name;
-      linkNamesToId[linkName] = linkId;
-      linkNames.push(linkName);
+  useEffect(() => {
+    let newList = [];
+    for(let [name, id] of Object.entries(linkNamesToId)) {
+      if (name.toLowerCase().indexOf(searchValue.toLowerCase()) > -1) {
+        newList.push(id);
+      }
     }
+    setFirebaseLinks(newList);
+  }, [searchValue]);
+
+  const sortAZ = async () => {
+    let linkNames = Object.keys(linkNamesToId)
     linkNames.sort((a, b) => {
       if (a.toLowerCase() < b.toLowerCase()) return -1;
       if (a.toLowerCase() > b.toLowerCase()) return 1;
@@ -115,8 +134,11 @@ export default function FolderView () {
               <option value="Recently Viewed">Recently Viewed</option>
             </FilesDropdown> */}
           </HeaderContainerWithDropdown>
-          <Button color="primary" onClick={sortAZ}>Sort A-Z</Button>
-          <Button color="primary" onClick={sortCreatedDate}>Sort by Created Date</Button>
+          <div className="FolderView__view_options">
+            <Button color="primary" onClick={sortAZ}>Sort A-Z</Button>
+            <Button color="primary" onClick={sortCreatedDate}>Sort by Created Date</Button>
+            <Input placeholder="Search" value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+          </div>
           {LOCALMODE ? (
             <LinksList>
               {links.map((link) => 

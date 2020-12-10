@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Button } from 'reactstrap';
+import { Button, Input } from 'reactstrap';
 import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
 import { NavLink } from 'react-router-dom'
@@ -13,6 +13,7 @@ import RightPanel from "containers/Panels/RightPanel"
 import ModalContent from 'containers/Modal/AddModalContent'
 import DeleteModalContent from 'containers/Modal/DeleteModalContent'
 import { OverlayContainer } from 'assets/StyledComponents/Overlay'
+import './Landing.scss';
 
 const TeamCard = ({ teamId, data, setCurrentTeam }) => {
   let name = data["teams"][teamId].name;
@@ -73,6 +74,8 @@ export default function Landing () {
   const { LOCALMODE, data, user, createTeam, setCurrentTeam, deleteTeam } = useContext(ControlContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [firebaseTeams, setFirebaseTeams] = useState([]);
+  const [teamNamesToId, setTeamNamesToId] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
 
   const [value] = useDocument(
     firebase.firestore().doc(`users/${user}`),
@@ -83,6 +86,19 @@ export default function Landing () {
   useEffect(() => {
     if (value) {
       setFirebaseTeams(value.data().teams);
+
+      async function getNewTeamNames() {
+        let newTeamNamesToId = {};
+        for (let teamId of value.data().teams) {
+          let teamName = await firebase.firestore().doc(`teams/${teamId.trim()}`).get();
+          teamName = teamName.data().name;
+          newTeamNamesToId[teamName] = teamId;
+        }
+        return newTeamNamesToId;
+      }
+      getNewTeamNames().then((result) => {
+        setTeamNamesToId(result);
+      })
     }
   }, [value]);
 
@@ -91,15 +107,18 @@ export default function Landing () {
     teamsList = data["users"][user]["teams"];
   }
 
-  const sortAZ = async () => {
-    let teamNamesToId = {};
-    let teamNames = []
-    for (let teamId of firebaseTeams) {
-      let teamName = await firebase.firestore().doc(`teams/${teamId.trim()}`).get();
-      teamName = teamName.data().name;
-      teamNamesToId[teamName] = teamId;
-      teamNames.push(teamName);
+  useEffect(() => {
+    let newList = [];
+    for(let [name, id] of Object.entries(teamNamesToId)) {
+      if (name.toLowerCase().indexOf(searchValue.toLowerCase()) > -1) {
+        newList.push(id);
+      }
     }
+    setFirebaseTeams(newList);
+  }, [searchValue]);
+
+  const sortAZ = async () => {
+    let teamNames = Object.keys(teamNamesToId)
     teamNames.sort((a, b) => {
       if (a.toLowerCase() < b.toLowerCase()) return -1;
       if (a.toLowerCase() > b.toLowerCase()) return 1;
@@ -113,7 +132,10 @@ export default function Landing () {
       <LeftPanel />
       <ContentContainer>
         <Title>Teams</Title>
-        <Button color="primary" onClick={sortAZ}>Sort A-Z</Button>
+        <div className="Landing__view_options">
+          <Button color="primary" onClick={sortAZ}>Sort A-Z</Button>
+          <Input placeholder="Search" value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+        </div>
         {LOCALMODE ? (
           <TeamsContainer>
             {teamsList.map((teamId, i) => <TeamCard key={i} data={data} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
