@@ -68,14 +68,11 @@ export const useStateMachine = () => {
     let funcPromise = new Promise((resolve, reject) => {
       switch(state.skip) {
         case "currentTeam":
-          // TODO: Don't use teamsRef, use usersRef and check teams
-          // array for team since teamsRef has ALL teams.
           usersRef.doc(user).get().then((ss) => {
             let teamsUserIsIn = ss.data().teams;
             teamsRef.where("name", "==", newMessage).get().then((s) => {
               s.forEach((doc) => {
                 if (teamsUserIsIn.includes(doc.id)) {
-                  console.log("BANZAI!", doc.data().name);
                   resolve({key: "teamId", val: doc.id});
                 }
               });

@@ -25,7 +25,7 @@ export const STATES = {
   "createFolder": [
     {name: "START"},
     {name: "GET_TEAM_NAME", skip: "currentTeam", prompt: "What team will the folder be created in?"},
-    {name: "CREATE_FOLDER_NAME", skip: "createTeam", prompt: "What do you want the name of the folder to be?"},
+    {name: "CREATE_FOLDER_NAME", skip: "createFolder", prompt: "What do you want the name of the folder to be?"},
     {name: "END", prompt: "The folder has been created!"},
   ],
   // Disable create link because it seems weird to have a chatbot put in a URL and such
