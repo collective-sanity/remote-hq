@@ -43,26 +43,30 @@ import { addLinkSnippet } from "react-chat-widget";
 const LOCALMODE = false;
 
 const App = () => {
-  const [data, setData] = useState(dummydata);
+//  const [data, setData] = useState(dummydata);
   const [user, setUser] = useState(null);
   const [teams, setTeams] = useState(null);
   const [currentTeam, setCurrentTeam] = useState(null);
   const [currentFolder, setCurrentFolder] = useState(null);
-  //const teamsRef = firebase.firestore().collection("teams");
-
   const [currentLink, setCurrentLink] = useState(null);
- // const usersRef = firebase.firestore().collection("users");
   let userListener;
-  //let firebaseHelper= new FirebaseHelper();
 
   window.addEventListener("load", ()=>{
-    let id = localStorage.getItem('userID');
-    let folderId = localStorage.getItem('teamID');
-    let teamId = localStorage.getItem('teamID');
-    if(id!==null && user===null){
-      setCurrentTeam();
-    }
-  }, false);
+    let _user = localStorage.getItem('user'),
+        _teams = localStorage.getItem('teams'),
+        _currentTeam = localStorage.getItem('currentTeam'),
+        _currentFolder = localStorage.getItem('currentFolder'),
+        _currentLink = localStorage.getItem('currentLink');
+        console.log(currentTeam);
+        console.log(_currentTeam);
+      if(_user!==null && user===null){ setUser(_user);}
+      if(_teams!==null && teams===null)  setTeams(_teams);
+      if(_currentTeam!==null && currentTeam===null) setCurrentTeam(_currentTeam);
+      if(_currentFolder!==null && currentFolder===null)  setCurrentFolder(_currentFolder);
+      if(_currentLink!==null && currentLink===null)    setCurrentLink(_currentLink);
+      console.log(currentTeam);
+  },true);
+  
 
 
   // handy for debugging state
@@ -73,20 +77,14 @@ const App = () => {
       <React.Fragment>
         <ControlContext.Provider
           value={{
-            LOCALMODE,
-            data,
-            user,
-            
-            teams,
-            currentTeam,
-            setCurrentTeam:(teamId) => setCurrentTeam(teamId),
-
-
+            user, // ID of current user
+            teams, // ids of user's teams
+            currentTeam, // id selected team
+            setCurrentTeam:(teamId) => {setCurrentTeam(teamId);window.localStorage.setItem("currentTeam",teamId);},
             currentFolder,
-            setCurrentFolder: folder => {setCurrentFolder(folder);},
-
+            setCurrentFolder: folderId => {setCurrentFolder(folderId);window.localStorage.setItem("currentFolder",folderId); },
             currentLink,
-            setCurrentLink: link => { setCurrentLink(link); },
+            setCurrentLink: linkId => { setCurrentLink(linkId);window.localStorage.setItem("currentLink",linkId); },
 
             loginUser: async () => {
                 // Authenticate and get User Info
@@ -96,32 +94,17 @@ const App = () => {
                 let data;
                 if (!userData) data = await createNewUser(result);
                 else  data = { id: userId, ...userData, }
-                setUser(userId);
-                setTeams(userData.teams);
-                // Add listener to keep track of changes and update state
-                userListener =getUserRef().onSnapshot(function (doc) {
-                  console.log("Current data: ", doc.data());
-                 // setUser(doc.id);
-                  //setTeams(doc.data().teams);
-                });
-              
+                setUser(userId);window.localStorage.setItem("user", userId);
+                setTeams(userData.teams);window.localStorage.setItem("teams", user.teams);
             },
             logoutUser: () => {
-              if (LOCALMODE) {
-                setUser(null);
-                setTeams(null);
-                setCurrentTeam(null);
-                setCurrentFolder(null);
-              }
-              else {
                 firebase.auth().signOut().then(function () {
                   userListener();
-                  setUser(null);
-                  setTeams(null);
-                  setCurrentTeam(null);
-                  setCurrentFolder(null);
+                  setUser(null);window.localStorage.setItem("user", null);
+                  setTeams(null); window.localStorage.setItem("teams", null);
+                  setCurrentTeam(null);window.localStorage.setItem("currentTeam", null);
+                  setCurrentFolder(null);window.localStorage.setItem("currentFolder", null);
                 }).catch(function (error) {console.log(error) });
-              }
               window.location.reload();
             },
 
@@ -129,6 +112,7 @@ const App = () => {
             createTeam: async (  name = "RandomTest" )=>{
               let res = await createTeam(name, user);
               setCurrentTeam(res.id);
+              window.localStorage.setItem("currentTeam", res.id);
             },
             updateTeam:({
               teamId=currentTeam,
@@ -148,6 +132,7 @@ const App = () => {
             ) => {
                await deleteTeam(teamId, user);
                setCurrentTeam(null)
+               window.localStorage.setItem("currentTeam", null);
               },
            
             /*
@@ -158,6 +143,7 @@ const App = () => {
             createFolder: async (name="TestName") => { 
                let res = await createFolder(currentTeam,{"name": name, "links": []});
               setCurrentFolder(res.id);
+              window.localStorage.setItem("currentFolder", res.id);
             },
             updateFolder: ({
               teamId=currentTeam.id, 
@@ -167,6 +153,7 @@ const App = () => {
             deleteFolder: async ( teamId = currentTeam , folderId) => {
                 await deleteFolder(teamId, currentFolder);
                 setCurrentFolder(null);
+                window.localStorage.setItem("currentFolder", null);
             },
 
 
@@ -194,7 +181,8 @@ const App = () => {
                   updateLink(currentTeam,currentLink, {name: newName})
             },
             deleteLink:async () => { 
-                await deleteLink(currentTeam,)
+                await deleteLink(currentTeam,);
+                
             },
             pinLink: async () => {
                let item = await getLinkData(currentTeam,currentLink);
