@@ -27,3 +27,5 @@ yarn-error.log*
 functions/*.log
 functions/credentials.json
 functions/dialogflowCredentials.json
+
+.firebase/*

@@ -23,6 +23,7 @@ import {
   updateFolder,
   deleteFolder,
   createTeam,
+  getTeamData,
   
  } from 'shared/firebase';
 import dummydata from 'shared/dummydata';
@@ -85,7 +86,6 @@ const App = () => {
             setCurrentFolder: folderId => {setCurrentFolder(folderId);window.localStorage.setItem("currentFolder",folderId); },
             currentLink,
             setCurrentLink: linkId => { setCurrentLink(linkId);window.localStorage.setItem("currentLink",linkId); },
-
             loginUser: async () => {
                 // Authenticate and get User Info
                 let result = await firebase.auth().signInWithPopup(provider);
@@ -95,7 +95,7 @@ const App = () => {
                 if (!userData) data = await createNewUser(result);
                 else  data = { id: userId, ...userData, }
                 setUser(userId);window.localStorage.setItem("user", userId);
-                setTeams(userData.teams);window.localStorage.setItem("teams", user.teams);
+                setTeams(userData.teams);window.localStorage.setItem("teams", userData.teams);
             },
             logoutUser: () => {
                 firebase.auth().signOut().then(function () {
@@ -122,10 +122,26 @@ const App = () => {
                 //eamsRef.doc(teamId).update(newData).then((ref)=>{ }).catch((error) => console.error("Error updating document", error));
               
             },
-            addTeamMember: async (id) => {
-              updateTeam(currentTeam,{
-                users: [{id: id}] // need to spread current users
-              })
+            addTeamMember: async (email) => {
+              console.log(email)
+              const usersRef = firebase.firestore().collection('users');
+              const snapshot = await usersRef.where('email', '==', email).get();
+              if (snapshot.empty) {
+                console.log('No matching documents.');
+                return;
+              }
+              let team = await getTeamData(currentTeam);
+              snapshot.forEach(doc => {
+                
+                updateTeam(currentTeam,{
+                  users: [...team.users, {"id": doc.id}] // need to spread current users
+                 });
+                //console.log(doc.id, '=>', doc.data());
+              });
+
+              // updateTeam(currentTeam,{
+              //   users: [{id: id}] // need to spread current users
+              // })
             },
             deleteTeam:async(
               teamId = currentTeam

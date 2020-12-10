@@ -1,0 +1,13 @@
+.FolderView {
+  &__view_options {
+    display: flex;
+
+    & button {
+      margin-right: 5px;
+    }
+    & input {
+      margin-left: 5px;
+      width: 60%;
+    }
+  }
+}
