@@ -25,7 +25,11 @@ export default function TeamBoards () {
   );
   useEffect(() => {
     if (value) {
-      setFirebaseFolders(value.docs.map((e) => e.data()));
+      setFirebaseFolders(value.docs.map((e) => {
+        let val = e.data();
+        val.id = e.id;
+        return val;
+      }));
     }
   }, [value]);
 
@@ -38,8 +42,8 @@ export default function TeamBoards () {
   const sortAZ = () => {
     let fbFolders = [...firebaseFolders];
     fbFolders.sort((a, b) => {
-      if (a.name < b.name) return -1;
-      if (a.name > b.name) return 1;
+      if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+      if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
       return 0;
     });
     setFirebaseFolders(fbFolders);

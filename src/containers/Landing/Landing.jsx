@@ -1,4 +1,5 @@
-import React, { useContext, useState } from "react"
+import React, { useContext, useState, useEffect } from "react";
+import { Button } from 'reactstrap';
 import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
 import { NavLink } from 'react-router-dom'
@@ -70,7 +71,8 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam }) => {
 
 export default function Landing () {
   const { LOCALMODE, data, user, createTeam, setCurrentTeam, deleteTeam } = useContext(ControlContext);
-  const [modalOpen, setModalOpen] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false);
+  const [firebaseTeams, setFirebaseTeams] = useState([]);
 
   const [value] = useDocument(
     firebase.firestore().doc(`users/${user}`),
@@ -78,10 +80,32 @@ export default function Landing () {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
   );
+  useEffect(() => {
+    if (value) {
+      setFirebaseTeams(value.data().teams);
+    }
+  }, [value]);
 
   let teamsList;
   if (LOCALMODE) {
     teamsList = data["users"][user]["teams"];
+  }
+
+  const sortAZ = async () => {
+    let teamNamesToId = {};
+    let teamNames = []
+    for (let teamId of firebaseTeams) {
+      let teamName = await firebase.firestore().doc(`teams/${teamId.trim()}`).get();
+      teamName = teamName.data().name;
+      teamNamesToId[teamName] = teamId;
+      teamNames.push(teamName);
+    }
+    teamNames.sort((a, b) => {
+      if (a.toLowerCase() < b.toLowerCase()) return -1;
+      if (a.toLowerCase() > b.toLowerCase()) return 1;
+      return 0;
+    });
+    setFirebaseTeams(teamNames.map((name) => teamNamesToId[name]));
   }
 
   return (
@@ -89,13 +113,14 @@ export default function Landing () {
       <LeftPanel />
       <ContentContainer>
         <Title>Teams</Title>
+        <Button color="primary" onClick={sortAZ}>Sort A-Z</Button>
         {LOCALMODE ? (
           <TeamsContainer>
             {teamsList.map((teamId, i) => <TeamCard key={i} data={data} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
           </TeamsContainer>
         ) : (
           <TeamsContainer>
-            {value && value.data().teams.map((teamId, i) => <FirebaseTeamCard key={i} teamId={teamId} setCurrentTeam={setCurrentTeam} deleteTeam={deleteTeam} />)}
+            {firebaseTeams && firebaseTeams.map((teamId, i) => <FirebaseTeamCard key={i} teamId={teamId} setCurrentTeam={setCurrentTeam} deleteTeam={deleteTeam} />)}
           </TeamsContainer>
         )}
         <ReactModal isOpen={modalOpen} className="Modal" >

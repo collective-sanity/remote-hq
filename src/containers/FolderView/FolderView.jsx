@@ -59,7 +59,11 @@ export default function FolderView () {
       linkNamesToId[linkName] = linkId;
       linkNames.push(linkName);
     }
-    linkNames.sort();
+    linkNames.sort((a, b) => {
+      if (a.toLowerCase() < b.toLowerCase()) return -1;
+      if (a.toLowerCase() > b.toLowerCase()) return 1;
+      return 0;
+    });
     setFirebaseLinks(linkNames.map((name) => linkNamesToId[name]));
   }
 
