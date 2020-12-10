@@ -1,4 +1,5 @@
-import React, { useContext, useState } from "react"
+import React, { useEffect, useContext, useState } from "react"
+import { Button } from 'reactstrap';
 import styled from "styled-components"
 import { Link } from 'react-router-dom'
 import ControlContext from '../../shared/control-context'
@@ -13,6 +14,7 @@ export default function TeamBoards () {
   const context = useContext(ControlContext);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   let { LOCALMODE, data, currentTeam, setCurrentFolder, deleteFolder } = context;
+  const [firebaseFolders, setFirebaseFolders] = useState([]);
   // console.log(currentTeam)
 
   const [value] = useCollection(
@@ -21,6 +23,11 @@ export default function TeamBoards () {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
   );
+  useEffect(() => {
+    if (value) {
+      setFirebaseFolders(value.docs.map((e) => e.data()));
+    }
+  }, [value]);
 
   let folders;
   if (LOCALMODE) {
@@ -28,9 +35,21 @@ export default function TeamBoards () {
     folders = Object.keys(foldersObj);
   }
 
+  const sortAZ = () => {
+    let fbFolders = [...firebaseFolders];
+    fbFolders.sort((a, b) => {
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
+    });
+    setFirebaseFolders(fbFolders);
+  }
+
+
   return (
     <TeamContainer>
       <Title>Team Folders</Title>
+      <Button color="primary" onClick={sortAZ}>Sort A-Z</Button>
       {LOCALMODE ? (
         <BoardContainer>
         {folders.map((folder, i) => 
@@ -41,11 +60,11 @@ export default function TeamBoards () {
       </BoardContainer>
       ) : (
       <BoardContainer>
-          {value && value.docs.map((folder, i) => (
+          {firebaseFolders && firebaseFolders.map((folder, i) => (
               <Board key={i}>
                 <OverlayContainer>
                   <TrashIcon onClick={() => setDeleteModalOpen(true)} src={Trashcan} />
-                  <FirebaseBoardLink id={folder.id} folder={folder.data()} setCurrentFolder={setCurrentFolder} deleteFolder={deleteFolder} />
+                  <FirebaseBoardLink id={folder.id} folder={folder} setCurrentFolder={setCurrentFolder} deleteFolder={deleteFolder} />
                   <ReactModal isOpen={deleteModalOpen} className="Modal" >
                     <DeleteModalContent 
                       setModalOpen={setDeleteModalOpen} 

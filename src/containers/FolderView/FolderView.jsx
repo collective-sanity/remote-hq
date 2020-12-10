@@ -1,9 +1,10 @@
-import React, { useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
 import firebase from 'firebase/app';
 import { useDocument } from 'react-firebase-hooks/firestore';
 import ControlContext from "shared/control-context";
+import { Button } from 'reactstrap';
 
 import LeftPanel from "containers/Panels/LeftPanel";
 import RightPanel from "containers/Panels/RightPanel";
@@ -18,7 +19,7 @@ import link from 'assets/Landing/link.png';
 export default function FolderView () {
   const context = useContext(ControlContext);
   const { LOCALMODE, data, currentTeam, currentFolder, setCurrentLink } = context;
-  // console.log(currentTeam)
+  const [firebaseLinks, setFirebaseLinks] = useState([]);
 
   let links;
   if (LOCALMODE) {
@@ -32,6 +33,12 @@ export default function FolderView () {
     }
   );
 
+  useEffect(() => {
+    if (value) {
+      setFirebaseLinks(value.data().links);
+    }
+  }, [value]);
+
   const [teamName] = useDocument(
     firebase.firestore().doc(`teams/${currentTeam.trim()}`),
     {
@@ -42,6 +49,32 @@ export default function FolderView () {
   useEffect(() => {
     // console.log(context);
   })
+
+  const sortAZ = async () => {
+    let linkNamesToId = {};
+    let linkNames = []
+    for (let linkId of firebaseLinks) {
+      let linkName = await firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(linkId).get();
+      linkName = linkName.data().name;
+      linkNamesToId[linkName] = linkId;
+      linkNames.push(linkName);
+    }
+    linkNames.sort();
+    setFirebaseLinks(linkNames.map((name) => linkNamesToId[name]));
+  }
+
+  const sortCreatedDate = async () => {
+    let linkDatesToId = {};
+    let linkDates = []
+    for (let linkId of firebaseLinks) {
+      let linkDate = await firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(linkId).get();
+      linkDate = linkDate.data().createdDate;
+      linkDatesToId[linkDate] = linkId;
+      linkDates.push(linkDate);
+    }
+    linkDates.sort();
+    setFirebaseLinks(linkDates.map((date) => linkDatesToId[date]));
+  }
 
   return (
     <Row>
@@ -64,7 +97,7 @@ export default function FolderView () {
             </LinksList>
           ) : (
             <LinksList>
-            {value && value.data().links.map((link, i) => (
+            {firebaseLinks && firebaseLinks.map((link, i) => (
               <GetFirebaseLinks key={i} pinned={true} link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
             ))}
             </LinksList>
@@ -78,6 +111,8 @@ export default function FolderView () {
               <option value="Recently Viewed">Recently Viewed</option>
             </FilesDropdown> */}
           </HeaderContainerWithDropdown>
+          <Button color="primary" onClick={sortAZ}>Sort A-Z</Button>
+          <Button color="primary" onClick={sortCreatedDate}>Sort by Created Date</Button>
           {LOCALMODE ? (
             <LinksList>
               {links.map((link) => 
@@ -86,7 +121,7 @@ export default function FolderView () {
             </LinksList>
           ) : (
             <LinksList>
-            {value && value.data().links.map((link, i) => (
+            {firebaseLinks && firebaseLinks.map((link, i) => (
               <GetFirebaseLinks key={i} pinned={false} link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
             ))}
             </LinksList>
