@@ -82,7 +82,7 @@ export default function SharedDesktop () {
         </Desktop> 
 
         <Docs>
-            <DocsTitle>Chatbot</DocsTitle>
+            {/* <DocsTitle>Chatbot</DocsTitle> */}
             {LOCALMODE ? (
               <DocsList>
                 {links.map((link) => 
