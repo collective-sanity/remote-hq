@@ -142,7 +142,6 @@ exports.createLink = functions.firestore
                     parents: [val],
                 };
                 var media = { mimeType: 'text/plain', body: '', };
-             
                 google.auth.getClient({
                     credentials,
                     scopes: 'https://www.googleapis.com/auth/drive.file',

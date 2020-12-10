@@ -45,7 +45,8 @@ export default function RightPanel ({ page, setModalOpen }) {
           .doc(currentLink)
           .get()
           .then((doc) => {
-            setPin(doc.data().pinned)
+            setPin(doc.data() && doc.data().pinned)
+           // setPin(doc.data().pinned)
           })
       }
     }

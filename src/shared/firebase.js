@@ -148,6 +148,6 @@ export async function updateFolder(teamId, folderId, data) {
         
 }
 export async function deleteFolder(teamId, folderId) {
-    return await getFolderRef(teamId, folderId).delete();
+    await getFolderRef(teamId, folderId).delete();
 }
 

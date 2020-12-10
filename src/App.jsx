@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Switch, Route, } from "react-router-dom";
-
+import React, { useEffect, useState} from "react";
+import { BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import { useHistory } from "react-router-dom"
 import { 
   provider, 
   getUserRef,
@@ -40,7 +40,10 @@ import './App.scss';
 import VoiceChat from "components/VoiceChat/VoiceChat";
 import { addLinkSnippet } from "react-chat-widget";
 
+const randomPhotos = [
+  "https://images.unsplash.com/photo-1607453813894-21f7b5cf201a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80",
 
+]
 const LOCALMODE = false;
 
 const App = () => {
@@ -50,29 +53,31 @@ const App = () => {
   const [currentTeam, setCurrentTeam] = useState(null);
   const [currentFolder, setCurrentFolder] = useState(null);
   const [currentLink, setCurrentLink] = useState(null);
+  
+  const history = useHistory();
+
+  
   let userListener;
 
-  window.addEventListener("load", ()=>{
-    let _user = localStorage.getItem('user'),
-        _teams = localStorage.getItem('teams'),
-        _currentTeam = localStorage.getItem('currentTeam'),
-        _currentFolder = localStorage.getItem('currentFolder'),
-        _currentLink = localStorage.getItem('currentLink');
-        console.log(currentTeam);
-        console.log(_currentTeam);
-      if(_user!==null && user===null){ setUser(_user);}
-      if(_teams!==null && teams===null)  setTeams(_teams);
-      if(_currentTeam!==null && currentTeam===null) setCurrentTeam(_currentTeam);
-      if(_currentFolder!==null && currentFolder===null)  setCurrentFolder(_currentFolder);
-      if(_currentLink!==null && currentLink===null)    setCurrentLink(_currentLink);
-      console.log(currentTeam);
-  },true);
-  
-
+  // window.addEventListener("load", ()=>{
+  //   // let _user = localStorage.getItem('user'),
+  //   //     _teams = localStorage.getItem('teams'),
+  //   //     _currentTeam = localStorage.getItem('currentTeam'),
+  //   //     _currentFolder = localStorage.getItem('currentFolder'),
+  //   //     _currentLink = localStorage.getItem('currentLink');
+  //   //     console.log(currentTeam);
+  //   //     console.log(_currentTeam);
+  //   //   if(_user!==null && user===null){ setUser(_user);}
+  //   //   if(_teams!==null && teams===null)  setTeams(_teams);
+  //   //   if(_currentTeam!==null && currentTeam===null) setCurrentTeam(_currentTeam);
+  //   //   if(_currentFolder!==null && currentFolder===null)  setCurrentFolder(_currentFolder);
+  //   //   if(_currentLink!==null && currentLink===null)    setCurrentLink(_currentLink);
+  //   //   console.log(currentTeam);
+  // },true);
 
   // handy for debugging state
   useEffect(() => {})
-
+ 
   return (
     <Router>
       <React.Fragment>
@@ -86,6 +91,7 @@ const App = () => {
             setCurrentFolder: folderId => {setCurrentFolder(folderId);window.localStorage.setItem("currentFolder",folderId); },
             currentLink,
             setCurrentLink: linkId => { setCurrentLink(linkId);window.localStorage.setItem("currentLink",linkId); },
+            
             loginUser: async () => {
                 // Authenticate and get User Info
                 let result = await firebase.auth().signInWithPopup(provider);
@@ -99,13 +105,18 @@ const App = () => {
             },
             logoutUser: () => {
                 firebase.auth().signOut().then(function () {
-                  userListener();
+                  //userListener();
                   setUser(null);window.localStorage.setItem("user", null);
                   setTeams(null); window.localStorage.setItem("teams", null);
                   setCurrentTeam(null);window.localStorage.setItem("currentTeam", null);
                   setCurrentFolder(null);window.localStorage.setItem("currentFolder", null);
+                  history.push("/");
                 }).catch(function (error) {console.log(error) });
-              window.location.reload();
+               
+               
+        
+              // window.location.reload();
+               
             },
 
            
@@ -132,16 +143,10 @@ const App = () => {
               }
               let team = await getTeamData(currentTeam);
               snapshot.forEach(doc => {
-                
                 updateTeam(currentTeam,{
-                  users: [...team.users, {"id": doc.id}] // need to spread current users
+                  users: [...team.users, {"id": doc.id, "email":doc.data().email}] // need to spread current users
                  });
-                //console.log(doc.id, '=>', doc.data());
               });
-
-              // updateTeam(currentTeam,{
-              //   users: [{id: id}] // need to spread current users
-              // })
             },
             deleteTeam:async(
               teamId = currentTeam
@@ -166,14 +171,13 @@ const App = () => {
               folderId=currentFolder.id, 
               newData})=> {updateFolder(teamId,folderId, { "folders":newData}) },
            
-            deleteFolder: async ( teamId = currentTeam , folderId) => {
-                await deleteFolder(teamId, currentFolder);
+            deleteFolder: async ( folderId) => {
+              
+                deleteFolder( currentTeam , folderId);
                 setCurrentFolder(null);
                 window.localStorage.setItem("currentFolder", null);
+                
             },
-
-
-            
             /*
             Links are all the "files" in the system, they can be organized in folders and viewed in screens
             */
@@ -204,6 +208,7 @@ const App = () => {
                let item = await getLinkData(currentTeam,currentLink);
                await updateTeam(currentTeam, {pinned: !item.pinned});
             },
+          
           }}>
           <div className="App__container">
             {user ? <><VoiceChat /><Chat /></> : <></> }
