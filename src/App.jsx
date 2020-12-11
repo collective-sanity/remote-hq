@@ -112,11 +112,7 @@ const App = () => {
                   setCurrentFolder(null);window.localStorage.setItem("currentFolder", null);
                   history.push("/");
                 }).catch(function (error) {console.log(error) });
-               
-               
-        
               // window.location.reload();
-               
             },
 
            
@@ -162,7 +158,7 @@ const App = () => {
 
             */
             createFolder: async (name="TestName") => { 
-               let res = await createFolder(currentTeam,{"name": name, "links": []});
+               let res = await createFolder(currentTeam, name, links);
               setCurrentFolder(res.id);
               window.localStorage.setItem("currentFolder", res.id);
             },
