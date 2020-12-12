@@ -16,12 +16,10 @@ export default function Room ({ location }) {
   const { currentTeam, createFolder } = useContext(ControlContext)
   const [modalOpen, setModalOpen] = useState(false)
 
-  const [value] = useDocument(
-    firebase.firestore().doc(`teams/${currentTeam.trim()}`),
-    {
-      snapshotListenOptions: { includeMetadataChanges: true },
-    }
-  );
+  const [value] = useDocument( firebase.firestore()
+  .doc( currentTeam!=null?`teams/${currentTeam.trim()}`: `teams/${window.localStorage.getItem("currentTeam").trim()}`),
+        {snapshotListenOptions: { includeMetadataChanges: true },},);
+       
 
   return (
     <Row>

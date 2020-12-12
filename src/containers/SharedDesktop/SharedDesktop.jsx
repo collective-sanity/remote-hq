@@ -74,7 +74,7 @@ export default function SharedDesktop () {
             <iframe 
                 width="100%"
                 height="100%"
-                src={value && getLink(value.data().linkType, value.data().link)}
+                src={value && getLink(value.data().linkType, value.data().url)}
                 title={value && value.data().name}
                 allowFullScreen
             ></iframe>
@@ -82,7 +82,7 @@ export default function SharedDesktop () {
         </Desktop> 
 
         <Docs>
-            <DocsTitle>Chatbot</DocsTitle>
+            {/* <DocsTitle>Chatbot</DocsTitle> */}
             {LOCALMODE ? (
               <DocsList>
                 {links.map((link) => 
@@ -140,7 +140,7 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink }) => {
         </Doc>
       }
       {value && value.data().linkType === "resource" &&
-        <WebDoc href={value.data().link} target="_blank" onClick={() => setCurrentLink(value.id)}>
+        <WebDoc href={value.data().url} target="_blank" onClick={() => setCurrentLink(value.id)}>
           <DocIcon src={getIconType(value.data().linkType)}></DocIcon>
           <DocTitle>{value.data().name}</DocTitle>
         </WebDoc>
