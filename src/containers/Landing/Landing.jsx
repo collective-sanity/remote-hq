@@ -14,6 +14,7 @@ import ModalContent from 'containers/Modal/AddModalContent'
 import DeleteModalContent from 'containers/Modal/DeleteModalContent'
 import { OverlayContainer } from 'assets/StyledComponents/Overlay'
 import './Landing.scss';
+import { getTeamRef } from "shared/firebase";
 
 const TeamCard = ({ teamId, data, setCurrentTeam }) => {
   let name = data["teams"][teamId].name;
@@ -39,8 +40,8 @@ const TeamCard = ({ teamId, data, setCurrentTeam }) => {
 
 const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-  const [value] = useDocument(
-    firebase.firestore().doc(`teams/${teamId.trim()}`),
+  const [teamDataDoc] = useDocument(
+    getTeamRef(teamId),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
@@ -55,7 +56,7 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam }) => {
           onClick={() => setCurrentTeam(teamId)}
         >
           <TeamImage />
-          <TeamName>{value && value.data() && value.data().name}</TeamName>
+          <TeamName>{teamDataDoc && teamDataDoc.data() && teamDataDoc.data().name}</TeamName>
         </NavLink>
         <ReactModal isOpen={deleteModalOpen} className="Modal" >
           <DeleteModalContent 
@@ -77,19 +78,19 @@ export default function Landing () {
   const [teamNamesToId, setTeamNamesToId] = useState([]);
   const [searchValue, setSearchValue] = useState("");
 
-  const [value] = useDocument(
+  const [userDataDoc] = useDocument(
     firebase.firestore().doc(`users/${user}`),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
   );
   useEffect(() => {
-    if (value) {
-      setFirebaseTeams(value.data().teams);
+    if (userDataDoc) {
+      setFirebaseTeams(userDataDoc.data().teams);
 
       async function getNewTeamNames() {
         let newTeamNamesToId = {};
-        for (let teamId of value.data().teams) {
+        for (let teamId of userDataDoc.data().teams) {
           let teamName = await firebase.firestore().doc(`teams/${teamId.trim()}`).get();
           teamName = teamName.data().name;
           newTeamNamesToId[teamName] = teamId;
@@ -100,7 +101,7 @@ export default function Landing () {
         setTeamNamesToId(result);
       })
     }
-  }, [value]);
+  }, [userDataDoc]);
 
   let teamsList;
   if (LOCALMODE) {

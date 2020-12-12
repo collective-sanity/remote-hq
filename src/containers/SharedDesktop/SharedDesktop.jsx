@@ -14,10 +14,11 @@ import slides from 'assets/Landing/google-slides.png';
 import drive from 'assets/Landing/google-drive.png';
 import figma from 'assets/Landing/figma.png';
 import link from 'assets/Landing/link.png';
+import { getLinkData, getLinkRef, getFolderRef } from "shared/firebase";
 
 export default function SharedDesktop () {
   const context = useContext(ControlContext);
-  const { LOCALMODE, data, currentTeam, currentFolder, setCurrentLink, currentLink } = context;
+  const { LOCALMODE, data, currentTeam, currentFolder, setCurrentLink, currentLink, } = context;
 
   let links;
   let currentLinkObj;
@@ -27,14 +28,14 @@ export default function SharedDesktop () {
   }
 
   const [firebaseLinks] = useDocument(
-    firebase.firestore().collection("teams").doc(currentTeam).collection("folders").doc(currentFolder),
+    getFolderRef(currentTeam, currentFolder),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
   );
 
-  const [value] = useDocument(
-    firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(currentLink),
+  const [linkDataDoc] = useDocument(
+    getLinkRef(currentTeam, currentLink),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
@@ -42,9 +43,9 @@ export default function SharedDesktop () {
 
   useEffect(() => {
     // console.log(currentFolder);
-  })
+  });
 
-  const getLink = (type, link) => {
+  const getLink = (type, url) => {
     if (LOCALMODE) {
       if (type === "figma") {
         return `https://www.figma.com/embed?embed_host=share&url=${currentLinkObj.link}`
@@ -53,32 +54,26 @@ export default function SharedDesktop () {
     }
     else { 
       if (type === "figma") {
-        return `https://www.figma.com/embed?embed_host=share&url=${link}`
+        return `https://www.figma.com/embed?embed_host=share&url=${url}`
       }
-      return link;}
+      console.log(url)
+      return url;}
     }
-
+    
+    //console.log(value.data().url);
     return (
       <Row>
         <LeftPanel />
         <Desktop>
-          {LOCALMODE ? (
-            <iframe 
-              width="100%"
-              height="100%"
-              src={getLink(currentLinkObj.linkType)}
-              title={currentLinkObj.name}
-              allowFullScreen
-          ></iframe>
-          ) : (
+          
             <iframe 
                 width="100%"
                 height="100%"
-                src={value && getLink(value.data().linkType, value.data().url)}
-                title={value && value.data().name}
+                src={linkDataDoc && getLink(linkDataDoc.data().linkType, linkDataDoc.data().url)}
+                title={linkDataDoc && linkDataDoc.data().name}
                 allowFullScreen
             ></iframe>
-          )}
+          
         </Desktop> 
 
         <Docs>
@@ -124,8 +119,9 @@ const GetLinks = ({link, data, currentTeam, setCurrentLink}) => {
 }
 
 const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink }) => {
-  const [value] = useDocument(
-    firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(link),
+  const [linkDataDoc] = useDocument(
+    getLinkRef(currentTeam, link),
+    //firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(link),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
@@ -133,16 +129,16 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink }) => {
 
   return (
     <div>
-      {value && value.data().linkType !== "resource" &&
-        <Doc onClick={() => setCurrentLink(value.id)}>
-          <DocIcon src={getIconType(value.data().linkType)}></DocIcon>
-          <DocTitle>{value.data().name}</DocTitle>
+      {linkDataDoc && linkDataDoc.data().linkType !== "resource" &&
+        <Doc onClick={() => setCurrentLink(link)}>
+          <DocIcon src={getIconType(linkDataDoc.data().linkType)}></DocIcon>
+          <DocTitle>{linkDataDoc.data().name}</DocTitle>
         </Doc>
       }
-      {value && value.data().linkType === "resource" &&
-        <WebDoc href={value.data().url} target="_blank" onClick={() => setCurrentLink(value.id)}>
-          <DocIcon src={getIconType(value.data().linkType)}></DocIcon>
-          <DocTitle>{value.data().name}</DocTitle>
+      {linkDataDoc && linkDataDoc.data().linkType === "resource" &&
+        <WebDoc href={linkDataDoc.data().url} target="_blank" onClick={() => setCurrentLink(link)}>
+          <DocIcon src={getIconType(linkDataDoc.data().linkType)}></DocIcon>
+          <DocTitle>{linkDataDoc.data().name}</DocTitle>
         </WebDoc>
       }
     </div>
