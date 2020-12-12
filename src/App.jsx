@@ -158,7 +158,7 @@ const App = () => {
 
             */
             createFolder: async (name="TestName") => { 
-               let res = await createFolder(currentTeam, name, links);
+               let res = await createFolder(currentTeam, name);
               setCurrentFolder(res.id);
               window.localStorage.setItem("currentFolder", res.id);
             },

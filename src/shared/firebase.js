@@ -387,8 +387,9 @@ export async function createLink(teamId, folderId, linktype, name, url) {
     if ( linktype === "figma" || linktype === "resource" || linktype.includes("google")) {
         let folderData = await getFolderData(teamId, folderId);
         let linkRes = await getTeamRef(teamId).collection('links').add(linkData);
+        console.log(linkRes);
         await updateFolder(teamId, folderId, { "links": [...folderData.links, linkRes.id] })
-        return {...linkRes.data(), "id":linkRes.id, "teamId":teamId, "folderId":folderId};
+        return {...linkData, "id":linkRes.id, "teamId":teamId, "folderId":folderId};
     }
 
 }
