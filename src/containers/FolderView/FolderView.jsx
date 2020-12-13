@@ -18,6 +18,8 @@ import figma from 'assets/Landing/figma.png';
 import link from 'assets/Landing/link.png';
 import { getFolderRef, getLinkData, getTeamRef, getLinkRef } from "shared/firebase";
 
+import MoonLoader from "react-spinners/MoonLoader";
+
 export default function FolderView () {
   const context = useContext(ControlContext);
   const { LOCALMODE, data, currentTeam, currentFolder, setCurrentLink } = context;
@@ -180,7 +182,16 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
 
   return (
     <div>
-      {linkDataDoc && linkDataDoc.data().pinned === pinned &&
+      {linkDataDoc && linkDataDoc.data().pinned === pinned && !linkDataDoc.data().url &&
+        <DisabledLinkContainer>
+          <MoonLoader
+            size={50}
+            color={"#123abc"}
+          />
+          <LinkContainerTitle>{linkDataDoc.data().name}</LinkContainerTitle>
+        </DisabledLinkContainer>
+      }
+      {linkDataDoc && linkDataDoc.data().pinned === pinned && linkDataDoc.data().url &&
         <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(linkDataDoc.id)}>
           <LinkContainerType src={getIconType(linkDataDoc.data().linkType)}></LinkContainerType>
           <LinkContainerTitle>{linkDataDoc.data().name}</LinkContainerTitle>
@@ -271,6 +282,18 @@ const LinksList = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+`
+
+const DisabledLinkContainer = styled.div`
+  height: 160px;
+  width: 120px;
+  background-color: #c4c4c4;
+  margin-right: 40px;
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 `
 
 const LinkContainer = styled(Link)`
