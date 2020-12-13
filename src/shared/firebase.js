@@ -18,13 +18,12 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 export const provider = new firebase.auth.GoogleAuthProvider();
 /*
-
 getUserRef
 createNewUser
 getUserData
 updateUserData
 getUsers
-set
+
 
 getTeamData
 createTeam
@@ -35,7 +34,6 @@ getFolderData
 createFolder
 updateFolder
 deleteFolder
-
 */
 
 
@@ -47,14 +45,30 @@ deleteFolder
 //          -- deleting / changing name / creating link / pinning/unpinning etc
 
 /*
-const teamsRef = db.collection('teams');
-const 
-const observer = query.onSnapshot(querySnapshot => {
+
+Team Listener
+
+const teamRef = db.collection('teams').doc("teamid");
+const teamListener = teamRef.onSnapshot(doc => {
+  console.log(`Received query snapshot  ${querySnapshot.size}`);
+  // ...
+}, err => {
+  console.log(`Encountered error: ${err}`);
+});
+const foldersListener = db.collection('teams').doc("teamid").collection("folders");
+const teamListener = teamRef.onSnapshot(doc => {
+  console.log(`Received query snapshot  ${querySnapshot.size}`);
+  // ...
+}, err => {
+  console.log(`Encountered error: ${err}`);
+});
+const link= query.onSnapshot(querySnapshot => {
   console.log(`Received query snapshot of size ${querySnapshot.size}`);
   // ...
 }, err => {
   console.log(`Encountered error: ${err}`);
 });
+
 */
 
 
@@ -90,8 +104,8 @@ function: [[createNewUser]]
                 "teams": ["N7GhVvDaR08YGKVQzc1l", "PHbymFO4SyTPMqcAxrk4", "DLSOGcR4k3igH1iXGYNT"],
                 "createdAt": "December 6, 2020 at 7:51:48 PM UTC-5"
             },
-
 */
+
 export async function createNewUser(result) {
     let data = {
         "id": result.user.uid,
@@ -141,8 +155,6 @@ async function setUserData(userId, data) {
     await getUserRef(userId).set(data);
 }
 
-
-
 /*
 function: [[updateUserData]]
     Updates the a document's data by passing in a map, if the attribute already exists, it is updated, and if it doesn't exist, it is created
@@ -184,7 +196,6 @@ function: [[getUsers]]
         },
 
     ]
-
 */
 export async function getUsers() {
     let res = await db.collection("users").get()

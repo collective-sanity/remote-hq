@@ -4,8 +4,8 @@ const cors = require('cors')({ origin: true});
 const admin = require('firebase-admin');
 const { SessionsClient } = require('dialogflow');
 
-const firebaseCredentials = require('./credentials.json');
-const dialogflowCredentials = require('./dialogflowCredentials.json');
+//const firebaseCredentials = require('./credentials.json');
+//const dialogflowCredentials = require('./dialogflowCredentials.json');
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -35,7 +35,6 @@ const credentials = {
     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/main-account%40remote-hq.iam.gserviceaccount.com"
 }
 
-
 const mimeTypes = {
     "googleDoc": 'application/vnd.google-apps.document',
     "googleSheet": 'application/vnd.google-apps.spreadsheet',
@@ -47,6 +46,7 @@ const toURL = {
     "googleSheet": (id)=>`https://docs.google.com/spreadsheets/d/${id}/edit`,
     "googleSlides": (id)=>`https://docs.google.com/presentation/d/${id}/edit`
 }
+
 
 /*
 On Create Team
@@ -162,7 +162,7 @@ exports.createLink = functions.firestore
                             .doc(linkID);
                         console.log(ref);
                         ref.update({
-                            "link": toURL[data.linkType](fileID)
+                            "url": toURL[data.linkType](fileID)
                         }).then((t) => { }).catch((e) => { });
                     }).catch((e) => { console.log(e); });
                 });
@@ -171,19 +171,19 @@ exports.createLink = functions.firestore
     });
    
 
-exports.dialogflowGateway = functions.https.onRequest((request, response) => {
-    cors(request, response, async () => {
-        const { queryInput, sessionId } = request.body;
+// exports.dialogflowGateway = functions.https.onRequest((request, response) => {
+//     cors(request, response, async () => {
+//         const { queryInput, sessionId } = request.body;
     
-        console.log(queryInput, sessionId);
+//         console.log(queryInput, sessionId);
 
-        const sessionClient = new SessionsClient({ credentials: dialogflowCredentials  });
-        const session = sessionClient.sessionPath('remotehq-297119', sessionId);
+//         const sessionClient = new SessionsClient({ credentials: dialogflowCredentials  });
+//         const session = sessionClient.sessionPath('remotehq-297119', sessionId);
 
-        const responses = await sessionClient.detectIntent({ session, queryInput });
+//         const responses = await sessionClient.detectIntent({ session, queryInput });
  
-        const result = responses[0].queryResult;
-        response.send({ result, sessionId });
-    });
-});
+//         const result = responses[0].queryResult;
+//         response.send({ result, sessionId });
+//     });
+// });
 

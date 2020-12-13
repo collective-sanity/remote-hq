@@ -10,6 +10,7 @@ import { OverlayContainer } from 'assets/StyledComponents/Overlay'
 import ReactModal from 'react-modal'
 import DeleteModalContent from 'containers/Modal/DeleteModalContent'
 import './TeamBoards.scss';
+import { getTeamRef } from "shared/firebase";
 
 export default function TeamBoards () {
   const context = useContext(ControlContext);
@@ -20,7 +21,7 @@ export default function TeamBoards () {
   // console.log(currentTeam)
 
   const [value] = useCollection(
-    firebase.firestore().collection("teams").doc(currentTeam.trim()).collection("folders"),
+    getTeamRef(currentTeam).collection("folders"),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
