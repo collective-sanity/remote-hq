@@ -40,14 +40,30 @@ import './App.scss';
 import VoiceChat from "components/VoiceChat/VoiceChat";
 import { addLinkSnippet } from "react-chat-widget";
 
-const randomPhotos = [
-  "https://images.unsplash.com/photo-1607453813894-21f7b5cf201a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80",
+// const randomPhotos = [
+//   "https://images.unsplash.com/photo-1607453813894-21f7b5cf201a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80",
+// ]// const LOCALMODE = false;
 
-]
-const LOCALMODE = false;
+
 
 const App = () => {
-//  const [data, setData] = useState(dummydata);
+
+/*
+user - userID, set when user logs in
+teams - list of teams id of the teams the user is on
+currentTeam 
+  - teamID of the current team that is selected
+  - set on the Landing page 
+  - when set, navigates to the Room page, which has a list of folders
+currentFolder 
+   - folderID of the current folder that is selected, 
+   - set on the Room page
+   - when set, navigates to the currentFolder page which has a list of links
+currentLink 
+  - linkID of the current link that is selected and being viewed
+  - set on the Room page
+  - when set, navigates to the SharedDesktop page which has an iframe of the link
+*/
   const [user, setUser] = useState(null);
   const [teams, setTeams] = useState(null);
   const [currentTeam, setCurrentTeam] = useState(null);
@@ -57,7 +73,7 @@ const App = () => {
   const history = useHistory();
 
   
-  let userListener;
+  let userListener, teamListener, foldersListener, linksListener;
 
   // window.addEventListener("load", ()=>{
   //   // let _user = localStorage.getItem('user'),
@@ -76,6 +92,8 @@ const App = () => {
   // },true);
 
   // handy for debugging state
+
+
   useEffect(() => {})
  
   return (
@@ -86,11 +104,33 @@ const App = () => {
             user, // ID of current user
             teams, // ids of user's teams
             currentTeam, // id selected team
-            setCurrentTeam:(teamId) => {setCurrentTeam(teamId);window.localStorage.setItem("currentTeam",teamId);},
+            setCurrentTeam:(teamId) => {
+              setCurrentTeam(teamId);window.localStorage.setItem("currentTeam",teamId);
+              // const teamRef = firebase.firestore().collection('teams').doc(teamId);
+              // teamListener = teamRef.onSnapshot(docSnapshot => {
+              //   console.log(`Received doc snapshot: ${docSnapshot}`);
+              //  // console.log(`Received query snapshot  ${querySnapshot.size}`);
+              // }, err => {
+              //   console.log(`Encountered error: ${err}`);
+              // });
+              // foldersListener = teamRef.collection('folders').onSnapshot(querySnapshot => {
+
+              //   console.log(`Received query snapshot  ${querySnapshot.size}`);
+              
+              // }, err => {
+              //   console.log(`Encountered error: ${err}`);
+              // });
+              // linksListener = teamRef.collection('links').onSnapshot(querySnapshot => {
+              //   console.log(`Received query snapshot  ${querySnapshot.size}`);
+              // }, err => {
+              //   console.log(`Encountered error: ${err}`);
+              // });
+            },
             currentFolder,
             setCurrentFolder: folderId => {setCurrentFolder(folderId);window.localStorage.setItem("currentFolder",folderId); },
             currentLink,
-            setCurrentLink: linkId => { setCurrentLink(linkId);window.localStorage.setItem("currentLink",linkId); },
+            setCurrentLink: linkId => { setCurrentLink(linkId);//window.localStorage.setItem("currentLink",linkId);
+           },
             
             loginUser: async () => {
                 // Authenticate and get User Info
@@ -198,13 +238,11 @@ const App = () => {
             },
             deleteLink:async () => { 
                 await deleteLink(currentTeam,);
-                
             },
             pinLink: async () => {
                let item = await getLinkData(currentTeam,currentLink);
                await updateTeam(currentTeam, {pinned: !item.pinned});
-            },
-          
+            }, 
           }}>
           <div className="App__container">
             {user ? <><VoiceChat /><Chat /></> : <></> }

@@ -8,6 +8,7 @@ import GoogleDocs from 'assets/Landing/google-docs.png'
 import GoogleSheets from 'assets/Landing/google-sheets.png'
 import GoogleSlides from 'assets/Landing/google-slides.png'
 import FigmaIcon from 'assets/Landing/figma.png'
+import { getLinkData } from "shared/firebase"
 // import Notification from 'assets/Landing/bell.png'
 // import MentalHealth from 'assets/Landing/mental-health.png'
 
@@ -15,14 +16,14 @@ export default function RightPanel ({ page, setModalOpen }) {
   const {
     LOCALMODE,
     data,
-    createTeam,
-    updateTeam,
-    deleteTeam,
+    // createTeam,
+    // updateTeam,
+    // deleteTeam,
     currentTeam,
     currentLink,
-    createFolder,
-    updateFolder,
-    deleteFolder,
+    // createFolder,
+    // updateFolder,
+    // deleteFolder,
     pinLink,
     createLink,
     deleteLink,
@@ -37,17 +38,21 @@ export default function RightPanel ({ page, setModalOpen }) {
       if (LOCALMODE) {
         setPin(data["teams"][currentTeam]["links"][currentLink].pinned)
       } else {
-        firebase
-          .firestore()
-          .collection("teams")
-          .doc(currentTeam)
-          .collection("links")
-          .doc(currentLink)
-          .get()
-          .then((doc) => {
-            setPin(doc.data() && doc.data().pinned)
-           // setPin(doc.data().pinned)
-          })
+        getLinkData(currentTeam, currentLink).then((doc) => {
+          setPin(doc && doc.pinned)
+         // setPin(doc.data().pinned)
+        } )
+        // firebase
+        //   .firestore()
+        //   .collection("teams")
+        //   .doc(currentTeam)
+        //   .collection("links")
+        //   .doc(currentLink)
+        //   .get()
+        //   .then((doc) => {
+        //     setPin(doc.data() && doc.data().pinned)
+        //    // setPin(doc.data().pinned)
+        //   })
       }
     }
   })

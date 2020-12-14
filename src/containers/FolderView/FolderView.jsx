@@ -16,6 +16,9 @@ import slides from 'assets/Landing/google-slides.png';
 import drive from 'assets/Landing/google-drive.png';
 import figma from 'assets/Landing/figma.png';
 import link from 'assets/Landing/link.png';
+import { getFolderRef, getLinkData, getTeamRef, getLinkRef } from "shared/firebase";
+
+import MoonLoader from "react-spinners/MoonLoader";
 
 export default function FolderView () {
   const context = useContext(ControlContext);
@@ -29,22 +32,22 @@ export default function FolderView () {
     links = data["teams"][currentTeam]["folders"][currentFolder]["links"];
   }
 
-  const [value] = useDocument(
-    firebase.firestore().collection("teams").doc(currentTeam.trim()).collection("folders").doc(currentFolder),
+  const [folderDataDoc] = useDocument(
+    getFolderRef(currentTeam, currentFolder),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
   );
 
   useEffect(() => {
-    if (value) {
-      setFirebaseLinks(value.data().links);
+    if (folderDataDoc) {
+      setFirebaseLinks(folderDataDoc.data().links);
 
       async function getNewLinkNames() {
         let newLinkNamesToId = {};
-        for (let linkId of value.data().links) {
-          let linkName = await firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(linkId).get();
-          linkName = linkName.data().name;
+        for (let linkId of folderDataDoc.data().links) {
+          let linkName = await getLinkData(currentTeam, linkId);
+          linkName = linkName.name;
           newLinkNamesToId[linkName] = linkId;
         }
         return newLinkNamesToId;
@@ -53,10 +56,10 @@ export default function FolderView () {
         setLinkNamesToId(result);
       })
     }
-  }, [value]);
+  }, [folderDataDoc]);
 
-  const [teamName] = useDocument(
-    firebase.firestore().doc(`teams/${currentTeam.trim()}`),
+  const [teamDataDoc] = useDocument(
+    getTeamRef(currentTeam),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
@@ -90,8 +93,9 @@ export default function FolderView () {
     let linkDatesToId = {};
     let linkDates = []
     for (let linkId of firebaseLinks) {
-      let linkDate = await firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(linkId).get();
-      linkDate = linkDate.data().createdDate;
+      let linkDate = await getLinkData(currentTeam,linkId);
+     // firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(linkId).get();
+      linkDate = linkDate.createdDate;
       linkDatesToId[linkDate] = linkId;
       linkDates.push(linkDate);
     }
@@ -106,9 +110,9 @@ export default function FolderView () {
         <Breadcrumbs>
           <NavLink to='/'>Teams</NavLink>
           <Arrow> &gt; </Arrow>
-          <NavLink to='/team'>{teamName && teamName.data().name}</NavLink>
+          <NavLink to='/team'>{teamDataDoc && teamDataDoc.data().name}</NavLink>
           <Arrow> &gt; </Arrow>
-          <NavLink to='/folder'>{value && value.data().name}</NavLink>
+          <NavLink to='/folder'>{folderDataDoc && folderDataDoc.data().name}</NavLink>
         </Breadcrumbs>
         <LinkListContainer>
           <LinkListContainerTitle>Pinned Files</LinkListContainerTitle>
@@ -169,8 +173,8 @@ const getIconType = type => {
 }
 
 const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
-  const [value] = useDocument(
-    firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(link),
+  const [linkDataDoc] = useDocument(
+    getLinkRef(currentTeam, link),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
@@ -178,10 +182,19 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
 
   return (
     <div>
-      {value && value.data().pinned === pinned &&
-        <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(value.id)}>
-          <LinkContainerType src={getIconType(value.data().linkType)}></LinkContainerType>
-          <LinkContainerTitle>{value.data().name}</LinkContainerTitle>
+      {linkDataDoc && linkDataDoc.data().pinned === pinned && !linkDataDoc.data().url &&
+        <DisabledLinkContainer>
+          <MoonLoader
+            size={50}
+            color={"#123abc"}
+          />
+          <LinkContainerTitle>{linkDataDoc.data().name}</LinkContainerTitle>
+        </DisabledLinkContainer>
+      }
+      {linkDataDoc && linkDataDoc.data().pinned === pinned && linkDataDoc.data().url &&
+        <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(linkDataDoc.id)}>
+          <LinkContainerType src={getIconType(linkDataDoc.data().linkType)}></LinkContainerType>
+          <LinkContainerTitle>{linkDataDoc.data().name}</LinkContainerTitle>
         </LinkContainer>
       }
     </div>
@@ -269,6 +282,18 @@ const LinksList = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+`
+
+const DisabledLinkContainer = styled.div`
+  height: 160px;
+  width: 120px;
+  background-color: #c4c4c4;
+  margin-right: 40px;
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 `
 
 const LinkContainer = styled(Link)`

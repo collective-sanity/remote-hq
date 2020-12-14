@@ -4,19 +4,20 @@ import ControlContext from '../../shared/control-context'
 import firebase from 'firebase/app'
 import { NavLink } from 'react-router-dom'
 import { useDocument } from 'react-firebase-hooks/firestore';
+import { getTeamRef, getUserRef } from "shared/firebase"
 
 function Team ({ teamId }) {
   const { setCurrentTeam } = useContext(ControlContext);
-  const [value] = useDocument(
-    firebase.firestore().doc(`teams/${teamId.trim()}`),
+  const [teamDataDoc] = useDocument(
+    getTeamRef(teamId),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
   );
 
   return (
-    <NavLink to='/team' onClick={() => setCurrentTeam(value.id)}>
-      <TeamName>{value && value.data() && value.data().name}</TeamName>
+    <NavLink to='/team' onClick={() => setCurrentTeam(teamDataDoc.id)}>
+      <TeamName>{teamDataDoc && teamDataDoc.data() && teamDataDoc.data().name}</TeamName>
     </NavLink>
   )
 }
@@ -36,8 +37,8 @@ export default function LeftPanel () {
     logoutUser,
   } = useContext(ControlContext);
 
-  const [value] = useDocument(
-    firebase.firestore().doc(`users/${user}`),
+  const [userDataDoc] = useDocument(
+    getUserRef(user),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
@@ -46,11 +47,11 @@ export default function LeftPanel () {
   return (
     <Panel>
       <section>
-        <PhotoUrl src={value && value.data().photoUrl} alt='Profile' />
+        <PhotoUrl src={userDataDoc && userDataDoc.data().photoUrl} alt='Profile' />
         {/* Only get user first name */}
-        <Name>Hi, {value && value.data().displayName.split(' ')[0]}</Name>
+        <Name>Hi, {userDataDoc && userDataDoc.data().displayName.split(' ')[0]}</Name>
       </section>
-      <Teams teams={value && value.data().teams} />
+      <Teams teams={userDataDoc && userDataDoc.data().teams} />
       <LogoutBtn className='logoutBtn' onClick={() => logoutUser()}>Log Out</LogoutBtn>
     </Panel>
   )
