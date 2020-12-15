@@ -1,10 +1,10 @@
 import React, { useContext } from "react"
 import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
-import firebase from 'firebase/app'
 import { NavLink } from 'react-router-dom'
 import { useDocument } from 'react-firebase-hooks/firestore';
 import { getTeamRef, getUserRef } from "shared/firebase"
+import TeamIcon from 'assets/Landing/gray-group.png'
 
 function Team ({ teamId }) {
   const { setCurrentTeam } = useContext(ControlContext);
@@ -16,9 +16,13 @@ function Team ({ teamId }) {
   );
 
   return (
-    <NavLink to='/team' onClick={() => setCurrentTeam(teamDataDoc.id)}>
+    <TeamLink 
+      to='/team' 
+      onClick={() => setCurrentTeam(teamDataDoc.id)}
+    >
+      <Icon src={TeamIcon} />
       <TeamName>{teamDataDoc && teamDataDoc.data() && teamDataDoc.data().name}</TeamName>
-    </NavLink>
+    </TeamLink>
   )
 }
 
@@ -49,18 +53,26 @@ export default function LeftPanel () {
       <section>
         <PhotoUrl src={userDataDoc && userDataDoc.data().photoUrl} alt='Profile' />
         {/* Only get user first name */}
-        <Name>Hi, {userDataDoc && userDataDoc.data().displayName.split(' ')[0]}</Name>
+        <Name>{userDataDoc && userDataDoc.data().displayName.split(' ')[0]}</Name>
       </section>
+      <Line />
       <Teams teams={userDataDoc && userDataDoc.data().teams} />
       <LogoutBtn className='logoutBtn' onClick={() => logoutUser()}>Log Out</LogoutBtn>
     </Panel>
   )
 }
 
+const Line = styled.hr `
+  height: 1px;
+  border-color: #33415C;
+  width: 80%;
+  margin: 30px 10% 30px 10%;
+`
+
 const Panel = styled.div`
-  height: 100vh;
-  width: 10%;
-  border-right: 1px solid black;
+  min-height: 100vh;
+  width: 12%;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   overflow: auto;
 `
 
@@ -78,7 +90,7 @@ const Name = styled.p`
 `
 
 const LogoutBtn = styled.button`
-  width:6%;
+  width: 7%;
   font-size: 14px;
   display: block;
   margin-left: 1%;
@@ -92,18 +104,29 @@ const LogoutBtn = styled.button`
 `
 
 const TeamsSection = styled.div`
-  margin-top: 75px;
   width: 80%;
   margin-left: 10%;
 `
 
 const MyTeams = styled.p`
-  font-size: 16px;
+  font-size: 12px;
+  color: #C4C4C4;
 `
 
 const TeamName = styled.li`
   list-style: none;
-  font-size: 12px;
-  margin-left: 15%;
-  margin-top: 10px;
+  font-size: 14px;
+  color: #33415C;
+`
+
+const TeamLink = styled(NavLink)`
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+`
+
+const Icon = styled.img`
+  width: 20px;
+  height: 20px;
+  margin-right: 15px;
 `
