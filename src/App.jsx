@@ -116,13 +116,12 @@ currentLink
               setCurrentTeam(res.id);
               window.localStorage.setItem("currentTeam", res.id);
             },
-            updateTeam:()=>{//{teamId=currentTeam,newData}
+            updateTeam: (teamId=currentTeam)=>{
                 let newName;
                 let name = prompt("Please enter a new name", '');
                 if (name === null || name === "") {return;
                 } else { newName = name;}
-                //updateFolder(teamId,folderId, { "name":newName}) 
-                updateTeam(currentTeam, { "name":newName});
+                updateTeam(teamId, { "name":newName});
             },
             addTeamMember: async (email) => {
               console.log(email)
@@ -157,12 +156,12 @@ currentLink
               setCurrentFolder(res.id);
               window.localStorage.setItem("currentFolder", res.id);
             },
-            updateFolder: ()=> { //{  teamId=currentTeam.id, folderId=currentFolder.id, newData}
+            updateFolder: (folderId=currentFolder)=> { //{  teamId=currentTeam.id, folderId=currentFolder.id, newData}
                 let newName;
                 let name = prompt("Please enter a new name", '');
                 if (name === null || name === "") {return;
                 } else { newName = name;}
-                updateFolder(currentTeam,currentFolder, { "name":newName}) 
+                updateFolder(currentTeam,folderId, { "name":newName}) 
               },
            
             deleteFolder: async ( folderId) => {
@@ -182,15 +181,15 @@ currentLink
                 }
                await createLink(currentTeam, currentFolder, linktype, name, url);
             },
-            updateLink:async  () => {
+            updateLink: async  (id=currentLink) => {
                   let newName;
                   let name = prompt("Please enter a new name", '');
                   if (name === null || name === "") {return;
                   } else { newName = name;}
-                  updateLink(currentTeam,currentLink, {name: newName})
+                  updateLink(currentTeam,id, {name: newName})
             },
-            deleteLink:async () => { 
-                await deleteLink(currentTeam,currentFolder,currentLink);
+            deleteLink: async (id=currentLink) => { 
+                await deleteLink(currentTeam, currentFolder, id);
             },
             pinLink: async (link=currentLink) => {
                let item = await getLinkData(currentTeam,link);

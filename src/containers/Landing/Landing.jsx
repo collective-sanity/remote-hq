@@ -8,6 +8,7 @@ import ReactModal from 'react-modal'
 import Trashcan from 'assets/Landing/delete.svg'
 import GroupIcon from 'assets/Landing/group.png'
 import Pin from 'assets/Landing/pin.svg'
+import Pencil from 'assets/Landing/pencil.svg'
 import { Title, Breadcrumbs, Input, FilterButton, ContentContainer, HeaderRow } from 'assets/StyledComponents/Shared'
 
 import LeftPanel from "containers/Panels/LeftPanel"
@@ -38,6 +39,7 @@ const TeamCard = ({ teamId, data, setCurrentTeam }) => {
 }
 
 const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam }) => {
+  const { updateTeam } = useContext(ControlContext);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [teamDataDoc] = useDocument(
     getTeamRef(teamId),
@@ -61,6 +63,7 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam }) => {
             >
               {teamDataDoc && teamDataDoc.data() && teamDataDoc.data().name}
             </Link>
+            <EditIcon src={Pencil} onClick={() => updateTeam(teamId)} />
           </TeamName>
           <ReactModal isOpen={deleteModalOpen} className="Modal" >
             <DeleteModalContent 
@@ -200,6 +203,16 @@ const TeamName = styled.p`
   font-size: 22px;
   text-align: center;
   color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
+const EditIcon = styled.img`
+  width: 20px;
+  height: 20px;
+  margin-left: 15px;
+  cursor: pointer;
 `
 
 const TrashIcon = styled.img`
@@ -208,6 +221,7 @@ const TrashIcon = styled.img`
   right: 10px;
   height: 25px;
   width: 25px;
+  cursor: pointer;
 `
 
 const PinIcon = styled.img`
@@ -216,6 +230,7 @@ const PinIcon = styled.img`
   left: 15px;
   height: 25px;
   width: 25px;
+  cursor: pointer;
 `
 
 const SectionName = styled.div`
