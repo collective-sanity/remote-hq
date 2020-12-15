@@ -3,6 +3,7 @@ import ControlContext from 'shared/control-context';
 import { STATES, detectIntent } from 'shared/dialogflow';
 import firebase from "firebase/app";
 import { useHistory } from "react-router-dom";
+import { createLink } from 'shared/firebase';
 
 export const useStateMachine = () => {
   const [state, setState] = useState({name: "START"});
@@ -18,7 +19,6 @@ export const useStateMachine = () => {
     setCurrentLink,
     createTeam,
     createFolder,
-    createLink,
   } = useContext(ControlContext);
   const teamsRef = firebase.firestore().collection("teams");
   const usersRef = firebase.firestore().collection("users");
@@ -118,10 +118,22 @@ export const useStateMachine = () => {
           createFolder(newMessage);
           resolve({key: "createdFolder", val: newMessage});
           break;
-        // case "createLink":
-        //   createLink(currentParams.fields.filetype.kind, newMessage);
-        //   resolve({key: "createdLink", val: newMessage});
-        //   break;
+        case "createLink":
+          if (currentParams.fields.filetype.stringValue !== "resource" && currentParams.fields.filetype.stringValue !== "figma") {
+            createLink(currentParams.teamId, currentParams.folderId, currentParams.fields.filetype.stringValue, newMessage).then(() => {
+              resolve({key: "createdLink", val: newMessage});
+            })
+          } else {
+            resolve({key: "needURL", val: newMessage});
+          }
+          break;
+        case "createLinkURL":
+          createLink(currentParams.teamId, currentParams.folderId, currentParams.fields.filetype.stringValue, currentParams.linkName, newMessage).then(() => {
+            resolve({key: "createdLinkWithURL", val: newMessage });
+          })
+          break;
+        default:
+          break;
       }
     })
     return funcPromise;
@@ -143,6 +155,22 @@ export const useStateMachine = () => {
         history.push("/shared-desktop");
         break;
     }
+  }
+
+  const setNewParams = (doc) => {
+    let newParams = {...currentParams};
+    switch(doc.key) {
+      case "teamId":
+        newParams.teamId = doc.val;
+        break;
+      case "folderId":
+        newParams.folderId = doc.val;
+        break;
+      case "needURL":
+        newParams.linkName = doc.val;
+        break;
+    }
+    setCurrentParams({...newParams});
   }
   const runStateMachine = async (newMessage, prevSessionId) => {
     let result = {
@@ -177,12 +205,14 @@ export const useStateMachine = () => {
       let validKey = await checkIfMessageIsValid(newMessage);
 
       if (validKey !== "") {
-        let newParams = {...currentParams};
-        newParams.teamId = validKey.val;
-        setCurrentParams({...newParams});
+        setNewParams(validKey);
 
         setLocation(validKey.val);
         let newState = getNewState(currentIntent.displayName);
+
+        if (validKey.key === "createdLink") {
+          newState = {name: "END", prompt: "The link has been created!"};
+        }
         if (newState.name === "END") {
           result.responseText = newState.prompt;
           result.conversationEnd = true;
