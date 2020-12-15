@@ -1,14 +1,14 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
-import firebase from 'firebase/app';
 import { useDocument } from 'react-firebase-hooks/firestore';
 import ControlContext from "shared/control-context";
-import { Button, Input } from 'reactstrap';
 import './FolderView.scss';
+import { Title, Breadcrumbs, Input, FilterButton, SectionName, HeaderRow, ContentContainer, TrashIcon, PinIcon } from 'assets/StyledComponents/Shared'
 
 import LeftPanel from "containers/Panels/LeftPanel";
 import RightPanel from "containers/Panels/RightPanel";
+import { OverlayContainer } from 'assets/StyledComponents/Overlay'
 
 import doc from 'assets/Landing/google-docs.png';
 import sheet from 'assets/Landing/google-sheets.png';
@@ -16,6 +16,8 @@ import slides from 'assets/Landing/google-slides.png';
 import drive from 'assets/Landing/google-drive.png';
 import figma from 'assets/Landing/figma.png';
 import link from 'assets/Landing/link.png';
+import Trashcan from 'assets/Landing/delete.svg'
+import Pin from 'assets/Landing/pin.svg'
 import { getFolderRef, getLinkData, getTeamRef, getLinkRef } from "shared/firebase";
 
 import MoonLoader from "react-spinners/MoonLoader";
@@ -106,7 +108,7 @@ export default function FolderView () {
   return (
     <Row>
       <LeftPanel />
-      <Links>
+      <ContentContainer>
         <Breadcrumbs>
           <NavLink to='/'>Teams</NavLink>
           <Arrow> &gt; </Arrow>
@@ -114,8 +116,15 @@ export default function FolderView () {
           <Arrow> &gt; </Arrow>
           <NavLink to='/folder'>{folderDataDoc && folderDataDoc.data().name}</NavLink>
         </Breadcrumbs>
+        <HeaderRow>
+          <Title>Files</Title>
+          <div>
+            <Input placeholder="Search for files" value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+            <FilterButton color="primary" onClick={sortAZ}>Sort A-Z</FilterButton>
+          </div>
+        </HeaderRow>
+        <SectionName>Pinned Files</SectionName>
         <LinkListContainer>
-          <LinkListContainerTitle>Pinned Files</LinkListContainerTitle>
           {LOCALMODE ? (
             <LinksList>
               {links.map((link) => 
@@ -123,25 +132,24 @@ export default function FolderView () {
               )}
             </LinksList>
           ) : (
-            <LinksList>
-            {firebaseLinks && firebaseLinks.map((link, i) => (
-              <GetFirebaseLinks key={i} pinned={true} link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
-            ))}
-            </LinksList>
+            <React.Fragment>
+              {firebaseLinks && firebaseLinks.map((link, i) => (
+                <GetFirebaseLinks key={i} pinned={true} link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
+              ))}
+            </React.Fragment>
           )}
         </LinkListContainer>
 
         <LinkListContainer>
           <HeaderContainerWithDropdown>
-            <LinkListContainerTitle>All Files</LinkListContainerTitle>
+            <SectionName>All Files</SectionName>
             {/* <FilesDropdown>
               <option value="Recently Viewed">Recently Viewed</option>
             </FilesDropdown> */}
           </HeaderContainerWithDropdown>
           <div className="FolderView__view_options">
-            <Button color="primary" onClick={sortAZ}>Sort A-Z</Button>
-            <Button color="primary" onClick={sortCreatedDate}>Sort by Created Date</Button>
-            <Input placeholder="Search" value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+            {/* <Button color="primary" onClick={sortAZ}>Sort A-Z</Button>
+            <Button color="primary" onClick={sortCreatedDate}>Sort by Created Date</Button> */}
           </div>
           {LOCALMODE ? (
             <LinksList>
@@ -151,14 +159,20 @@ export default function FolderView () {
             </LinksList>
           ) : (
             <LinksList>
-            {firebaseLinks && firebaseLinks.map((link, i) => (
-              <GetFirebaseLinks key={i} pinned={false} link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
-            ))}
+              <AddCard>
+                <div>
+                  <AddText style={{ fontSize: '64px' }}>+</AddText>
+                  <AddText>Add a File</AddText>
+                </div>
+              </AddCard>
+              {firebaseLinks && firebaseLinks.map((link, i) => (
+                <GetFirebaseLinks key={i} pinned={false} link={link} currentTeam={currentTeam} currentFolder={currentFolder} setCurrentLink={setCurrentLink} />
+              ))}
             </LinksList>
           )}
         </LinkListContainer>
-      </Links>
-      <RightPanel page={"FolderView"} />
+      </ContentContainer>
+      {/* <RightPanel page={"FolderView"} /> */}
     </Row>
   )
 }
@@ -181,7 +195,7 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
   );
 
   return (
-    <div>
+    <React.Fragment>
       {linkDataDoc && linkDataDoc.data().pinned === pinned && !linkDataDoc.data().url &&
         <DisabledLinkContainer>
           <MoonLoader
@@ -193,11 +207,17 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
       }
       {linkDataDoc && linkDataDoc.data().pinned === pinned && linkDataDoc.data().url &&
         <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(linkDataDoc.id)}>
-          <LinkContainerType src={getIconType(linkDataDoc.data().linkType)}></LinkContainerType>
-          <LinkContainerTitle>{linkDataDoc.data().name}</LinkContainerTitle>
+          <OverlayContainer>
+            <TrashIcon src={Trashcan} />
+            <PinIcon src={Pin} />
+            <Circle>
+              <Icon src={getIconType(linkDataDoc.data().linkType)} />
+            </Circle>
+            <LinkContainerTitle>{linkDataDoc.data().name}</LinkContainerTitle>
+          </OverlayContainer>
         </LinkContainer>
       }
-    </div>
+    </React.Fragment>
     // <div>
     //   {value && value.data().pinned === pinned && value.data().linkType !== "resource" &&
     //     <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(value.id)}>
@@ -221,14 +241,17 @@ const GetLinks = ({link, data, currentTeam, pinned, setCurrentLink}) => {
   // console.log(item.pinned === pinned && item.linkType !== "resource")
 
   return (
-    <div>
+    <React.Fragment>
       {item && item.pinned === pinned &&
         <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
-          <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
+          <Circle>
+            <Icon src={getIconType(item.linkType)} />
+          </Circle>
+          {/* <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType> */}
           <LinkContainerTitle>{item.name}</LinkContainerTitle>
         </LinkContainer>
       }
-    </div>
+    </React.Fragment>
     // <div>
     //   {item && item.pinned === pinned && item.linkType !== "resource" &&
     //     <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
@@ -252,80 +275,62 @@ const Row = styled.div`
   width: 100%;
 `
 
-const Links = styled.div`
-    width: 100%;
-    height: 100vh;
-    overflow: auto;
-    display: flex;
-    flex: 1;
-    justify-content: flex-start;
-    flex-direction: column;
-    padding: 3vw;
-`
-
-const Breadcrumbs = styled.div`
-  font-size: 24px;
-  margin-bottom: 30px;
-  display: flex;
-`
-
 const LinkListContainer = styled.div`
-  margin-bottom: 30px;
-
-`
-
-const LinkListContainerTitle = styled.div`
-  font-size: 36px;
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
 `
 
 const LinksList = styled.div`
   display: flex;
-  flex-direction: row;
   flex-wrap: wrap;
+  margin-top: 15px;
 `
 
 const DisabledLinkContainer = styled.div`
-  height: 160px;
-  width: 120px;
-  background-color: #c4c4c4;
-  margin-right: 40px;
-  margin-top: 40px;
+  width: 17%;
+  height: 180px;
+  margin-right: 3%;
+  margin-bottom: 20px;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  background: #F7ECFF;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 5px;
 `
 
 const LinkContainer = styled(Link)`
-  height: 160px;
-  width: 120px;
-  background-color: #c4c4c4;
-  margin-right: 40px;
-  margin-top: 40px;
+  width: 17%;
+  height: 180px;
+  margin-right: 3%;
+  margin-bottom: 20px;
+  background: #F7ECFF;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 5px;
+`
+
+const Circle = styled.div`
+  width: 65px;
+  height: 65px;
+  border-radius: 50px;
+  margin: 0 auto;
+  margin-top: 20px;
+  background: #BE83FF;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
 `
 
-const WebLinkContainer = styled.a`
-  height: 160px;
-  width: 120px;
-  background-color: #c4c4c4;
-  margin-right: 40px;
-  margin-top: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-`
-
-const LinkContainerType = styled.img`
-  height: 50%;
+const Icon = styled.img`
+  width: 30px;
+  height: 30px;
 `
 
 const LinkContainerTitle = styled.div`
+  margin-top: 10px;
+  font-weight: 600;
   font-size: 18px;
+  text-align: center;
+  color: black;
 `
 
 const HeaderContainerWithDropdown = styled.div`
@@ -338,6 +343,32 @@ const Arrow = styled.p`
   margin: 0 10px 0 10px;
 `
 
+const AddCard = styled.div`
+  width: 17%;
+  height: 180px;
+  border: 2px solid #BE83FF;
+  border-radius: 15px;
+  margin-right: 3%;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  cursor: pointer;
+`
+
+const AddText = styled.p`
+  width: 100%;
+  font-weight: bold;
+  font-size: 20px;
+  color: #BE83FF;
+  text-align: center;
+`
+
+// const LinkContainerType = styled.img`
+//   height: 50%;
+// `
+
 // const FilesDropdown = styled.select`
 //   width: 200px;
 //   height: 50px;
@@ -345,4 +376,16 @@ const Arrow = styled.p`
 //   align-self: center;
 //   margin-left: auto;
 //   -webkit-appearance: menulist-button;
+// `
+
+// const WebLinkContainer = styled.a`
+//   height: 160px;
+//   width: 120px;
+//   background-color: #c4c4c4;
+//   margin-right: 40px;
+//   margin-top: 40px;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   flex-direction: column;
 // `

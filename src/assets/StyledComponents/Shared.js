@@ -59,3 +59,11 @@ export const PinIcon = styled.img`
   height: 25px;
   width: 25px;
 `
+
+export const SectionName = styled.div`
+  font-family: Open Sans;
+  font-weight: bold;
+  font-size: 18px;
+  color: #9B9B9B;
+  margin-top: 40px;
+`
