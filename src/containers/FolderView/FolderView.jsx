@@ -21,6 +21,7 @@ import link from 'assets/Landing/link.png';
 import Trashcan from 'assets/Landing/delete.svg'
 import Pin from 'assets/Landing/pin.svg'
 import FilledPin from 'assets/Landing/filled-pin.svg'
+import Pencil from 'assets/Landing/pencil.svg'
 import { getFolderRef, getLinkData, getTeamRef, getLinkRef } from "shared/firebase";
 
 import MoonLoader from "react-spinners/MoonLoader";
@@ -196,7 +197,7 @@ const getIconType = type => {
 }
 
 const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
-  const { pinLink, deleteLink } = useContext(ControlContext)
+  const { pinLink, deleteLink, updateLink } = useContext(ControlContext)
   const [modalOpen, setModalOpen] = useState(false)
   const [linkDataDoc] = useDocument(
     getLinkRef(currentTeam, link),
@@ -228,6 +229,7 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
               <Link to="/shared-desktop" onClick={() => setCurrentLink(linkDataDoc.id)}>
                 {linkDataDoc.data().name}
               </Link>
+              <EditIcon src={Pencil} onClick={() => updateLink(link)} />
             </LinkContainerTitle>
           </OverlayContainer>
           <ReactModal isOpen={modalOpen} className="Modal" >
@@ -388,6 +390,13 @@ const AddText = styled.p`
   color: #BE83FF;
   text-align: center;
   margin-bottom: 0;
+`
+
+const EditIcon = styled.img`
+  width: 17px;
+  height: 17px;
+  margin-left: 12px;
+  cursor: pointer;
 `
 
 // const LinkContainerType = styled.img`
