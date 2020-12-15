@@ -40,10 +40,7 @@ import './App.scss';
 import VoiceChat from "components/VoiceChat/VoiceChat";
 import { addLinkSnippet } from "react-chat-widget";
 
-// const randomPhotos = [
-//   "https://images.unsplash.com/photo-1607453813894-21f7b5cf201a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80",
-// ]// const LOCALMODE = false;
-
+// const LOCALMODE = false;
 
 
 const App = () => {
@@ -73,26 +70,7 @@ currentLink
   const history = useHistory();
 
   
-  let userListener, teamListener, foldersListener, linksListener;
-
-  // window.addEventListener("load", ()=>{
-  //   // let _user = localStorage.getItem('user'),
-  //   //     _teams = localStorage.getItem('teams'),
-  //   //     _currentTeam = localStorage.getItem('currentTeam'),
-  //   //     _currentFolder = localStorage.getItem('currentFolder'),
-  //   //     _currentLink = localStorage.getItem('currentLink');
-  //   //     console.log(currentTeam);
-  //   //     console.log(_currentTeam);
-  //   //   if(_user!==null && user===null){ setUser(_user);}
-  //   //   if(_teams!==null && teams===null)  setTeams(_teams);
-  //   //   if(_currentTeam!==null && currentTeam===null) setCurrentTeam(_currentTeam);
-  //   //   if(_currentFolder!==null && currentFolder===null)  setCurrentFolder(_currentFolder);
-  //   //   if(_currentLink!==null && currentLink===null)    setCurrentLink(_currentLink);
-  //   //   console.log(currentTeam);
-  // },true);
-
-  // handy for debugging state
-
+ 
 
   useEffect(() => {})
  
@@ -106,25 +84,7 @@ currentLink
             currentTeam, // id selected team
             setCurrentTeam:(teamId) => {
               setCurrentTeam(teamId);window.localStorage.setItem("currentTeam",teamId);
-              // const teamRef = firebase.firestore().collection('teams').doc(teamId);
-              // teamListener = teamRef.onSnapshot(docSnapshot => {
-              //   console.log(`Received doc snapshot: ${docSnapshot}`);
-              //  // console.log(`Received query snapshot  ${querySnapshot.size}`);
-              // }, err => {
-              //   console.log(`Encountered error: ${err}`);
-              // });
-              // foldersListener = teamRef.collection('folders').onSnapshot(querySnapshot => {
-
-              //   console.log(`Received query snapshot  ${querySnapshot.size}`);
-              
-              // }, err => {
-              //   console.log(`Encountered error: ${err}`);
-              // });
-              // linksListener = teamRef.collection('links').onSnapshot(querySnapshot => {
-              //   console.log(`Received query snapshot  ${querySnapshot.size}`);
-              // }, err => {
-              //   console.log(`Encountered error: ${err}`);
-              // });
+      
             },
             currentFolder,
             setCurrentFolder: folderId => {setCurrentFolder(folderId);window.localStorage.setItem("currentFolder",folderId); },
@@ -164,7 +124,8 @@ currentLink
             updateTeam:({
               teamId=currentTeam,
               newData})=>{
-                updateTeam(teamId, )
+                console.log(newData);
+                updateTeam(teamId, newData);
              
                 //eamsRef.doc(teamId).update(newData).then((ref)=>{ }).catch((error) => console.error("Error updating document", error));
               
@@ -205,7 +166,9 @@ currentLink
             updateFolder: ({
               teamId=currentTeam.id, 
               folderId=currentFolder.id, 
-              newData})=> {updateFolder(teamId,folderId, { "folders":newData}) },
+              newData})=> {
+                console.log(newData);
+                updateFolder(teamId,folderId, { "folders":newData}) },
            
             deleteFolder: async ( folderId) => {
               
@@ -237,11 +200,11 @@ currentLink
                   updateLink(currentTeam,currentLink, {name: newName})
             },
             deleteLink:async () => { 
-                await deleteLink(currentTeam,);
+                await deleteLink(currentTeam,currentFolder,currentLink);
             },
             pinLink: async () => {
                let item = await getLinkData(currentTeam,currentLink);
-               await updateTeam(currentTeam, {pinned: !item.pinned});
+               await updateLink(currentTeam,currentLink, {pinned: !item.pinned});
             }, 
           }}>
           <div className="App__container">
@@ -268,47 +231,45 @@ export default App;
 
 
 
-                      /*
-                      let folder = await getFolder(currentTeam, currentFolder);
-                let links = folder.data().links;
-                let index = links.indexOf(currentLink);
-                links.splice(index, 1);
-                await updateFolder(currentTeam, currentFolder,{ links: links} )
-                      if(linktype === "figma" || linktype === "resource"){
-                        setCurrentLink(linkData);
-                      }
-                      else if(linktype.includes("google")){
-                        //let linkListener = 
-                        teamsRef
-                        .doc( currentTeam).collection("links").doc(linkID).onSnapshot(function (doc) {
-                          console.log("Current data: ", doc.data());
-                          let newData = doc.data();
-                        if(newData.url!==null && newData !==""){
-                              setCurrentLink(doc.id);
-                              linkListener();
-                         }
+ //let userListener, teamListener, foldersListener, linksListener;
 
-                        });
-                      }*/
-                  // teamsRef.doc(currentTeam).collection("links")
+  
+// window.addEventListener("load", ()=>{
+  //   // let _user = localStorage.getItem('user'),
+  //   //     _teams = localStorage.getItem('teams'),
+  //   //     _currentTeam = localStorage.getItem('currentTeam'),
+  //   //     _currentFolder = localStorage.getItem('currentFolder'),
+  //   //     _currentLink = localStorage.getItem('currentLink');
+  //   //     console.log(currentTeam);
+  //   //     console.log(_currentTeam);
+  //   //   if(_user!==null && user===null){ setUser(_user);}
+  //   //   if(_teams!==null && teams===null)  setTeams(_teams);
+  //   //   if(_currentTeam!==null && currentTeam===null) setCurrentTeam(_currentTeam);
+  //   //   if(_currentFolder!==null && currentFolder===null)  setCurrentFolder(_currentFolder);
+  //   //   if(_currentLink!==null && currentLink===null)    setCurrentLink(_currentLink);
+  //   //   console.log(currentTeam);
+  // },true);
 
-                  // teamsRef
-                  //   .doc(currentTeam)
-                  //   .collection("folders")
-                  //   .doc(currentFolder)
-                  //   .collection("links")
-                  //   .set({
-                  //     links: d["teams"][currentTeam]["folders"][currentFolder]["links"]
-                  //   });
-                    
-                    // .add(linkData).then((ref)=>{}).catch((error) => console.error("Error deleting document", error));
+  // handy for debugging state
 
 
+        // const teamRef = firebase.firestore().collection('teams').doc(teamId);
+              // teamListener = teamRef.onSnapshot(docSnapshot => {
+              //   console.log(`Received doc snapshot: ${docSnapshot}`);
+              //  // console.log(`Received query snapshot  ${querySnapshot.size}`);
+              // }, err => {
+              //   console.log(`Encountered error: ${err}`);
+              // });
+              // foldersListener = teamRef.collection('folders').onSnapshot(querySnapshot => {
 
-                //   teamsRef.doc(teamId).delete().then((ref)=>{
-                //     usersRef.doc(user).update({
-                //       teams: teams.filter(team => team !== teamId)
-                //     });
-                //     console.log("Deleted team with ID: ", currentTeam);
-                //     setCurrentTeam(null)
-                // }).catch((error) => console.error("Error deleting document", error));
+              //   console.log(`Received query snapshot  ${querySnapshot.size}`);
+              
+              // }, err => {
+              //   console.log(`Encountered error: ${err}`);
+              // });
+              // linksListener = teamRef.collection('links').onSnapshot(querySnapshot => {
+              //   console.log(`Received query snapshot  ${querySnapshot.size}`);
+              // }, err => {
+              //   console.log(`Encountered error: ${err}`);
+              // });
+                   

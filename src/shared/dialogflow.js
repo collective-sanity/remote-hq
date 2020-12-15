@@ -28,14 +28,14 @@ export const STATES = {
     {name: "CREATE_FOLDER_NAME", skip: "createFolder", prompt: "What do you want the name of the folder to be?"},
     {name: "END", prompt: "The folder has been created!"},
   ],
-  // Disable create link because it seems weird to have a chatbot put in a URL and such
-  // "createLink": [
-  //   {name: "START"},
-  //   {name: "GET_TEAM_NAME", skip: "currentTeam", prompt: "What team will the link be created in?"},
-  //   {name: "GET_FOLDER_NAME", skip: "currentFolder", prompt: "What folder will the link be created in?"},
-  //   {name: "CREATE_LINK_NAME", skip: "createLink", prompt: "What do you want the name of the link to be?"},
-  //   {name: "END", prompt: "The link has been created!"},
-  // ]
+  "createLink": [
+    {name: "START"},
+    {name: "GET_TEAM_NAME", skip: "currentTeam", prompt: "What team will the link be created in?"},
+    {name: "GET_FOLDER_NAME", skip: "currentFolder", prompt: "What folder will the link be created in?"},
+    {name: "CREATE_LINK_NAME", skip: "createLink", prompt: "What do you want the name of the link to be?"},
+    {name: "CREATE_LINK_URL", skip: "createLinkURL", prompt: "What is the link URL?"},
+    {name: "END", prompt: "The link has been created!"},
+  ]
 }
 export const getVoices = () => {
   return window.speechSynthesis.getVoices();
