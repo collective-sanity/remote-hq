@@ -20,9 +20,8 @@ export default function SharedDesktopPanel ({ firebaseLinks, linkData }) {
     data,
     currentTeam,
     currentLink,
-    pinLink,
-    deleteLink,
     updateLink,
+    deleteLink,
     currentFolder,
     setCurrentLink
   } = useContext(ControlContext);
@@ -46,9 +45,9 @@ export default function SharedDesktopPanel ({ firebaseLinks, linkData }) {
         <TextBtn onClick={ () => history.push("/folder") }>Leave</TextBtn>
         <TextBtn onClick={ () => updateLink() }>Edit Name</TextBtn>
         {linkData && !linkData.pinned ? (
-            <TextBtn onClick={ () => pinLink() }>Pin</TextBtn>
+            <TextBtn onClick={ () => updateLink(currentLink, {"pinned":!pinned}) }>Pin</TextBtn>
         ) : (
-            <TextBtn onClick={ () => pinLink() }>Unpin</TextBtn>
+            <TextBtn onClick={ () => updateLink(currentLink, {"pinned":!pinned}) }>Unpin</TextBtn>
         )}
 
         <TextBtn onClick={ () => { deleteLink(); history.push("/folder"); } }>Delete</TextBtn>

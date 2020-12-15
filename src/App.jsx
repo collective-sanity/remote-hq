@@ -111,12 +111,18 @@ currentLink
               setCurrentTeam(res.id);
               window.localStorage.setItem("currentTeam", res.id);
             },
-            updateTeam: (teamId=currentTeam)=>{
-                let newName;
-                let name = prompt("Please enter a new name", '');
-                if (name === null || name === "") {return;
-                } else { newName = name;}
-                updateTeam(teamId, { "name":newName});
+            updateTeam:async (teamId=currentTeam,newData={})=>{//{teamId=currentTeam,newData}
+            console.log(newData);
+              if(newData==={}){ 
+                  let newName;
+                  let name = prompt("Please enter a new name", '');
+                  if (name === null || name === "") {return;
+                  } else { newName = name;}
+                  //updateFolder(teamId,folderId, { "name":newName}) 
+                  updateTeam(currentTeam, { "name":newName});
+              }else{
+                await updateTeam(teamId, newData);
+              }
             },
             addTeamMember: async (email) => {
               console.log(email)
@@ -140,7 +146,10 @@ currentLink
                setCurrentTeam(null)
                window.localStorage.setItem("currentTeam", null);
               },
-           
+              pinTeam: async (teamId, newValue) => {
+              //  let item = await getTeamData(teamId);
+                await updateTeam(teamId,{pinned: newValue});
+             }, 
             /*
 
             FOLDERS
@@ -151,19 +160,34 @@ currentLink
               setCurrentFolder(res.id);
               window.localStorage.setItem("currentFolder", res.id);
             },
-            updateFolder: (folderId=currentFolder)=> { //{  teamId=currentTeam.id, folderId=currentFolder.id, newData}
-                let newName;
-                let name = prompt("Please enter a new name", '');
-                if (name === null || name === "") {return;
-                } else { newName = name;}
-                updateFolder(currentTeam,folderId, { "name":newName}) 
-              },
+            updateFolder:async (folderId=null, newData={})=> { //{  teamId=currentTeam.id, folderId=currentFolder.id, newData}
            
-            deleteFolder: async ( folderId) => {
-                deleteFolder( currentTeam , folderId);
-                setCurrentFolder(null);
-                window.localStorage.setItem("currentFolder", null);
-            },
+                if(folderId==null ||newData=={}){ 
+                    let newName;
+                    let name = prompt("Please enter a new name", '');
+                    if (name === null || name === "") {return;
+                    } else { newName = name;}
+                    updateFolder(currentTeam,currentFolder, { "name":newName}) 
+                }else{
+                  updateFolder(currentTeam,folderId, newData)
+                }
+          },
+           
+            deleteFolder: async (folderId=null) => {
+                if(folderId===null){
+                  deleteFolder( currentTeam , currentFolder);
+                  setCurrentFolder(null);
+                }else{
+                  deleteFolder( currentTeam , folderId);
+                }
+              
+                //window.localStorage.setItem("currentFolder", null);
+           
+              },
+          //   pinFolder: async (folderId, newValue) => {
+          //     await updateFolder(currentTeam, folderId,{pinned: newValue});
+          //  }, 
+           
             /*
             Links are all the "files" in the system, they can be organized in folders and viewed in screens
             */
@@ -176,20 +200,28 @@ currentLink
                 }
                await createLink(currentTeam, currentFolder, linktype, name, url);
             },
-            updateLink: async  (id=currentLink) => {
-                  let newName;
+            updateLink:async  (linkId=null, newData={}) => {
+              if(linkId==null ||newData=={}){
+                let newName;
                   let name = prompt("Please enter a new name", '');
                   if (name === null || name === "") {return;
                   } else { newName = name;}
-                  updateLink(currentTeam,id, {name: newName})
+                  updateLink(currentTeam,currentLink, {name: newName})
+              }else{
+                updateLink(currentTeam,linkId, newData)
+              }
+                  
             },
-            deleteLink: async (id=currentLink) => { 
-                await deleteLink(currentTeam, currentFolder, id);
+            deleteLink:async (linkId=null) => {
+                if(linkId === null) linkId = currentLink;
+                await deleteLink(currentTeam,currentFolder,linkId);
             },
-            pinLink: async (link=currentLink) => {
-               let item = await getLinkData(currentTeam,link);
-               await updateLink(currentTeam,link, {pinned: !item.pinned});
-            }, 
+           
+           
+            // pinLink: async (linkId=currentLink, newValue) => {
+            //    //let item = await getLinkData(currentTeam,linkId);
+            //    await updateLink(currentTeam,linkId, {pinned: newValue});
+            // }, 
           }}>
           <div className="App__container">
             {user ? <><VoiceChat /><Chat /></> : <></> }

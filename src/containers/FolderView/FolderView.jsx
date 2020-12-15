@@ -220,8 +220,9 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
       {linkDataDoc && linkDataDoc.data() && linkDataDoc.data().pinned === pinned && linkDataDoc.data().url &&
         <LinkContainer>
           <OverlayContainer>
+
             <TrashIcon src={Trashcan} onClick={() => setModalOpen(true)} />
-            <PinIcon src={pinned ? FilledPin : Pin} onClick={() => pinLink(linkDataDoc.id)} />
+            <PinIcon src={pinned ? FilledPin : Pin} onClick={() => updateLink(linkDataDoc.id, {"pinned":!pinned})} />
             <Circle>
               <Icon src={getIconType(linkDataDoc.data().linkType)} />
             </Circle>
@@ -304,6 +305,7 @@ const LinkListContainer = styled.div`
   margin-top: 15px;
   display: flex;
   flex-wrap: wrap;
+  width:100%;
 `
 
 const LinksList = styled.div`
@@ -311,6 +313,7 @@ const LinksList = styled.div`
   display: flex;
   flex-wrap: wrap;
   margin-top: 15px;
+  width: 100%;
 `
 
 const DisabledLinkContainer = styled.div`
