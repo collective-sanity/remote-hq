@@ -5,6 +5,7 @@ import { useDocument } from 'react-firebase-hooks/firestore'
 import ControlContext from '../../shared/control-context'
 import { NavLink } from 'react-router-dom'
 import ReactModal from 'react-modal'
+import { Breadcrumbs } from 'assets/StyledComponents/Shared'
 
 import TeamSummary from './TeamSummary'
 import TeamBoards from './TeamBoards'
@@ -39,7 +40,6 @@ export default function Room ({ location }) {
           />
         </ReactModal>
       </RoomsContainer>
-      <RightPanel page="Team" setModalOpen={setModalOpen} />
     </Row>
   )
 }
@@ -52,12 +52,6 @@ const Row = styled.div`
 const RoomsContainer = styled.div`
   width: 100%;
   margin: 5vh 5% 0 5%;
-`
-
-const Breadcrumbs = styled.div`
-  font-size: 24px;
-  margin-bottom: 30px;
-  display: flex;
 `
 
 const Arrow = styled.p`

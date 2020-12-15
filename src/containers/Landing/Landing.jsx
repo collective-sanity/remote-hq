@@ -8,6 +8,7 @@ import ReactModal from 'react-modal'
 import Trashcan from 'assets/Landing/delete.svg'
 import GroupIcon from 'assets/Landing/group.png'
 import Pin from 'assets/Landing/pin.svg'
+import { Title, Breadcrumbs, Input, FilterButton, ContentContainer, HeaderRow } from 'assets/StyledComponents/Shared'
 
 import LeftPanel from "containers/Panels/LeftPanel"
 import ModalContent from 'containers/Modal/AddModalContent'
@@ -131,11 +132,12 @@ export default function Landing () {
     <Row>
       <LeftPanel />
       <ContentContainer>
+        <Breadcrumbs><NavLink to='/'>Teams</NavLink></Breadcrumbs>
         <HeaderRow>
           <Title>My Teams</Title>
           <div>
             <Input placeholder="Search for teams" value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
-            <Button color="primary" onClick={sortAZ}>Sort A-Z</Button>
+            <FilterButton color="primary" onClick={sortAZ}>Sort A-Z</FilterButton>
           </div>
         </HeaderRow>
         <SectionName>All</SectionName>
@@ -171,25 +173,6 @@ export default function Landing () {
 const Row = styled.div`
   display: flex;
   width: 100%;
-`
-
-const HeaderRow = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  align-items: center;
-`
-
-const ContentContainer = styled.div`
-  width: 100%;
-  margin: 5vh 5% 0 5%;
-`
-
-const Title = styled.h1`
-  font-size: 36px;
-  font-weight: bold;
-  font-size: 36px;
-  line-height: 49px;
 `
 
 const TeamsContainer = styled.div`
@@ -228,25 +211,6 @@ const PinIcon = styled.img`
   left: 15px;
   height: 25px;
   width: 25px;
-`
-
-const Input = styled.input`
-  width: 375px;
-  border-radius: 5px;
-  border: 2px solid #5C677D;
-  font-size: 18px;
-  padding: 5px 15px;
-`
-
-const Button = styled.button`
-  width: 150px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  border: 2px solid #5C677D;
-  background-color: white;
-  margin-left: 15px;
-  font-size: 18px;
-  color: #5C677D;
 `
 
 const SectionName = styled.div`
