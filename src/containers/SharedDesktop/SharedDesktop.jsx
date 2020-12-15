@@ -6,7 +6,7 @@ import { useDocument } from 'react-firebase-hooks/firestore';
 import ControlContext from "shared/control-context";
 
 import LeftPanel from "containers/Panels/LeftPanel";
-import RightPanel from "containers/Panels/RightPanel";
+import SharedDesktopPanel from 'containers/Panels/SharedDesktopPanel'
 
 import doc from 'assets/Landing/google-docs.png';
 import sheet from 'assets/Landing/google-sheets.png';
@@ -76,8 +76,7 @@ export default function SharedDesktop () {
           
         </Desktop> 
 
-        <Docs>
-            {/* <DocsTitle>Chatbot</DocsTitle> */}
+        {/* <Docs>
             {LOCALMODE ? (
               <DocsList>
                 {links.map((link) => 
@@ -91,8 +90,8 @@ export default function SharedDesktop () {
                 )}
               </DocsList>
             )}
-        </Docs>  
-        <RightPanel page={"SharedDesktop"} />     
+        </Docs>   */}
+        <SharedDesktopPanel firebaseLinks={firebaseLinks} />     
       </Row>
     )
   }
@@ -161,7 +160,7 @@ const Row = styled.div`
 `
 
 const Desktop = styled.div`
-  width: 75%;
+  width: 100%;
   height: 100vh;
   overflow: auto;
   display: flex;

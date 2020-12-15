@@ -1,9 +1,7 @@
 import React, { useEffect, useContext, useState } from "react"
-import { Button, Input } from 'reactstrap';
 import styled from "styled-components"
 import { Link } from 'react-router-dom'
 import ControlContext from '../../shared/control-context'
-import firebase from 'firebase/app'
 import { useCollection } from 'react-firebase-hooks/firestore';
 import Trashcan from 'assets/Landing/delete.svg'
 import { OverlayContainer } from 'assets/StyledComponents/Overlay'
@@ -11,10 +9,12 @@ import ReactModal from 'react-modal'
 import DeleteModalContent from 'containers/Modal/DeleteModalContent'
 import './TeamBoards.scss';
 import { getTeamRef } from "shared/firebase";
+import { Title, Input, FilterButton, HeaderRow, PinIcon } from 'assets/StyledComponents/Shared'
+import FolderIcon from 'assets/Landing/folder.svg'
+import Pin from 'assets/Landing/pin.svg'
 
-export default function TeamBoards () {
+export default function TeamBoards ({ setModalOpen }) {
   const context = useContext(ControlContext);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   let { LOCALMODE, data, currentTeam, setCurrentFolder, deleteFolder } = context;
   const [firebaseFolders, setFirebaseFolders] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -70,37 +70,32 @@ export default function TeamBoards () {
 
   return (
     <TeamContainer>
-      <Title>Team Folders</Title>
-      <div className="TeamBoards__view_options">
-        <Button color="primary" onClick={sortAZ}>Sort A-Z</Button>
-        <Input placeholder="Search" value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
-      </div>
+      <HeaderRow>
+        <Title>Team Folders</Title>
+        <div>
+          <Input placeholder="Search for teams" value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+          <FilterButton color="primary" onClick={sortAZ}>Sort A-Z</FilterButton>
+        </div>
+      </HeaderRow>
       {LOCALMODE ? (
-        <BoardContainer>
+      <BoardContainer>
         {folders.map((folder, i) => 
-          <Board key={i}>
+          <Folder key={i}>
             <BoardLink folder={folder} data={data} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
-          </Board>
+          </Folder>
         )}
       </BoardContainer>
       ) : (
       <BoardContainer>
-          {firebaseFolders && firebaseFolders.map((folder, i) => (
-              <Board key={i}>
-                <OverlayContainer>
-                  <TrashIcon onClick={() => setDeleteModalOpen(true)} src={Trashcan} />
-                  <FirebaseBoardLink id={folder.id} folder={folder} setCurrentFolder={setCurrentFolder} deleteFolder={deleteFolder} />
-                  <ReactModal isOpen={deleteModalOpen} className="Modal" >
-                    <DeleteModalContent 
-                      setModalOpen={setDeleteModalOpen} 
-                      deleteFunction={deleteFolder}
-                      id={folder.id}
-                      labelName="Delete Folder?"
-                    />
-                  </ReactModal>
-                </OverlayContainer>
-              </Board>
-          ))}
+        <AddCard onClick={() => setModalOpen(true)}>
+          <div>
+            <AddText style={{ fontSize: '64px' }}>+</AddText>
+            <AddText>Add a Team</AddText>
+          </div>
+        </AddCard>
+        {firebaseFolders && firebaseFolders.map((folder, i) => (
+          <FirebaseBoardLink id={folder.id} folder={folder} setCurrentFolder={setCurrentFolder} deleteFolder={deleteFolder} />
+        ))}
       </BoardContainer>
       )}
     </TeamContainer>
@@ -121,24 +116,59 @@ const BoardLink = ({ folder, data, currentTeam, setCurrentFolder }) => {
 }
 
 const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder }) => {
-  return (
-    <NavLink 
-      to='/folder'
-      onClick={() => setCurrentFolder(id)}
-    >
-      <FolderName>{folder.name}</FolderName>
-      <LinkContainer>
-        {/* Only get first 6 files */}
-        {folder.links.slice(0, 8).map((i) => <LinkBox key={i}></LinkBox>)}
-      </LinkContainer>
-    </NavLink>
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+
+  const handleOnClick = (event) => {
+    event.stopPropagation()
+    setDeleteModalOpen(true)
+  }
+  
+  return (              
+    <Folder>
+      <OverlayContainer>
+        <TrashIcon onClick={(event) => handleOnClick(event)} src={Trashcan} />
+        <PinIcon src={Pin} />
+        <Circle>
+          <Icon src={FolderIcon} />
+        </Circle>
+        <FolderName>
+          <Link       
+            to='/folder'
+            onClick={() => setCurrentFolder(id)}
+          >
+            {folder.name}
+          </Link>
+        </FolderName>
+        <Description>{`${folder.links.length} Files`}</Description>
+      </OverlayContainer>
+      <ReactModal isOpen={deleteModalOpen} className="Modal" >
+        <DeleteModalContent 
+          setModalOpen={setDeleteModalOpen} 
+          deleteFunction={deleteFolder}
+          id={folder.id}
+          labelName="Delete Folder?"
+        />
+      </ReactModal>
+    </Folder>
   )
 }
 
+const Folder = styled.div`
+  width: 22%;
+  margin-right: 3%;
+  height: 200px;
+  background-color: #FCEBE2;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 15px;
+  margin-bottom: 40px;
+`
+
 const FolderName = styled.h2`
-  font-size: 24px;
+  margin-top: 20px;
+  font-weight: 600;
+  font-size: 22px;
   text-align: center;
-  margin-bottom: 30px;
+  color: black;
 `
 
 const TeamContainer = styled.div`
@@ -146,13 +176,9 @@ const TeamContainer = styled.div`
 `
 
 const BoardContainer = styled.div`
+  margin-top: 15px;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-`
-
-const Title = styled.h1`
-  font-size: 36px;
 `
 
 const NavLink = styled(Link)`
@@ -160,34 +186,57 @@ const NavLink = styled(Link)`
   height: 375px;
 ` 
 
-const Board = styled.div`
-  width: 47%;
-  height: auto;
-  background: #F0F0F0;
-  border-radius: 5px;
-  margin-top: 30px;
-  padding: 30px;
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.25);
-`
-
-const LinkBox = styled.div`
-  height: 120px;
-  width: 21%;
-  background-color: #c4c4c4;
-  margin-bottom: 20px;
-`
-
-const LinkContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-`
-
 const TrashIcon = styled.img`
   position: absolute;
   top: 0;
-  right: 0;
+  right: 10px;
   height: 30px;
   width: 30px;
   cursor: pointer;
+`
+
+const AddCard = styled.div`
+  width: 22%;
+  margin-right: 3%;
+  height: 200px;
+  border: 2px solid #F7985A;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  cursor: pointer;
+  margin-bottom: 40px;
+`
+
+const AddText = styled.p`
+  width: 100%;
+  font-weight: bold;
+  font-size: 24px;
+  line-height: 33px;
+  color: #F7985A;
+  text-align: center;
+`
+
+const Circle = styled.div`
+  width: 75px;
+  height: 75px;
+  border-radius: 50px;
+  margin: 0 auto;
+  background: #F7985A;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
+const Icon = styled.img`
+  width: 40px;
+  height: 40px;
+`
+
+const Description = styled.p`
+  font-size: 14px;
+  color: #757575;
+  text-align: center;
 `

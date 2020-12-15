@@ -173,12 +173,9 @@ currentLink
             /*
             Links are all the "files" in the system, they can be organized in folders and viewed in screens
             */
-            createLink: async linktype => {
-                let name = prompt("Please enter a name", '');
+            createLink: async (linktype, name, url="") => {
                 if (name === null || name === "") { return; }
-                let url="";
                 if (linktype === "figma" || linktype === "resource") {
-                  url = prompt("Please enter a URL", '');
                   if (url === null || url === "") {
                     return;
                   }
@@ -195,9 +192,9 @@ currentLink
             deleteLink:async () => { 
                 await deleteLink(currentTeam,currentFolder,currentLink);
             },
-            pinLink: async () => {
-               let item = await getLinkData(currentTeam,currentLink);
-               await updateLink(currentTeam,currentLink, {pinned: !item.pinned});
+            pinLink: async (link=currentLink) => {
+               let item = await getLinkData(currentTeam,link);
+               await updateLink(currentTeam,link, {pinned: !item.pinned});
             }, 
           }}>
           <div className="App__container">

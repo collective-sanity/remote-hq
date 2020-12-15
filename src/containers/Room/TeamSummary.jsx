@@ -1,10 +1,11 @@
 import React, { useState, useContext } from "react"
 import styled from "styled-components"
 import firebase from 'firebase/app'
-import { useDocument, useCollection } from 'react-firebase-hooks/firestore'
+import { useDocument } from 'react-firebase-hooks/firestore'
 import ReactModal from 'react-modal'
 import ControlContext from "shared/control-context"
 import ModalContent from 'containers/Modal/AddModalContent'
+import { Title, HeaderRow } from 'assets/StyledComponents/Shared'
 
 const Person = ({ user }) => {
   const [value] = useDocument(
@@ -22,17 +23,18 @@ const Person = ({ user }) => {
   )
 }
 
-export default function Room ({ users }) {
+export default function Room ({ users, teamName }) {
   const [modalOpen, setModalOpen] = useState(false)
   const { addTeamMember } = useContext(ControlContext);
 
   return (
     <TeamContainer>
-      <Row>
-        <Title>Team Summary</Title>
-        <AddBtn onClick={() => setModalOpen(true)} >Add a Team Member</AddBtn>
-      </Row>
+      <Title>{teamName}</Title>
       <TeamCard>
+        <PersonCard style={{ cursor: 'pointer' }}>
+          <AddBtn onClick={() => setModalOpen(true)}>+</AddBtn>
+          <Name><b>Add a Member</b></Name>
+        </PersonCard>
         {users && users.map((user, i) => <Person user={user} key={i} />)}
       </TeamCard>
       <ReactModal isOpen={modalOpen} className="Modal" >
@@ -50,13 +52,27 @@ export default function Room ({ users }) {
 const Name = styled.p`
   font-size: 14px;
   text-align: center;
+  margin-bottom: 0;
+  margin-top: 8px;
 `
 
 const Photo = styled.img`
-  width: 20%;
+  width: 50px;
   display: block;
-  margin: 10px auto;
+  margin: 0 auto;
   border-radius: 50px;
+`
+
+const AddBtn = styled.div`
+  width: 50px;
+  height: 50px;
+  background: #0466C8;
+  display: block;
+  margin: 0 auto;
+  border-radius: 50px;
+  font-size: 36px;
+  color: white;
+  text-align: center;
 `
 
 const TeamContainer = styled.div`
@@ -64,14 +80,10 @@ const TeamContainer = styled.div`
   height: 225px;
 `
 
-const Title = styled.h1`
-  font-size: 36px;
-`
-
 const TeamCard = styled.div`
   height: auto;
-  background: #F0F0F0;
-  border-radius: 5px;
+  box-shadow: 0px 4px 10px 3px rgba(0, 0, 0, 0.25);
+  border-radius: 15px;
   margin-top: 30px;
   padding: 20px;
   overflow-x: scroll;
@@ -80,22 +92,8 @@ const TeamCard = styled.div`
 `
 
 const PersonCard = styled.div`
-  width: 18%;
+  width: 13%;
   margin-right: 1%;
-  background: #C4C4C4;
   border-radius: 5px;
   display: inline-block;
-`
-
-const Row = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-`
-
-const AddBtn = styled.button`
-  border-radius: 5px;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
 `
