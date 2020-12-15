@@ -39,7 +39,7 @@ const TeamCard = ({ teamId, data, setCurrentTeam }) => {
   )
 }
 
-const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam , updateTeam}) => {
+const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam , updateTeam, pinned }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [teamDataDoc] = useDocument(
     getTeamRef(teamId),
@@ -49,32 +49,39 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam , updateTeam}) =>
   );
 
   return (
-      <Team>
-        <OverlayContainer>
-          <TrashIcon onClick={() => setDeleteModalOpen(true)} src={Trashcan} />
-          <PinIcon src={Pin} onClick={() => updateTeam(teamId, {"pinned":!teamDataDoc.data().pinned})} />
-          <Circle>
-            <Icon src={GroupIcon} />
-          </Circle>
-          <TeamName>
-            <Link         
-              to='/team'
-              onClick={() => setCurrentTeam(teamId)}
-            >
-              {teamDataDoc && teamDataDoc.data() && teamDataDoc.data().name}
-            </Link>
-            <EditIcon src={Pencil} onClick={() => updateTeam(teamId)} />
-          </TeamName>
-          <ReactModal isOpen={deleteModalOpen} className="Modal" >
-            <DeleteModalContent 
-              setModalOpen={setDeleteModalOpen} 
-              deleteFunction={deleteTeam}
-              id={teamId}
-              labelName="Delete Team?"
+    <React.Fragment>
+      {teamDataDoc && teamDataDoc.data() && teamDataDoc.data().pinned === pinned &&
+        <Team>
+          <OverlayContainer>
+            <TrashIcon onClick={() => setDeleteModalOpen(true)} src={Trashcan} />
+            <PinIcon 
+              src={teamDataDoc && teamDataDoc.data().pinned ? FilledPin : Pin} 
+              onClick={() => updateTeam(teamId, {"pinned":!teamDataDoc.data().pinned})} 
             />
-          </ReactModal>
-        </OverlayContainer>
-      </Team>
+            <Circle>
+              <Icon src={GroupIcon} />
+            </Circle>
+            <TeamName>
+              <Link         
+                to='/team'
+                onClick={() => setCurrentTeam(teamId)}
+              >
+                {teamDataDoc && teamDataDoc.data() && teamDataDoc.data().name}
+              </Link>
+              <EditIcon src={Pencil} onClick={() => updateTeam(teamDataDoc.id)} />
+            </TeamName>
+            <ReactModal isOpen={deleteModalOpen} className="Modal" >
+              <DeleteModalContent 
+                setModalOpen={setDeleteModalOpen} 
+                deleteFunction={deleteTeam}
+                id={teamId}
+                labelName="Delete Team?"
+              />
+            </ReactModal>
+          </OverlayContainer>
+        </Team>
+      }
+    </React.Fragment>
   )
 }
 
@@ -147,6 +154,10 @@ export default function Landing () {
             <FilterButton color="primary" onClick={sortAZ}>Sort A-Z</FilterButton>
           </div>
         </HeaderRow>
+        <SectionName>Pinned</SectionName>
+        <TeamsContainer>
+          {firebaseTeams && firebaseTeams.map((teamId, i) => <FirebaseTeamCard key={i} pinned={true} teamId={teamId} setCurrentTeam={setCurrentTeam} deleteTeam={deleteTeam} updateTeam={updateTeam}/>)}
+        </TeamsContainer>
         <SectionName>All</SectionName>
         {LOCALMODE ? (
           <TeamsContainer>
@@ -160,7 +171,7 @@ export default function Landing () {
                 <AddText>Add a Team</AddText>
               </div>
             </AddCard>
-            {firebaseTeams && firebaseTeams.map((teamId, i) => <FirebaseTeamCard key={i} teamId={teamId} setCurrentTeam={setCurrentTeam} deleteTeam={deleteTeam} updateTeam={updateTeam}/>)}
+            {firebaseTeams && firebaseTeams.map((teamId, i) => <FirebaseTeamCard key={i} pinned={false} teamId={teamId} setCurrentTeam={setCurrentTeam} deleteTeam={deleteTeam} updateTeam={updateTeam}/>)}
           </TeamsContainer>
         )}
         <ReactModal isOpen={modalOpen} className="Modal" >

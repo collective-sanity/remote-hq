@@ -177,7 +177,6 @@ export default function FolderView () {
           )}
         </LinkListContainer>
       </ContentContainer>
-      {/* <RightPanel page={"FolderView"} /> */}
       <ReactModal isOpen={fileModalOpen} className="Modal" >
           <AddFileModal 
             setModalOpen={setFileModalOpen} 
@@ -197,7 +196,7 @@ const getIconType = type => {
 }
 
 const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
-  const { pinLink, deleteLink, updateLink } = useContext(ControlContext)
+  const { deleteLink, updateLink } = useContext(ControlContext)
   const [modalOpen, setModalOpen] = useState(false)
   const [linkDataDoc] = useDocument(
     getLinkRef(currentTeam, link),
@@ -220,7 +219,6 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
       {linkDataDoc && linkDataDoc.data() && linkDataDoc.data().pinned === pinned && linkDataDoc.data().url &&
         <LinkContainer>
           <OverlayContainer>
-
             <TrashIcon src={Trashcan} onClick={() => setModalOpen(true)} />
             <PinIcon src={pinned ? FilledPin : Pin} onClick={() => updateLink(linkDataDoc.id, {"pinned":!pinned})} />
             <Circle>
