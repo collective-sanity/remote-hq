@@ -9,8 +9,9 @@ import ReactModal from 'react-modal'
 import DeleteModalContent from 'containers/Modal/DeleteModalContent'
 import './TeamBoards.scss';
 import { getTeamRef } from "shared/firebase";
-import { Title, Input, FilterButton, HeaderRow } from 'assets/StyledComponents/Shared'
+import { Title, Input, FilterButton, HeaderRow, PinIcon } from 'assets/StyledComponents/Shared'
 import FolderIcon from 'assets/Landing/folder.svg'
+import Pin from 'assets/Landing/pin.svg'
 
 export default function TeamBoards ({ setModalOpen }) {
   const context = useContext(ControlContext);
@@ -126,6 +127,7 @@ const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder }) => {
     <Folder>
       <OverlayContainer>
         <TrashIcon onClick={(event) => handleOnClick(event)} src={Trashcan} />
+        <PinIcon src={Pin} />
         <Circle>
           <Icon src={FolderIcon} />
         </Circle>

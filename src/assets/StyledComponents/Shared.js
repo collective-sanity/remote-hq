@@ -43,3 +43,19 @@ export const HeaderRow = styled.div`
   justify-content: space-between;
   align-items: center;
 `
+
+export const TrashIcon = styled.img`
+  position: absolute;
+  top: 0px;
+  right: 10px;
+  height: 25px;
+  width: 25px;
+`
+
+export const PinIcon = styled.img`
+  position: absolute;
+  top: 0px;
+  left: 15px;
+  height: 25px;
+  width: 25px;
+`
