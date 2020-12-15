@@ -164,34 +164,28 @@ currentLink
               setCurrentFolder(res.id);
               window.localStorage.setItem("currentFolder", res.id);
             },
-            updateFolder:async (folderId=null, newData={})=> { //{  teamId=currentTeam.id, folderId=currentFolder.id, newData}
-           
-                if(folderId==null ||newData=={}){ 
-                    let newName;
-                    let name = prompt("Please enter a new name", '');
-                    if (name === null || name === "") {return;
-                    } else { newName = name;}
-                    updateFolder(currentTeam,currentFolder, { "name":newName}) 
-                }else{
-                  updateFolder(currentTeam,folderId, newData)
+            updateFolder:async (folderId=null, newData={})=> {
+              if (folderId===null || Object.keys(newData).length === 0) { 
+                let newName;
+                let name = prompt("Please enter a new name", '');
+                if (name === null || name === "") {
+                  return;
+                } else { 
+                  newName = name;
                 }
-          },
-           
+                updateFolder(currentTeam,folderId, { "name":newName}) 
+              }else{
+                updateFolder(currentTeam,folderId, newData)
+              }
+            },
             deleteFolder: async (folderId=null) => {
-                if(folderId===null){
-                  deleteFolder( currentTeam , currentFolder);
-                  setCurrentFolder(null);
-                }else{
-                  deleteFolder( currentTeam , folderId);
-                }
-              
-                //window.localStorage.setItem("currentFolder", null);
-           
-              },
-          //   pinFolder: async (folderId, newValue) => {
-          //     await updateFolder(currentTeam, folderId,{pinned: newValue});
-          //  }, 
-           
+              if(folderId===null){
+                deleteFolder( currentTeam , currentFolder);
+                setCurrentFolder(null);
+              }else{
+                deleteFolder( currentTeam , folderId);
+              }
+            },       
             /*
             Links are all the "files" in the system, they can be organized in folders and viewed in screens
             */
