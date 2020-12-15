@@ -47,17 +47,21 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam }) => {
   );
 
   return (
-      <Team
-        to='/team'
-        onClick={() => setCurrentTeam(teamId)}
-      >
+      <Team>
         <OverlayContainer>
           <TrashIcon onClick={() => setDeleteModalOpen(true)} src={Trashcan} />
           <PinIcon src={Pin} />
           <Circle>
             <Icon src={GroupIcon} />
           </Circle>
-          <TeamName>{teamDataDoc && teamDataDoc.data() && teamDataDoc.data().name}</TeamName>
+          <TeamName>
+            <Link         
+              to='/team'
+              onClick={() => setCurrentTeam(teamId)}
+            >
+              {teamDataDoc && teamDataDoc.data() && teamDataDoc.data().name}
+            </Link>
+          </TeamName>
           <ReactModal isOpen={deleteModalOpen} className="Modal" >
             <DeleteModalContent 
               setModalOpen={setDeleteModalOpen} 
@@ -181,7 +185,7 @@ const TeamsContainer = styled.div`
   margin-top: 15px;
 `
 
-const Team = styled(Link)`
+const Team = styled.div`
   width: 30%;
   margin-right: 3%;
   height: auto;

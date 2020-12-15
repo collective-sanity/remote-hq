@@ -123,16 +123,20 @@ const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder }) => {
   }
   
   return (              
-    <Folder       
-      to='/folder'
-      onClick={() => setCurrentFolder(id)}
-    >
+    <Folder>
       <OverlayContainer>
         <TrashIcon onClick={(event) => handleOnClick(event)} src={Trashcan} />
         <Circle>
           <Icon src={FolderIcon} />
         </Circle>
-        <FolderName>{folder.name}</FolderName>
+        <FolderName>
+          <Link       
+            to='/folder'
+            onClick={() => setCurrentFolder(id)}
+          >
+            {folder.name}
+          </Link>
+        </FolderName>
         <Description>{`${folder.links.length} Files`}</Description>
       </OverlayContainer>
       <ReactModal isOpen={deleteModalOpen} className="Modal" >
@@ -147,7 +151,7 @@ const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder }) => {
   )
 }
 
-const Folder = styled(Link)`
+const Folder = styled.div`
   width: 22%;
   margin-right: 3%;
   height: auto;
