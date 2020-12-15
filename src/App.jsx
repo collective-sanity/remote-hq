@@ -156,12 +156,12 @@ currentLink
               setCurrentFolder(res.id);
               window.localStorage.setItem("currentFolder", res.id);
             },
-            updateFolder: ()=> { //{  teamId=currentTeam.id, folderId=currentFolder.id, newData}
+            updateFolder: (folderId=currentFolder)=> { //{  teamId=currentTeam.id, folderId=currentFolder.id, newData}
                 let newName;
                 let name = prompt("Please enter a new name", '');
                 if (name === null || name === "") {return;
                 } else { newName = name;}
-                updateFolder(currentTeam,currentFolder, { "name":newName}) 
+                updateFolder(currentTeam,folderId, { "name":newName}) 
               },
            
             deleteFolder: async ( folderId) => {
