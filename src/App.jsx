@@ -198,14 +198,17 @@ currentLink
                 }
                await createLink(currentTeam, currentFolder, linktype, name, url);
             },
-            updateLink:async  (linkId=null, newData={}) => {
-              if(linkId==null ||newData=={}){
+            updateLink: async (linkId=null, newData={}) => {
+              if (linkId==null || Object.keys(newData).length === 0) {
                 let newName;
-                  let name = prompt("Please enter a new name", '');
-                  if (name === null || name === "") {return;
-                  } else { newName = name;}
-                  updateLink(currentTeam,currentLink, {name: newName})
-              }else{
+                let name = prompt("Please enter a new name", '');
+                if (name === null || name === "") {
+                  return;
+                } else { 
+                  newName = name;
+                }
+                updateLink(currentTeam, linkId ? linkId : currentLink, {name: newName})
+              } else{
                 updateLink(currentTeam,linkId, newData)
               }
                   
@@ -214,12 +217,6 @@ currentLink
                 if(linkId === null) linkId = currentLink;
                 await deleteLink(currentTeam,currentFolder,linkId);
             },
-           
-           
-            // pinLink: async (linkId=currentLink, newValue) => {
-            //    //let item = await getLinkData(currentTeam,linkId);
-            //    await updateLink(currentTeam,linkId, {pinned: newValue});
-            // }, 
           }}>
           <div className="App__container">
             {user ? <><VoiceChat /><Chat /></> : <></> }

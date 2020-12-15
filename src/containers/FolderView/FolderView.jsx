@@ -148,13 +148,8 @@ export default function FolderView () {
         <LinkListContainer>
           <HeaderContainerWithDropdown>
             <SectionName>All Files</SectionName>
-            {/* <FilesDropdown>
-              <option value="Recently Viewed">Recently Viewed</option>
-            </FilesDropdown> */}
           </HeaderContainerWithDropdown>
           <div className="FolderView__view_options">
-            {/* <Button color="primary" onClick={sortAZ}>Sort A-Z</Button>
-            <Button color="primary" onClick={sortCreatedDate}>Sort by Created Date</Button> */}
           </div>
           {LOCALMODE ? (
             <LinksList>
@@ -242,27 +237,11 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
         </LinkContainer>
       }
     </React.Fragment>
-    // <div>
-    //   {value && value.data().pinned === pinned && value.data().linkType !== "resource" &&
-    //     <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(value.id)}>
-    //       <LinkContainerType src={getIconType(value.data().linkType)}></LinkContainerType>
-    //       <LinkContainerTitle>{value.data().name}</LinkContainerTitle>
-    //     </LinkContainer>
-    //   }
-
-    //   {value && value.data().pinned === pinned && value.data().linkType === "resource" &&
-    //     <WebLinkContainer href={value.data().link} target="_blank">
-    //       <LinkContainerType src={getIconType(value.data().linkType)}></LinkContainerType>
-    //       <LinkContainerTitle>{value.data().name}</LinkContainerTitle>
-    //     </WebLinkContainer>
-    //   }
-    // </div>
   )
 }
 
 const GetLinks = ({link, data, currentTeam, pinned, setCurrentLink}) => {
   let item = data["teams"][currentTeam]["links"][link];
-  // console.log(item.pinned === pinned && item.linkType !== "resource")
 
   return (
     <React.Fragment>
@@ -271,26 +250,10 @@ const GetLinks = ({link, data, currentTeam, pinned, setCurrentLink}) => {
           <Circle>
             <Icon src={getIconType(item.linkType)} />
           </Circle>
-          {/* <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType> */}
           <LinkContainerTitle>{item.name}</LinkContainerTitle>
         </LinkContainer>
       }
     </React.Fragment>
-    // <div>
-    //   {item && item.pinned === pinned && item.linkType !== "resource" &&
-    //     <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(link)}>
-    //       <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
-    //       <LinkContainerTitle>{item.name}</LinkContainerTitle>
-    //     </LinkContainer>
-    //   }
-
-    //   {item && item.pinned === pinned && item.linkType === "resource" &&
-    //     <WebLinkContainer href={item.link} target="_blank">
-    //       <LinkContainerType src={getIconType(item.linkType)}></LinkContainerType>
-    //       <LinkContainerTitle>{item.name}</LinkContainerTitle>
-    //     </WebLinkContainer>
-    //   }
-    // </div>
   )
 }
 
@@ -323,6 +286,10 @@ const DisabledLinkContainer = styled.div`
   background: #F7ECFF;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `
 
 const LinkContainer = styled.div`
@@ -399,28 +366,3 @@ const EditIcon = styled.img`
   margin-left: 12px;
   cursor: pointer;
 `
-
-// const LinkContainerType = styled.img`
-//   height: 50%;
-// `
-
-// const FilesDropdown = styled.select`
-//   width: 200px;
-//   height: 50px;
-//   font-size: 18px;
-//   align-self: center;
-//   margin-left: auto;
-//   -webkit-appearance: menulist-button;
-// `
-
-// const WebLinkContainer = styled.a`
-//   height: 160px;
-//   width: 120px;
-//   background-color: #c4c4c4;
-//   margin-right: 40px;
-//   margin-top: 40px;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   flex-direction: column;
-// `
