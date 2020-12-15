@@ -65,8 +65,8 @@ export default function LeftPanel () {
 const Line = styled.hr `
   height: 1px;
   border-color: #33415C;
-  width: 80%;
-  margin: 30px 10% 30px 10%;
+  width: 90%;
+  margin: 30px 5% 30px 5%;
 `
 
 const Panel = styled.div`
@@ -104,8 +104,8 @@ const LogoutBtn = styled.button`
 `
 
 const TeamsSection = styled.div`
-  width: 80%;
-  margin-left: 10%;
+  width: 90%;
+  margin-left: 5%;
 `
 
 const MyTeams = styled.p`

@@ -7,7 +7,6 @@ import './FolderView.scss';
 import { Title, Breadcrumbs, Input, FilterButton, SectionName, HeaderRow, ContentContainer, TrashIcon, PinIcon } from 'assets/StyledComponents/Shared'
 
 import LeftPanel from "containers/Panels/LeftPanel";
-import RightPanel from "containers/Panels/RightPanel";
 import { OverlayContainer } from 'assets/StyledComponents/Overlay'
 
 import doc from 'assets/Landing/google-docs.png';
@@ -18,6 +17,7 @@ import figma from 'assets/Landing/figma.png';
 import link from 'assets/Landing/link.png';
 import Trashcan from 'assets/Landing/delete.svg'
 import Pin from 'assets/Landing/pin.svg'
+import FilledPin from 'assets/Landing/filled-pin.svg'
 import { getFolderRef, getLinkData, getTeamRef, getLinkRef } from "shared/firebase";
 
 import MoonLoader from "react-spinners/MoonLoader";
@@ -187,6 +187,7 @@ const getIconType = type => {
 }
 
 const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
+  const { pinLink } = useContext(ControlContext);
   const [linkDataDoc] = useDocument(
     getLinkRef(currentTeam, link),
     {
@@ -206,14 +207,18 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
         </DisabledLinkContainer>
       }
       {linkDataDoc && linkDataDoc.data().pinned === pinned && linkDataDoc.data().url &&
-        <LinkContainer to="/shared-desktop" onClick={() => setCurrentLink(linkDataDoc.id)}>
+        <LinkContainer>
           <OverlayContainer>
             <TrashIcon src={Trashcan} />
-            <PinIcon src={Pin} />
+            <PinIcon src={pinned ? FilledPin : Pin} onClick={() => pinLink(linkDataDoc.id)} />
             <Circle>
               <Icon src={getIconType(linkDataDoc.data().linkType)} />
             </Circle>
-            <LinkContainerTitle>{linkDataDoc.data().name}</LinkContainerTitle>
+            <LinkContainerTitle>
+              <Link to="/shared-desktop" onClick={() => setCurrentLink(linkDataDoc.id)}>
+                {linkDataDoc.data().name}
+              </Link>
+            </LinkContainerTitle>
           </OverlayContainer>
         </LinkContainer>
       }
@@ -298,7 +303,7 @@ const DisabledLinkContainer = styled.div`
   border-radius: 5px;
 `
 
-const LinkContainer = styled(Link)`
+const LinkContainer = styled.div`
   width: 17%;
   height: 180px;
   margin-right: 3%;
@@ -363,6 +368,7 @@ const AddText = styled.p`
   font-size: 20px;
   color: #BE83FF;
   text-align: center;
+  margin-bottom: 0;
 `
 
 // const LinkContainerType = styled.img`

@@ -15,7 +15,7 @@ export const Breadcrumbs = styled.div`
 
 export const ContentContainer = styled.div`
   width: 100%;
-  margin: 5vh 5% 0 5%;
+  padding: 5vh 5% 0 5%;
 `
 
 export const Input = styled.input`
@@ -58,6 +58,7 @@ export const PinIcon = styled.img`
   left: 15px;
   height: 25px;
   width: 25px;
+  cursor: pointer;
 `
 
 export const SectionName = styled.div`

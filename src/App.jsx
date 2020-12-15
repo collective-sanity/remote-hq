@@ -195,9 +195,9 @@ currentLink
             deleteLink:async () => { 
                 await deleteLink(currentTeam,currentFolder,currentLink);
             },
-            pinLink: async () => {
-               let item = await getLinkData(currentTeam,currentLink);
-               await updateLink(currentTeam,currentLink, {pinned: !item.pinned});
+            pinLink: async (link=currentLink) => {
+               let item = await getLinkData(currentTeam,link);
+               await updateLink(currentTeam,link, {pinned: !item.pinned});
             }, 
           }}>
           <div className="App__container">
