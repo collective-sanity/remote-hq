@@ -116,13 +116,12 @@ currentLink
               setCurrentTeam(res.id);
               window.localStorage.setItem("currentTeam", res.id);
             },
-            updateTeam:()=>{//{teamId=currentTeam,newData}
+            updateTeam: (teamId=currentTeam)=>{
                 let newName;
                 let name = prompt("Please enter a new name", '');
                 if (name === null || name === "") {return;
                 } else { newName = name;}
-                //updateFolder(teamId,folderId, { "name":newName}) 
-                updateTeam(currentTeam, { "name":newName});
+                updateTeam(teamId, { "name":newName});
             },
             addTeamMember: async (email) => {
               console.log(email)
