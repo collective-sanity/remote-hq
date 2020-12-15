@@ -1,5 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Button, Input } from 'reactstrap';
+import React, { useContext, useState, useEffect } from "react"
 import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
 import { NavLink } from 'react-router-dom'
@@ -7,13 +6,13 @@ import firebase from 'firebase/app'
 import { useDocument } from 'react-firebase-hooks/firestore'
 import ReactModal from 'react-modal'
 import Trashcan from 'assets/Landing/delete.svg'
+import GroupIcon from 'assets/Landing/group.png'
+import Pin from 'assets/Landing/pin.svg'
 
 import LeftPanel from "containers/Panels/LeftPanel"
-import RightPanel from "containers/Panels/RightPanel"
 import ModalContent from 'containers/Modal/AddModalContent'
 import DeleteModalContent from 'containers/Modal/DeleteModalContent'
 import { OverlayContainer } from 'assets/StyledComponents/Overlay'
-import './Landing.scss';
 import { getTeamRef } from "shared/firebase";
 
 const TeamCard = ({ teamId, data, setCurrentTeam }) => {
@@ -30,7 +29,6 @@ const TeamCard = ({ teamId, data, setCurrentTeam }) => {
           }}
           onClick={() => setCurrentTeam(teamId)}
         >
-          <TeamImage />
           <TeamName>{name}</TeamName>
         </NavLink>
       </OverlayContainer>
@@ -48,26 +46,27 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam }) => {
   );
 
   return (
-    <Team>
-      <OverlayContainer>
-        <TrashIcon onClick={() => setDeleteModalOpen(true)} src={Trashcan} />
-        <NavLink 
-          to='/team'
-          onClick={() => setCurrentTeam(teamId)}
-        >
-          <TeamImage />
+      <Team
+        to='/team'
+        onClick={() => setCurrentTeam(teamId)}
+      >
+        <OverlayContainer>
+          <TrashIcon onClick={() => setDeleteModalOpen(true)} src={Trashcan} />
+          <PinIcon src={Pin} />
+          <Circle>
+            <Icon src={GroupIcon} />
+          </Circle>
           <TeamName>{teamDataDoc && teamDataDoc.data() && teamDataDoc.data().name}</TeamName>
-        </NavLink>
-        <ReactModal isOpen={deleteModalOpen} className="Modal" >
-          <DeleteModalContent 
-            setModalOpen={setDeleteModalOpen} 
-            deleteFunction={deleteTeam}
-            id={teamId}
-            labelName="Delete Team?"
-          />
-        </ReactModal>
-      </OverlayContainer>
-    </Team>
+          <ReactModal isOpen={deleteModalOpen} className="Modal" >
+            <DeleteModalContent 
+              setModalOpen={setDeleteModalOpen} 
+              deleteFunction={deleteTeam}
+              id={teamId}
+              labelName="Delete Team?"
+            />
+          </ReactModal>
+        </OverlayContainer>
+      </Team>
   )
 }
 
@@ -132,17 +131,26 @@ export default function Landing () {
     <Row>
       <LeftPanel />
       <ContentContainer>
-        <Title>Teams</Title>
-        <div className="Landing__view_options">
-          <Button color="primary" onClick={sortAZ}>Sort A-Z</Button>
-          <Input placeholder="Search" value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
-        </div>
+        <HeaderRow>
+          <Title>My Teams</Title>
+          <div>
+            <Input placeholder="Search for teams" value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+            <Button color="primary" onClick={sortAZ}>Sort A-Z</Button>
+          </div>
+        </HeaderRow>
+        <SectionName>All</SectionName>
         {LOCALMODE ? (
           <TeamsContainer>
             {teamsList.map((teamId, i) => <TeamCard key={i} data={data} teamId={teamId} setCurrentTeam={setCurrentTeam} />)}
           </TeamsContainer>
         ) : (
           <TeamsContainer>
+            <AddCard onClick={() => setModalOpen(true)}>
+              <div>
+                <AddText style={{ fontSize: '64px' }}>+</AddText>
+                <AddText>Add a Team</AddText>
+              </div>
+            </AddCard>
             {firebaseTeams && firebaseTeams.map((teamId, i) => <FirebaseTeamCard key={i} teamId={teamId} setCurrentTeam={setCurrentTeam} deleteTeam={deleteTeam} />)}
           </TeamsContainer>
         )}
@@ -155,7 +163,7 @@ export default function Landing () {
           />
         </ReactModal>
       </ContentContainer>
-      <RightPanel page="Landing" setModalOpen={setModalOpen} />
+      {/* <RightPanel page="Landing" setModalOpen={setModalOpen} /> */}
     </Row>
   )
 }
@@ -165,6 +173,13 @@ const Row = styled.div`
   width: 100%;
 `
 
+const HeaderRow = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+`
+
 const ContentContainer = styled.div`
   width: 100%;
   margin: 5vh 5% 0 5%;
@@ -172,36 +187,111 @@ const ContentContainer = styled.div`
 
 const Title = styled.h1`
   font-size: 36px;
+  font-weight: bold;
+  font-size: 36px;
+  line-height: 49px;
 `
 
 const TeamsContainer = styled.div`
   display: flex;
-  justify-content: space-between;
   flex-wrap: wrap;
+  margin-top: 15px;
 `
 
-const Team = styled.div`
-  width: 45%;
+const Team = styled(NavLink)`
+  width: 30%;
+  margin-right: 3%;
   height: auto;
-`
-
-const TeamImage = styled.div`
-  width: 100%;
-  height: 300px;
-  background: #C4C4C4;
-  border-radius: 5px;
-  margin-top: 50px;
+  background-color: #ECF6FF;
+  border-radius: 15px;
 `
 
 const TeamName = styled.p`
-  font-size: 18px;
   margin-top: 10px;
+  font-weight: 600;
+  font-size: 22px;
+  text-align: center;
+  color: black;
 `
 
 const TrashIcon = styled.img`
   position: absolute;
-  top: 15px;
-  right: 15px;
-  height: 30px;
-  width: 30px;
+  top: 0px;
+  right: 10px;
+  height: 25px;
+  width: 25px;
+`
+
+const PinIcon = styled.img`
+  position: absolute;
+  top: 0px;
+  left: 15px;
+  height: 25px;
+  width: 25px;
+`
+
+const Input = styled.input`
+  width: 375px;
+  border-radius: 5px;
+  border: 2px solid #5C677D;
+  font-size: 18px;
+  padding: 5px 15px;
+`
+
+const Button = styled.button`
+  width: 150px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 2px solid #5C677D;
+  background-color: white;
+  margin-left: 15px;
+  font-size: 18px;
+  color: #5C677D;
+`
+
+const SectionName = styled.div`
+  font-family: Open Sans;
+  font-weight: bold;
+  font-size: 18px;
+  color: #9B9B9B;
+  margin-top: 40px;
+`
+
+const AddCard = styled.div`
+  width: 30%;
+  height: 250px;
+  border: 2px solid #0466C8;
+  border-radius: 15px;
+  margin-right: 3%;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  cursor: pointer;
+`
+
+const AddText = styled.p`
+  width: 100%;
+  font-weight: bold;
+  font-size: 24px;
+  line-height: 33px;
+  color: #0466C8;
+  text-align: center;
+`
+
+const Circle = styled.div`
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+  margin: 0 auto;
+  background: #0466C8;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
+const Icon = styled.img`
+  width: 50px;
+  height: 50px;
 `
