@@ -18,19 +18,21 @@ const ControlContext = createContext({
   currentLink:     null,
   setCurrentLink:  ()=>{},
   
-  createTeam:   async ()=>{},
-  updateTeam:   async ()=>{},
-  deleteTeam:   async ()=>{},
-  addTeamMember:async () => {},
+  createTeam:   async ( name = "RandomTest")=>{},
+  updateTeam:   async (teamId, newData={})=>{},
+  deleteTeam:   async (teamId=null)=>{},
+  //pinTeam:      async (teamId, newValue) => {},
+  addTeamMember:async (email) => {},
 
-  createFolder: async()=>{},
-  updateFolder: async()=>{},
-  deleteFolder: async()=>{},
+  createFolder: async(name="TestName")=>{},
+  updateFolder: async(folderId=null, newData={})=>{},
+  deleteFolder: async( folderId=null)=>{},
+  //pinFolder: async (folderId, newValue) => {},
   
-  createLink:   async()=>{},
-  updateLink:   async()=>{},
+  createLink:   async(linktype, name, url="")=>{},
+  updateLink:   async(linkId=null, newData={})=>{},
   deleteLink:   async()=>{},
-  pinLink:      async () => {},
+  //pinLink:      async (linkId=currentLink, newValue) => {},
 });
   
 export default ControlContext;

@@ -195,7 +195,7 @@ const getIconType = type => {
 }
 
 const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
-  const { pinLink } = useContext(ControlContext);
+  const { updateLink } = useContext(ControlContext);
   const [linkDataDoc] = useDocument(
     getLinkRef(currentTeam, link),
     {
@@ -218,7 +218,7 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
         <LinkContainer>
           <OverlayContainer>
             <TrashIcon src={Trashcan} />
-            <PinIcon src={pinned ? FilledPin : Pin} onClick={() => pinLink(linkDataDoc.id)} />
+            <PinIcon src={pinned ? FilledPin : Pin} onClick={() => updateLink(linkDataDoc.id, {"pinned":!pinned})} />
             <Circle>
               <Icon src={getIconType(linkDataDoc.data().linkType)} />
             </Circle>

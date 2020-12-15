@@ -12,10 +12,11 @@ import { getTeamRef } from "shared/firebase";
 import { Title, Input, FilterButton, HeaderRow, PinIcon } from 'assets/StyledComponents/Shared'
 import FolderIcon from 'assets/Landing/folder.svg'
 import Pin from 'assets/Landing/pin.svg'
+import FilledPin from 'assets/Landing/filled-pin.svg'
 
 export default function TeamBoards ({ setModalOpen }) {
   const context = useContext(ControlContext);
-  let { LOCALMODE, data, currentTeam, setCurrentFolder, deleteFolder } = context;
+  let { LOCALMODE, data, currentTeam, setCurrentFolder, deleteFolder, updateFolder } = context;
   const [firebaseFolders, setFirebaseFolders] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   // console.log(currentTeam)
@@ -90,11 +91,11 @@ export default function TeamBoards ({ setModalOpen }) {
         <AddCard onClick={() => setModalOpen(true)}>
           <div>
             <AddText style={{ fontSize: '64px' }}>+</AddText>
-            <AddText>Add a Team</AddText>
+            <AddText>Add a Folder</AddText>
           </div>
         </AddCard>
         {firebaseFolders && firebaseFolders.map((folder, i) => (
-          <FirebaseBoardLink id={folder.id} folder={folder} setCurrentFolder={setCurrentFolder} deleteFolder={deleteFolder} />
+          <FirebaseBoardLink id={folder.id} folder={folder} setCurrentFolder={setCurrentFolder} deleteFolder={deleteFolder} updateFolder={updateFolder} />
         ))}
       </BoardContainer>
       )}
@@ -115,7 +116,7 @@ const BoardLink = ({ folder, data, currentTeam, setCurrentFolder }) => {
   )
 }
 
-const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder }) => {
+const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder, updateFolder }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
 
   const handleOnClick = (event) => {
@@ -127,7 +128,7 @@ const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder }) => {
     <Folder>
       <OverlayContainer>
         <TrashIcon onClick={(event) => handleOnClick(event)} src={Trashcan} />
-        <PinIcon src={Pin} />
+        <PinIcon src={folder.pinned ? FilledPin : Pin}  onClick={(event) => updateFolder(folder.id, {"pinned": !folder.pinned})}  />
         <Circle>
           <Icon src={FolderIcon} />
         </Circle>

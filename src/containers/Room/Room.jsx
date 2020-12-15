@@ -13,7 +13,7 @@ import LeftPanel from "containers/Panels/LeftPanel"
 import ModalContent from 'containers/Modal/AddModalContent'
 
 export default function Room ({ location }) {
-  const { currentTeam, createFolder } = useContext(ControlContext)
+  const { currentTeam, createFolder, } = useContext(ControlContext)
   const [modalOpen, setModalOpen] = useState(false)
 
    const [value] = useDocument( firebase.firestore()

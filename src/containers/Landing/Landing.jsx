@@ -8,6 +8,7 @@ import ReactModal from 'react-modal'
 import Trashcan from 'assets/Landing/delete.svg'
 import GroupIcon from 'assets/Landing/group.png'
 import Pin from 'assets/Landing/pin.svg'
+import FilledPin from 'assets/Landing/filled-pin.svg'
 import { Title, Breadcrumbs, Input, FilterButton, ContentContainer, HeaderRow } from 'assets/StyledComponents/Shared'
 
 import LeftPanel from "containers/Panels/LeftPanel"
@@ -37,7 +38,7 @@ const TeamCard = ({ teamId, data, setCurrentTeam }) => {
   )
 }
 
-const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam }) => {
+const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam , updateTeam}) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [teamDataDoc] = useDocument(
     getTeamRef(teamId),
@@ -50,7 +51,7 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam }) => {
       <Team>
         <OverlayContainer>
           <TrashIcon onClick={() => setDeleteModalOpen(true)} src={Trashcan} />
-          <PinIcon src={Pin} />
+          <PinIcon src={Pin} onClick={() => updateTeam(teamId, {"pinned":!teamDataDoc.data().pinned})} />
           <Circle>
             <Icon src={GroupIcon} />
           </Circle>
@@ -76,7 +77,7 @@ const FirebaseTeamCard = ({ teamId, setCurrentTeam, deleteTeam }) => {
 }
 
 export default function Landing () {
-  const { LOCALMODE, data, user, createTeam, setCurrentTeam, deleteTeam } = useContext(ControlContext);
+  const { LOCALMODE, data, user, createTeam, setCurrentTeam, deleteTeam , updateTeam} = useContext(ControlContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [firebaseTeams, setFirebaseTeams] = useState([]);
   const [teamNamesToId, setTeamNamesToId] = useState([]);
@@ -157,7 +158,7 @@ export default function Landing () {
                 <AddText>Add a Team</AddText>
               </div>
             </AddCard>
-            {firebaseTeams && firebaseTeams.map((teamId, i) => <FirebaseTeamCard key={i} teamId={teamId} setCurrentTeam={setCurrentTeam} deleteTeam={deleteTeam} />)}
+            {firebaseTeams && firebaseTeams.map((teamId, i) => <FirebaseTeamCard key={i} teamId={teamId} setCurrentTeam={setCurrentTeam} deleteTeam={deleteTeam} updateTeam={updateTeam}/>)}
           </TeamsContainer>
         )}
         <ReactModal isOpen={modalOpen} className="Modal" >
