@@ -2,7 +2,6 @@ import React, { useEffect, useContext, useState } from 'react'
 import { useHistory } from "react-router-dom"
 import styled from "styled-components"
 import ControlContext from 'shared/control-context'
-import { getLinkData } from "shared/firebase"
 import { ContentContainer } from 'assets/StyledComponents/Shared'
 import { useDocument } from 'react-firebase-hooks/firestore'
 import { getLinkRef } from "shared/firebase"
@@ -16,8 +15,6 @@ import link from 'assets/Landing/link.png'
 
 export default function SharedDesktopPanel ({ firebaseLinks, linkData }) {
   const {
-    LOCALMODE,
-    data,
     currentTeam,
     currentLink,
     updateLink,
@@ -44,12 +41,7 @@ export default function SharedDesktopPanel ({ firebaseLinks, linkData }) {
       <ContentContainer>
         <TextBtn onClick={ () => history.push("/folder") }>Leave</TextBtn>
         <TextBtn onClick={ () => updateLink() }>Edit Name</TextBtn>
-        {linkData && !linkData.pinned ? (
-            <TextBtn onClick={ () => updateLink(currentLink, {"pinned":!pinned}) }>Pin</TextBtn>
-        ) : (
-            <TextBtn onClick={ () => updateLink(currentLink, {"pinned":!pinned}) }>Unpin</TextBtn>
-        )}
-
+        <TextBtn onClick={ () => updateLink(currentLink, {"pinned":!linkData.pinned}) }>{linkData && !linkData.pinned ? "Pin" : "Unpin"}</TextBtn>
         <TextBtn onClick={ () => { deleteLink(); history.push("/folder"); } }>Delete</TextBtn>
         <Line />
         <div>
@@ -66,7 +58,6 @@ export default function SharedDesktopPanel ({ firebaseLinks, linkData }) {
 const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink }) => {
   const [linkDataDoc] = useDocument(
     getLinkRef(currentTeam, link),
-    //firebase.firestore().collection("teams").doc(currentTeam).collection("links").doc(link),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }

@@ -268,6 +268,7 @@ export async function createTeam(name, userId) {
         "folders": [],
         "links": [],
         "screens": [],
+        "pinned": false,
         "createdAt": firebase.firestore.FieldValue.serverTimestamp(),
     };
     // Add team

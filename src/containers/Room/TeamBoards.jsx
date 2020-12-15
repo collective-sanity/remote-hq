@@ -80,26 +80,33 @@ export default function TeamBoards ({ setModalOpen }) {
           <FilterButton color="primary" onClick={sortAZ}>Sort A-Z</FilterButton>
         </div>
       </HeaderRow>
+      <SectionName>Pinned</SectionName>
+        <BoardContainer>
+          {firebaseFolders && firebaseFolders.map((folder, i) => (
+            <FirebaseBoardLink id={folder.id} pinned={true} folder={folder} setCurrentFolder={setCurrentFolder} deleteFolder={deleteFolder} updateFolder={updateFolder} />
+          ))}
+        </BoardContainer>
+      <SectionName>All</SectionName>
       {LOCALMODE ? (
-      <BoardContainer>
-        {folders.map((folder, i) => 
-          <Folder key={i}>
-            <BoardLink folder={folder} data={data} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
-          </Folder>
-        )}
-      </BoardContainer>
-      ) : (
-      <BoardContainer>
-        <AddCard onClick={() => setModalOpen(true)}>
-          <div>
-            <AddText style={{ fontSize: '64px' }}>+</AddText>
-            <AddText>Add a Folder</AddText>
-          </div>
-        </AddCard>
-        {firebaseFolders && firebaseFolders.map((folder, i) => (
-          <FirebaseBoardLink id={folder.id} folder={folder} setCurrentFolder={setCurrentFolder} deleteFolder={deleteFolder} updateFolder={updateFolder} />
-        ))}
-      </BoardContainer>
+        <BoardContainer>
+          {folders.map((folder, i) => 
+            <Folder key={i}>
+              <BoardLink folder={folder} data={data} setCurrentFolder={setCurrentFolder} currentTeam={currentTeam} />
+            </Folder>
+          )}
+        </BoardContainer>
+        ) : (
+        <BoardContainer>
+          <AddCard onClick={() => setModalOpen(true)}>
+            <div>
+              <AddText style={{ fontSize: '64px' }}>+</AddText>
+              <AddText>Add a Folder</AddText>
+            </div>
+          </AddCard>
+          {firebaseFolders && firebaseFolders.map((folder, i) => (
+            <FirebaseBoardLink id={folder.id} pinned={false} folder={folder} setCurrentFolder={setCurrentFolder} deleteFolder={deleteFolder} updateFolder={updateFolder} />
+          ))}
+        </BoardContainer>
       )}
     </TeamContainer>
   )
@@ -118,9 +125,8 @@ const BoardLink = ({ folder, data, currentTeam, setCurrentFolder }) => {
   )
 }
 
-const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder, updateFolder }) => {
+const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder, updateFolder, pinned }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
- // const { updateFolder } = useContext(ControlContext);
 
   const handleOnClick = (event) => {
     event.stopPropagation()
@@ -128,33 +134,37 @@ const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder, updateF
   }
   
   return (              
-    <Folder>
-      <OverlayContainer>
-        <TrashIcon onClick={(event) => handleOnClick(event)} src={Trashcan} />
-        <PinIcon src={folder.pinned ? FilledPin : Pin}  onClick={(event) => updateFolder(folder.id, {"pinned": !folder.pinned})}  />
-        <Circle>
-          <Icon src={FolderIcon} />
-        </Circle>
-        <FolderName>
-          <Link       
-            to='/folder'
-            onClick={() => setCurrentFolder(id)}
-          >
-            {folder.name}
-          </Link>
-          <EditIcon src={Pencil} onClick={() => updateFolder(id)} />
-        </FolderName>
-        <Description>{`${folder.links.length} Files`}</Description>
-      </OverlayContainer>
-      <ReactModal isOpen={deleteModalOpen} className="Modal" >
-        <DeleteModalContent 
-          setModalOpen={setDeleteModalOpen} 
-          deleteFunction={()=>deleteFolder(folder.id)}
-          id={folder.id}
-          labelName="Delete Folder?"
-        />
-      </ReactModal>
-    </Folder>
+    <React.Fragment>
+      {folder && folder.pinned === pinned &&
+        <Folder>
+          <OverlayContainer>
+            <TrashIcon onClick={(event) => handleOnClick(event)} src={Trashcan} />
+            <PinIcon src={folder.pinned ? FilledPin : Pin}  onClick={(event) => updateFolder(folder.id, {"pinned": !folder.pinned})}  />
+            <Circle>
+              <Icon src={FolderIcon} />
+            </Circle>
+            <FolderName>
+              <Link       
+                to='/folder'
+                onClick={() => setCurrentFolder(id)}
+              >
+                {folder.name}
+              </Link>
+              <EditIcon src={Pencil} onClick={() => updateFolder(id)} />
+            </FolderName>
+            <Description>{`${folder.links.length} Files`}</Description>
+          </OverlayContainer>
+          <ReactModal isOpen={deleteModalOpen} className="Modal" >
+            <DeleteModalContent 
+              setModalOpen={setDeleteModalOpen} 
+              deleteFunction={()=>deleteFolder(folder.id)}
+              id={folder.id}
+              labelName="Delete Folder?"
+            />
+          </ReactModal>
+        </Folder>
+      }
+    </React.Fragment>
   )
 }
 
@@ -254,4 +264,12 @@ const EditIcon = styled.img`
   height: 17px;
   margin-left: 12px;
   cursor: pointer;
+`
+
+const SectionName = styled.div`
+  font-family: Open Sans;
+  font-weight: bold;
+  font-size: 18px;
+  color: #9B9B9B;
+  margin-top: 40px;
 `
