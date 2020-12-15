@@ -31,7 +31,7 @@ const ControlContext = createContext({
   
   createLink:   async(linktype, name, url="")=>{},
   updateLink:   async(linkId=null, newData={})=>{},
-  deleteLink:   async()=>{},
+  deleteLink:   async(linkId=null)=>{},
   //pinLink:      async (linkId=currentLink, newValue) => {},
 });
   

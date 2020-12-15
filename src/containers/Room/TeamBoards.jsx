@@ -145,7 +145,7 @@ const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder, updateF
       <ReactModal isOpen={deleteModalOpen} className="Modal" >
         <DeleteModalContent 
           setModalOpen={setDeleteModalOpen} 
-          deleteFunction={deleteFolder}
+          deleteFunction={()=>deleteFolder(folder.id)}
           id={folder.id}
           labelName="Delete Folder?"
         />

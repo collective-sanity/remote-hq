@@ -179,11 +179,17 @@ currentLink
                 }
           },
            
-            deleteFolder: async ( folderId) => {
-                deleteFolder( currentTeam , folderId);
-                setCurrentFolder(null);
-                window.localStorage.setItem("currentFolder", null);
-            },
+            deleteFolder: async (folderId=null) => {
+                if(folderId===null){
+                  deleteFolder( currentTeam , currentFolder);
+                  setCurrentFolder(null);
+                }else{
+                  deleteFolder( currentTeam , folderId);
+                }
+              
+                //window.localStorage.setItem("currentFolder", null);
+           
+              },
           //   pinFolder: async (folderId, newValue) => {
           //     await updateFolder(currentTeam, folderId,{pinned: newValue});
           //  }, 
@@ -212,8 +218,9 @@ currentLink
               }
                   
             },
-            deleteLink:async () => { 
-                await deleteLink(currentTeam,currentFolder,currentLink);
+            deleteLink:async (linkId=null) => {
+                if(linkId === null) linkId = currentLink;
+                await deleteLink(currentTeam,currentFolder,linkId);
             },
            
            
