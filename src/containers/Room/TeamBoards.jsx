@@ -116,6 +116,11 @@ const BoardLink = ({ folder, data, currentTeam, setCurrentFolder }) => {
 
 const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+
+  const handleOnClick = (event) => {
+    event.stopPropagation()
+    setDeleteModalOpen(true)
+  }
   
   return (              
     <Folder       
@@ -123,15 +128,12 @@ const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder }) => {
       onClick={() => setCurrentFolder(id)}
     >
       <OverlayContainer>
-        <TrashIcon onClick={() => setDeleteModalOpen(true)} src={Trashcan} />
+        <TrashIcon onClick={(event) => handleOnClick(event)} src={Trashcan} />
         <Circle>
           <Icon src={FolderIcon} />
         </Circle>
         <FolderName>{folder.name}</FolderName>
         <Description>{`${folder.links.length} Files`}</Description>
-        {/* <LinkContainer>
-          {folder.links.slice(0, 8).map((i) => <LinkBox key={i}></LinkBox>)}
-        </LinkContainer> */}
       </OverlayContainer>
       <ReactModal isOpen={deleteModalOpen} className="Modal" >
         <DeleteModalContent 
