@@ -119,7 +119,7 @@ export const useStateMachine = () => {
           resolve({key: "createdFolder", val: newMessage});
           break;
         case "createLink":
-          if (currentParams.fields.filetype.stringValue !== "resource") {
+          if (currentParams.fields.filetype.stringValue !== "resource" && currentParams.fields.filetype.stringValue !== "figma") {
             createLink(currentParams.teamId, currentParams.folderId, currentParams.fields.filetype.stringValue, newMessage).then(() => {
               resolve({key: "createdLink", val: newMessage});
             })
