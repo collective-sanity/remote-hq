@@ -292,12 +292,14 @@ const LinkListContainer = styled.div`
   margin-top: 15px;
   display: flex;
   flex-wrap: wrap;
+  width:100%;
 `
 
 const LinksList = styled.div`
   display: flex;
   flex-wrap: wrap;
   margin-top: 15px;
+  width: 100%;
 `
 
 const DisabledLinkContainer = styled.div`
