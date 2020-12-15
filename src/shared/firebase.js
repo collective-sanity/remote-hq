@@ -309,12 +309,14 @@ function: [[deleteTeam]]
 export async function deleteTeam(teamId, userId) {
     
     let teamData = await getTeamData(teamId);
+
     if (userId === teamData.host) {
     //let promises =[];
         for (const teamUserData of teamData.users) {
             let userData= await getUserData(teamUserData.id);
             await updateUserData(teamUserData.id, {"teams": userData.teams.filter(team => team !== teamId)});
         }
+        await _deleteTeamSubcollections(teamId);
         await getTeamRef(teamId).delete();
     } 
     else{
@@ -324,6 +326,118 @@ export async function deleteTeam(teamId, userId) {
     
    return null;
 
+}
+
+
+
+async function _deleteTeamSubcollections(teamId) {
+
+    await getTeamRef(teamId).collection("folders").get().then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+            doc.ref.delete();
+        });
+    });
+    await getTeamRef(teamId).collection("links").get().then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+            doc.ref.delete();
+        });
+    });
+    return;
+}
+
+
+/*
+
+Folders
+
+*/
+
+
+
+/*
+function: [[getFolderData]]
+    gets link data
+    input -  teamId, folderId
+    output - null
+    ex. 
+    in -> ("BF8zK1dN8W3ShXaXcQyH", "296ReqaQki50z4m7HRwl")
+    out -> {
+        {
+            "id":"296ReqaQki50z4m7HRwl",
+            "teamId":"BF8zK1dN8W3ShXaXcQyH"
+            "name": "Chatbot",
+            "links": ["5YttJMBlL6vmiakDFu9p"]
+         
+        },
+    }
+*/
+export async function getFolderData(teamId, folderId) {
+    let res = await getFolderRef(teamId, folderId).get()
+    return (res.exists) ? {...res.data(), "id":res.id, "teamId":teamId} : false;
+}
+
+
+
+/*
+function: [[createFolder]]
+    creates a folder
+
+    input -  teamId, 
+             name,
+             links =[]
+    output - linkData
+    ex. 
+    in -> ("BF8zK1dN8W3ShXaXcQyH","ChatBot" )
+    out -> 
+         {
+            "id": "296ReqaQki50z4m7HRwl",
+            "teamId": "BF8zK1dN8W3ShXaXcQyH",
+            "name": "Chatbot",
+            "links": []
+        }
+    
+*/
+export async function createFolder(teamId, name, links=[]) {
+    let res = await getTeamRef(teamId).collection('folders').add({
+        "name":name,
+        "links":links,
+        "pinned":false,
+    });
+    return (res.exists) ? {...res.data(), "id":res.id, "teamId":teamId} : false;
+}
+
+/*
+function: [[updateFolder]]
+    updates a Folder
+    input -  teamId, folderId, data(map)
+    output - null
+    ex. updating link
+    in -> ("296ReqaQki50z4m7HRwl", {
+        "links": [
+                "5YttJMBlL6vmiakDFu9p",
+                "BF8zK1dN8W3ShXaXcQyH",
+            ]}, )
+    out-> null
+*/
+export async function updateFolder(teamId, folderId, data) {
+  return await getFolderRef(teamId, folderId).update(data);
+        
+}
+
+
+/*
+function: [[deleteFolder]]
+    deletes a folder
+
+    input -  teamId, folderId
+    output - null
+    ex. 
+    in -> ("BF8zK1dN8W3ShXaXcQyH", "5YttJMBlL6vmiakDFu9p")
+    out -> 
+*/
+// TODO delete links within folder
+export async function deleteFolder(teamId, folderId) {
+    await getFolderRef(teamId, folderId).delete();
 }
 
 
@@ -447,96 +561,4 @@ export async function deleteLink(teamId, folderId, linkId) {
     await updateFolder(teamId, folderId,{ "links": links });
 }
 
-/*
-
-Folders
-
-*/
-
-
-
-/*
-function: [[getFolderData]]
-    gets link data
-    input -  teamId, folderId
-    output - null
-    ex. 
-    in -> ("BF8zK1dN8W3ShXaXcQyH", "296ReqaQki50z4m7HRwl")
-    out -> {
-        {
-            "id":"296ReqaQki50z4m7HRwl",
-            "teamId":"BF8zK1dN8W3ShXaXcQyH"
-            "name": "Chatbot",
-            "links": ["5YttJMBlL6vmiakDFu9p"]
-         
-        },
-    }
-*/
-export async function getFolderData(teamId, folderId) {
-    let res = await getFolderRef(teamId, folderId).get()
-    return (res.exists) ? {...res.data(), "id":res.id, "teamId":teamId} : false;
-}
-
-
-
-/*
-function: [[createFolder]]
-    creates a folder
-
-    input -  teamId, 
-             name,
-             links =[]
-    output - linkData
-    ex. 
-    in -> ("BF8zK1dN8W3ShXaXcQyH","ChatBot" )
-    out -> 
-         {
-            "id": "296ReqaQki50z4m7HRwl",
-            "teamId": "BF8zK1dN8W3ShXaXcQyH",
-            "name": "Chatbot",
-            "links": []
-        }
-    
-*/
-export async function createFolder(teamId, name, links=[]) {
-    let res = await getTeamRef(teamId).collection('folders').add({
-        "name":name,
-        "links":links
-    });
-    return (res.exists) ? {...res.data(), "id":res.id, "teamId":teamId} : false;
-}
-
-/*
-function: [[updateFolder]]
-    updates a Folder
-    input -  teamId, folderId, data(map)
-    output - null
-    ex. updating link
-    in -> ("296ReqaQki50z4m7HRwl", {
-        "links": [
-                "5YttJMBlL6vmiakDFu9p",
-                "BF8zK1dN8W3ShXaXcQyH",
-            ]}, )
-    out-> null
-*/
-export async function updateFolder(teamId, folderId, data) {
-  return await getFolderRef(teamId, folderId).update(data);
-        
-}
-
-
-/*
-function: [[deleteFolder]]
-    deletes a folder
-
-    input -  teamId, folderId
-    output - null
-    ex. 
-    in -> ("BF8zK1dN8W3ShXaXcQyH", "5YttJMBlL6vmiakDFu9p")
-    out -> 
-*/
-// TODO delete links within folder
-export async function deleteFolder(teamId, folderId) {
-    await getFolderRef(teamId, folderId).delete();
-}
 
