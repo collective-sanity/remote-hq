@@ -156,10 +156,11 @@ const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder }) => {
 const Folder = styled.div`
   width: 22%;
   margin-right: 3%;
-  height: auto;
+  height: 200px;
   background-color: #FCEBE2;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 15px;
+  margin-bottom: 40px;
 `
 
 const FolderName = styled.h2`
@@ -205,6 +206,7 @@ const AddCard = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   cursor: pointer;
+  margin-bottom: 40px;
 `
 
 const AddText = styled.p`

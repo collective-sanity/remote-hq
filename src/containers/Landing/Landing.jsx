@@ -188,9 +188,10 @@ const TeamsContainer = styled.div`
 const Team = styled.div`
   width: 30%;
   margin-right: 3%;
-  height: auto;
+  height: 250px;
   background-color: #ECF6FF;
   border-radius: 15px;
+  margin-bottom: 40px;
 `
 
 const TeamName = styled.p`
@@ -236,6 +237,7 @@ const AddCard = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   cursor: pointer;
+  margin-bottom: 40px;
 `
 
 const AddText = styled.p`
