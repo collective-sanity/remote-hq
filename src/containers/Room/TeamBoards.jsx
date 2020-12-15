@@ -13,6 +13,8 @@ import { Title, Input, FilterButton, HeaderRow, PinIcon } from 'assets/StyledCom
 import FolderIcon from 'assets/Landing/folder.svg'
 import Pin from 'assets/Landing/pin.svg'
 import FilledPin from 'assets/Landing/filled-pin.svg'
+import Pencil from 'assets/Landing/pencil.svg'
+
 
 export default function TeamBoards ({ setModalOpen }) {
   const context = useContext(ControlContext);
@@ -118,6 +120,7 @@ const BoardLink = ({ folder, data, currentTeam, setCurrentFolder }) => {
 
 const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder, updateFolder }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const { updateFolder } = useContext(ControlContext);
 
   const handleOnClick = (event) => {
     event.stopPropagation()
@@ -139,6 +142,7 @@ const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder, updateF
           >
             {folder.name}
           </Link>
+          <EditIcon src={Pencil} onClick={() => updateFolder(id)} />
         </FolderName>
         <Description>{`${folder.links.length} Files`}</Description>
       </OverlayContainer>
@@ -170,6 +174,9 @@ const FolderName = styled.h2`
   font-size: 22px;
   text-align: center;
   color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `
 
 const TeamContainer = styled.div`
@@ -240,4 +247,11 @@ const Description = styled.p`
   font-size: 14px;
   color: #757575;
   text-align: center;
+`
+
+const EditIcon = styled.img`
+  width: 17px;
+  height: 17px;
+  margin-left: 12px;
+  cursor: pointer;
 `

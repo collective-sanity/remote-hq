@@ -91,7 +91,7 @@ export default function SharedDesktop () {
               </DocsList>
             )}
         </Docs>   */}
-        <SharedDesktopPanel firebaseLinks={firebaseLinks} />     
+        <SharedDesktopPanel firebaseLinks={firebaseLinks} linkData={linkDataDoc && linkDataDoc.data()} />     
       </Row>
     )
   }

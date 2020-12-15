@@ -14,7 +14,7 @@ import drive from 'assets/Landing/google-drive.png'
 import figma from 'assets/Landing/figma.png'
 import link from 'assets/Landing/link.png'
 
-export default function SharedDesktopPanel ({ firebaseLinks }) {
+export default function SharedDesktopPanel ({ firebaseLinks, linkData }) {
   const {
     LOCALMODE,
     data,
@@ -27,27 +27,24 @@ export default function SharedDesktopPanel ({ firebaseLinks }) {
   } = useContext(ControlContext);
 
   let history = useHistory();
-
-  let [pinned, setPin] = useState(false);
-
-  useEffect(() => {
-    if (currentLink) {
-      if (LOCALMODE) {
-        setPin(data["teams"][currentTeam]["links"][currentLink].pinned)
-      } else {
-        getLinkData(currentTeam, currentLink).then((doc) => {
-          setPin(doc && doc.pinned)
-        } )
-      }
-    }
-  },[currentLink, LOCALMODE, data, currentTeam])
+  // useEffect(() => {
+  //   if (currentLink) {
+  //     if (LOCALMODE) {
+  //       setPin(data["teams"][currentTeam]["links"][currentLink].pinned)
+  //     } else {
+  //       getLinkData(currentTeam, currentLink).then((doc) => {
+  //         setPin(doc && doc.pinned)
+  //       } )
+  //     }
+  //   }
+  // },[currentLink, LOCALMODE, data, currentTeam])
 
   return (
     <Panel>
       <ContentContainer>
         <TextBtn onClick={ () => history.push("/folder") }>Leave</TextBtn>
         <TextBtn onClick={ () => updateLink() }>Edit Name</TextBtn>
-        {!pinned ? (
+        {linkData && !linkData.pinned ? (
             <TextBtn onClick={ () => updateLink(currentLink, {"pinned":!pinned}) }>Pin</TextBtn>
         ) : (
             <TextBtn onClick={ () => updateLink(currentLink, {"pinned":!pinned}) }>Unpin</TextBtn>

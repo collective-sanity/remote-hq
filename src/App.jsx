@@ -64,9 +64,6 @@ currentLink
   
   const history = useHistory();
 
-  
- 
-
   useEffect(() => {})
  
   return (
@@ -100,14 +97,12 @@ currentLink
             },
             logoutUser: () => {
                 firebase.auth().signOut().then(function () {
-                  //userListener();
-                  setUser(null);window.localStorage.setItem("user", null);
-                  setTeams(null); window.localStorage.setItem("teams", null);
-                  setCurrentTeam(null);window.localStorage.setItem("currentTeam", null);
-                  setCurrentFolder(null);window.localStorage.setItem("currentFolder", null);
-                  history.push("/");
+                  // setUser(null);window.localStorage.setItem("user", null);
+                  // setTeams(null); window.localStorage.setItem("teams", null);
+                  // setCurrentTeam(null);window.localStorage.setItem("currentTeam", null);
+                  // setCurrentFolder(null);window.localStorage.setItem("currentFolder", null);
+                  window.location.replace("/");
                 }).catch(function (error) {console.log(error) });
-              // window.location.reload();
             },
 
            
@@ -128,7 +123,6 @@ currentLink
               }else{
                 await updateTeam(teamId, newData);
               }
-
             },
             addTeamMember: async (email) => {
               console.log(email)

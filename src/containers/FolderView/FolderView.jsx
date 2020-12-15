@@ -10,6 +10,7 @@ import ReactModal from 'react-modal'
 import LeftPanel from "containers/Panels/LeftPanel";
 import { OverlayContainer } from 'assets/StyledComponents/Overlay'
 import AddFileModal from 'containers/Modal/AddFileModal'
+import DeleteModalContent from 'containers/Modal/DeleteModalContent'
 
 import doc from 'assets/Landing/google-docs.png';
 import sheet from 'assets/Landing/google-sheets.png';
@@ -20,6 +21,7 @@ import link from 'assets/Landing/link.png';
 import Trashcan from 'assets/Landing/delete.svg'
 import Pin from 'assets/Landing/pin.svg'
 import FilledPin from 'assets/Landing/filled-pin.svg'
+import Pencil from 'assets/Landing/pencil.svg'
 import { getFolderRef, getLinkData, getTeamRef, getLinkRef } from "shared/firebase";
 
 import MoonLoader from "react-spinners/MoonLoader";
@@ -195,7 +197,8 @@ const getIconType = type => {
 }
 
 const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
-  const { updateLink , deleteLink} = useContext(ControlContext);
+  const { pinLink, deleteLink, updateLink } = useContext(ControlContext)
+  const [modalOpen, setModalOpen] = useState(false)
   const [linkDataDoc] = useDocument(
     getLinkRef(currentTeam, link),
     {
@@ -205,7 +208,7 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
 
   return (
     <React.Fragment>
-      {linkDataDoc && linkDataDoc.data().pinned === pinned && !linkDataDoc.data().url &&
+      {linkDataDoc && linkDataDoc.data() && linkDataDoc.data().pinned === pinned && !linkDataDoc.data().url &&
         <DisabledLinkContainer>
           <MoonLoader
             size={50}
@@ -214,10 +217,11 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
           <LinkContainerTitle>{linkDataDoc.data().name}</LinkContainerTitle>
         </DisabledLinkContainer>
       }
-      {linkDataDoc && linkDataDoc.data().pinned === pinned && linkDataDoc.data().url &&
+      {linkDataDoc && linkDataDoc.data() && linkDataDoc.data().pinned === pinned && linkDataDoc.data().url &&
         <LinkContainer>
           <OverlayContainer>
-            <TrashIcon src={Trashcan} onClick={() => deleteLink(linkDataDoc.id)} />
+
+            <TrashIcon src={Trashcan} onClick={() => setModalOpen(true)} />
             <PinIcon src={pinned ? FilledPin : Pin} onClick={() => updateLink(linkDataDoc.id, {"pinned":!pinned})} />
             <Circle>
               <Icon src={getIconType(linkDataDoc.data().linkType)} />
@@ -226,8 +230,17 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
               <Link to="/shared-desktop" onClick={() => setCurrentLink(linkDataDoc.id)}>
                 {linkDataDoc.data().name}
               </Link>
+              <EditIcon src={Pencil} onClick={() => updateLink(link)} />
             </LinkContainerTitle>
           </OverlayContainer>
+          <ReactModal isOpen={modalOpen} className="Modal" >
+            <DeleteModalContent 
+              setModalOpen={setModalOpen} 
+              deleteFunction={deleteLink}
+              id={linkDataDoc && linkDataDoc.id}
+              labelName="Delete Link?"
+            />
+          </ReactModal>
         </LinkContainer>
       }
     </React.Fragment>
@@ -296,6 +309,7 @@ const LinkListContainer = styled.div`
 `
 
 const LinksList = styled.div`
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   margin-top: 15px;
@@ -379,6 +393,13 @@ const AddText = styled.p`
   color: #BE83FF;
   text-align: center;
   margin-bottom: 0;
+`
+
+const EditIcon = styled.img`
+  width: 17px;
+  height: 17px;
+  margin-left: 12px;
+  cursor: pointer;
 `
 
 // const LinkContainerType = styled.img`
