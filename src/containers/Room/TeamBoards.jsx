@@ -90,7 +90,7 @@ export default function TeamBoards ({ setModalOpen }) {
         <AddCard onClick={() => setModalOpen(true)}>
           <div>
             <AddText style={{ fontSize: '64px' }}>+</AddText>
-            <AddText>Add a Team</AddText>
+            <AddText>Add a Folder</AddText>
           </div>
         </AddCard>
         {firebaseFolders && firebaseFolders.map((folder, i) => (

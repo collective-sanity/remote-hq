@@ -208,6 +208,7 @@ const TrashIcon = styled.img`
   right: 10px;
   height: 25px;
   width: 25px;
+  cursor: pointer;
 `
 
 const PinIcon = styled.img`
@@ -216,6 +217,7 @@ const PinIcon = styled.img`
   left: 15px;
   height: 25px;
   width: 25px;
+  cursor: pointer;
 `
 
 const SectionName = styled.div`
