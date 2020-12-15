@@ -19,6 +19,7 @@ import {
   deleteFolder,
   createTeam,
   getTeamData,
+  updateUserData
 
  } from 'shared/firebase';
 //import dummydata from 'shared/dummydata';
@@ -136,7 +137,9 @@ currentLink
               snapshot.forEach(doc => {
                 updateTeam(currentTeam,{
                   users: [...team.users, {"id": doc.id, "email":doc.data().email}] // need to spread current users
-                 });
+                 }).then(()=>{
+                  updateUserData(doc.id, {"teams":[...doc.data().teams, currentTeam]})
+                });
               });
             },
             deleteTeam:async(

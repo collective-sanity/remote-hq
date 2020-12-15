@@ -120,7 +120,7 @@ const BoardLink = ({ folder, data, currentTeam, setCurrentFolder }) => {
 
 const FirebaseBoardLink = ({ id, folder, setCurrentFolder, deleteFolder, updateFolder }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-  const { updateFolder } = useContext(ControlContext);
+ // const { updateFolder } = useContext(ControlContext);
 
   const handleOnClick = (event) => {
     event.stopPropagation()
