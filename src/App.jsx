@@ -173,12 +173,9 @@ currentLink
             /*
             Links are all the "files" in the system, they can be organized in folders and viewed in screens
             */
-            createLink: async linktype => {
-                let name = prompt("Please enter a name", '');
+            createLink: async (linktype, name, url="") => {
                 if (name === null || name === "") { return; }
-                let url="";
                 if (linktype === "figma" || linktype === "resource") {
-                  url = prompt("Please enter a URL", '');
                   if (url === null || url === "") {
                     return;
                   }

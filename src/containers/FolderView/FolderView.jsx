@@ -5,9 +5,11 @@ import { useDocument } from 'react-firebase-hooks/firestore';
 import ControlContext from "shared/control-context";
 import './FolderView.scss';
 import { Title, Breadcrumbs, Input, FilterButton, SectionName, HeaderRow, ContentContainer, TrashIcon, PinIcon } from 'assets/StyledComponents/Shared'
+import ReactModal from 'react-modal'
 
 import LeftPanel from "containers/Panels/LeftPanel";
 import { OverlayContainer } from 'assets/StyledComponents/Overlay'
+import AddFileModal from 'containers/Modal/AddFileModal'
 
 import doc from 'assets/Landing/google-docs.png';
 import sheet from 'assets/Landing/google-sheets.png';
@@ -28,6 +30,7 @@ export default function FolderView () {
   const [firebaseLinks, setFirebaseLinks] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [linkNamesToId, setLinkNamesToId] = useState([]);
+  const [fileModalOpen, setFileModalOpen] = useState(false);
 
   let links;
   if (LOCALMODE) {
@@ -159,7 +162,7 @@ export default function FolderView () {
             </LinksList>
           ) : (
             <LinksList>
-              <AddCard>
+              <AddCard onClick={() => setFileModalOpen(true)}>
                 <div>
                   <AddText style={{ fontSize: '64px' }}>+</AddText>
                   <AddText>Add a File</AddText>
@@ -173,6 +176,11 @@ export default function FolderView () {
         </LinkListContainer>
       </ContentContainer>
       {/* <RightPanel page={"FolderView"} /> */}
+      <ReactModal isOpen={fileModalOpen} className="Modal" >
+          <AddFileModal 
+            setModalOpen={setFileModalOpen} 
+          />
+        </ReactModal>
     </Row>
   )
 }
