@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 
-export const useKeyPress = (key, ctrl=false, alt=false) => {
+export const useKeyPress = (key, ctrl=false, shift=false) => {
   const [keyPressed, setKeyPressed] = useState(false);
 
   const keydownHandler = useCallback((e) => {
-    if (e.altKey === alt && e.ctrlKey === ctrl && e.key === key){
+    if (e.shiftKey === shift && e.ctrlKey === ctrl && e.key === key){
       setKeyPressed(true);
     }
-  }, [alt, ctrl, key]);
+  }, [shift, ctrl, key]);
 
   const keyupHandler = useCallback((e) => {
     if (e.key === key){
