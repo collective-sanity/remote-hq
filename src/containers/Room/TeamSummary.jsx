@@ -23,19 +23,17 @@ const Person = ({ user }) => {
   )
 }
 
-export default function Room ({ users }) {
+export default function Room ({ users, teamName }) {
   const [modalOpen, setModalOpen] = useState(false)
   const { addTeamMember } = useContext(ControlContext);
 
   return (
     <TeamContainer>
-      <HeaderRow>
-        <Title>My Teams</Title>
-      </HeaderRow>
+      <Title>{teamName}</Title>
       <TeamCard>
         <PersonCard style={{ cursor: 'pointer' }}>
           <AddBtn onClick={() => setModalOpen(true)}>+</AddBtn>
-          <Name>Add a Team Member</Name>
+          <Name><b>Add a Member</b></Name>
         </PersonCard>
         {users && users.map((user, i) => <Person user={user} key={i} />)}
       </TeamCard>
@@ -98,10 +96,4 @@ const PersonCard = styled.div`
   margin-right: 1%;
   border-radius: 5px;
   display: inline-block;
-`
-
-const Row = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
 `

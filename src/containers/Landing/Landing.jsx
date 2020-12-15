@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react"
 import styled from "styled-components"
 import ControlContext from '../../shared/control-context'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import firebase from 'firebase/app'
 import { useDocument } from 'react-firebase-hooks/firestore'
 import ReactModal from 'react-modal'
@@ -23,7 +23,7 @@ const TeamCard = ({ teamId, data, setCurrentTeam }) => {
     <Team>
       <OverlayContainer>
         <TrashIcon src={Trashcan} />
-        <NavLink 
+        <Link 
           to={{
             pathname: '/team',
             search: `?name=${name}`
@@ -31,7 +31,7 @@ const TeamCard = ({ teamId, data, setCurrentTeam }) => {
           onClick={() => setCurrentTeam(teamId)}
         >
           <TeamName>{name}</TeamName>
-        </NavLink>
+        </Link>
       </OverlayContainer>
     </Team>
   )
@@ -132,7 +132,7 @@ export default function Landing () {
     <Row>
       <LeftPanel />
       <ContentContainer>
-        <Breadcrumbs><NavLink to='/'>Teams</NavLink></Breadcrumbs>
+        <Breadcrumbs><Link to='/'>Teams</Link></Breadcrumbs>
         <HeaderRow>
           <Title>My Teams</Title>
           <div>
@@ -181,7 +181,7 @@ const TeamsContainer = styled.div`
   margin-top: 15px;
 `
 
-const Team = styled(NavLink)`
+const Team = styled(Link)`
   width: 30%;
   margin-right: 3%;
   height: auto;

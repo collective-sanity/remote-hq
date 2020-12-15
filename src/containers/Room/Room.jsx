@@ -10,7 +10,6 @@ import { Breadcrumbs } from 'assets/StyledComponents/Shared'
 import TeamSummary from './TeamSummary'
 import TeamBoards from './TeamBoards'
 import LeftPanel from "containers/Panels/LeftPanel"
-import RightPanel from "containers/Panels/RightPanel"
 import ModalContent from 'containers/Modal/AddModalContent'
 
 export default function Room ({ location }) {
@@ -29,8 +28,8 @@ export default function Room ({ location }) {
           <NavLink to='/'>Teams</NavLink>
           <Arrow> &gt; </Arrow>
           <NavLink to='/team'>{value && value.data().name}</NavLink></Breadcrumbs>
-        <TeamSummary users={value && value.data().users} />
-        <TeamBoards />
+        <TeamSummary users={value && value.data().users} teamName={value && value.data().name} />
+        <TeamBoards setModalOpen={setModalOpen} />
         <ReactModal isOpen={modalOpen} className="Modal" >
           <ModalContent 
             setModalOpen={setModalOpen} 
