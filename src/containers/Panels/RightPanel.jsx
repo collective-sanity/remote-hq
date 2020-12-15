@@ -17,12 +17,12 @@ export default function RightPanel ({ page, setModalOpen }) {
     LOCALMODE,
     data,
     // createTeam,
-    // updateTeam,
+     updateTeam,
     // deleteTeam,
     currentTeam,
     currentLink,
     // createFolder,
-    // updateFolder,
+    updateFolder,
     // deleteFolder,
     pinLink,
     createLink,
@@ -69,6 +69,8 @@ export default function RightPanel ({ page, setModalOpen }) {
       return (
         <TopIconContainer>
           <Add onClick={() => setModalOpen(true)}>+</Add>
+          <TextBtn onClick={() => updateTeam()}>Edit</TextBtn>
+          {/* <TextBtn onClick={() => deleteFolder()}>Delete</TextBtn> */}
         </TopIconContainer>
       )
     }
@@ -80,7 +82,7 @@ export default function RightPanel ({ page, setModalOpen }) {
           <TopIcon src={GoogleSlides} onClick={() => createLink("googleSlides")} />
           <TopIcon src={FigmaIcon} onClick={() => createLink("figma")} />
           <Add onClick={() => createLink("resource")}>+</Add>
-          <TextBtn onClick={() => {}}>Edit</TextBtn>
+          <TextBtn onClick={() => updateFolder()}>Edit</TextBtn>
           <TextBtn onClick={() => {}}>Delete</TextBtn>
         </TopIconContainer>
       )

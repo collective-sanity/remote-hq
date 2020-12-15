@@ -3,14 +3,9 @@ import { BrowserRouter as Router, Switch, Route} from "react-router-dom";
 import { useHistory } from "react-router-dom"
 import { 
   provider, 
-  getUserRef,
   getUserData, 
-  setUserData, 
-  updateUserData, 
-  getUsers,
   createNewUser,
 
-  getTeamUsers, 
   updateTeam,
   deleteTeam,
   
@@ -24,9 +19,9 @@ import {
   deleteFolder,
   createTeam,
   getTeamData,
-  
+
  } from 'shared/firebase';
-import dummydata from 'shared/dummydata';
+//import dummydata from 'shared/dummydata';
 import firebase from "firebase/app";
 import ControlContext from "shared/control-context";
 import Splash from 'containers/Splash/Splash'
@@ -121,14 +116,13 @@ currentLink
               setCurrentTeam(res.id);
               window.localStorage.setItem("currentTeam", res.id);
             },
-            updateTeam:({
-              teamId=currentTeam,
-              newData})=>{
-                console.log(newData);
-                updateTeam(teamId, newData);
-             
-                //eamsRef.doc(teamId).update(newData).then((ref)=>{ }).catch((error) => console.error("Error updating document", error));
-              
+            updateTeam:()=>{//{teamId=currentTeam,newData}
+                let newName;
+                let name = prompt("Please enter a new name", '');
+                if (name === null || name === "") {return;
+                } else { newName = name;}
+                //updateFolder(teamId,folderId, { "name":newName}) 
+                updateTeam(currentTeam, { "name":newName});
             },
             addTeamMember: async (email) => {
               console.log(email)
@@ -163,19 +157,18 @@ currentLink
               setCurrentFolder(res.id);
               window.localStorage.setItem("currentFolder", res.id);
             },
-            updateFolder: ({
-              teamId=currentTeam.id, 
-              folderId=currentFolder.id, 
-              newData})=> {
-                console.log(newData);
-                updateFolder(teamId,folderId, { "folders":newData}) },
+            updateFolder: ()=> { //{  teamId=currentTeam.id, folderId=currentFolder.id, newData}
+                let newName;
+                let name = prompt("Please enter a new name", '');
+                if (name === null || name === "") {return;
+                } else { newName = name;}
+                updateFolder(currentTeam,currentFolder, { "name":newName}) 
+              },
            
             deleteFolder: async ( folderId) => {
-              
                 deleteFolder( currentTeam , folderId);
                 setCurrentFolder(null);
                 window.localStorage.setItem("currentFolder", null);
-                
             },
             /*
             Links are all the "files" in the system, they can be organized in folders and viewed in screens
@@ -190,7 +183,7 @@ currentLink
                     return;
                   }
                 }
-               await createLink(currentTeam, currentFolder, linktype, name, url=url);
+               await createLink(currentTeam, currentFolder, linktype, name, url);
             },
             updateLink:async  () => {
                   let newName;
