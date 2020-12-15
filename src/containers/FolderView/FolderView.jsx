@@ -10,6 +10,7 @@ import ReactModal from 'react-modal'
 import LeftPanel from "containers/Panels/LeftPanel";
 import { OverlayContainer } from 'assets/StyledComponents/Overlay'
 import AddFileModal from 'containers/Modal/AddFileModal'
+import DeleteModalContent from 'containers/Modal/DeleteModalContent'
 
 import doc from 'assets/Landing/google-docs.png';
 import sheet from 'assets/Landing/google-sheets.png';
@@ -195,7 +196,8 @@ const getIconType = type => {
 }
 
 const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
-  const { pinLink } = useContext(ControlContext);
+  const { pinLink, deleteLink } = useContext(ControlContext)
+  const [modalOpen, setModalOpen] = useState(false)
   const [linkDataDoc] = useDocument(
     getLinkRef(currentTeam, link),
     {
@@ -205,7 +207,7 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
 
   return (
     <React.Fragment>
-      {linkDataDoc && linkDataDoc.data().pinned === pinned && !linkDataDoc.data().url &&
+      {linkDataDoc && linkDataDoc.data() && linkDataDoc.data().pinned === pinned && !linkDataDoc.data().url &&
         <DisabledLinkContainer>
           <MoonLoader
             size={50}
@@ -214,10 +216,10 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
           <LinkContainerTitle>{linkDataDoc.data().name}</LinkContainerTitle>
         </DisabledLinkContainer>
       }
-      {linkDataDoc && linkDataDoc.data().pinned === pinned && linkDataDoc.data().url &&
+      {linkDataDoc && linkDataDoc.data() && linkDataDoc.data().pinned === pinned && linkDataDoc.data().url &&
         <LinkContainer>
           <OverlayContainer>
-            <TrashIcon src={Trashcan} />
+            <TrashIcon src={Trashcan} onClick={() => setModalOpen(true)} />
             <PinIcon src={pinned ? FilledPin : Pin} onClick={() => pinLink(linkDataDoc.id)} />
             <Circle>
               <Icon src={getIconType(linkDataDoc.data().linkType)} />
@@ -228,6 +230,14 @@ const GetFirebaseLinks = ({ link, currentTeam, setCurrentLink, pinned }) => {
               </Link>
             </LinkContainerTitle>
           </OverlayContainer>
+          <ReactModal isOpen={modalOpen} className="Modal" >
+            <DeleteModalContent 
+              setModalOpen={setModalOpen} 
+              deleteFunction={deleteLink}
+              id={linkDataDoc && linkDataDoc.id}
+              labelName="Delete Link?"
+            />
+          </ReactModal>
         </LinkContainer>
       }
     </React.Fragment>
@@ -295,6 +305,7 @@ const LinkListContainer = styled.div`
 `
 
 const LinksList = styled.div`
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   margin-top: 15px;

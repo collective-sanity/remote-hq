@@ -182,15 +182,15 @@ currentLink
                 }
                await createLink(currentTeam, currentFolder, linktype, name, url);
             },
-            updateLink:async  () => {
+            updateLink: async  () => {
                   let newName;
                   let name = prompt("Please enter a new name", '');
                   if (name === null || name === "") {return;
                   } else { newName = name;}
                   updateLink(currentTeam,currentLink, {name: newName})
             },
-            deleteLink:async () => { 
-                await deleteLink(currentTeam,currentFolder,currentLink);
+            deleteLink: async (id=currentLink) => { 
+                await deleteLink(currentTeam, currentFolder, id);
             },
             pinLink: async (link=currentLink) => {
                let item = await getLinkData(currentTeam,link);

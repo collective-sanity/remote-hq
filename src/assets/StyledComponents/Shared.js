@@ -50,6 +50,7 @@ export const TrashIcon = styled.img`
   right: 10px;
   height: 25px;
   width: 25px;
+  cursor: pointer;
 `
 
 export const PinIcon = styled.img`
