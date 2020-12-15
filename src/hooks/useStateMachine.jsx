@@ -120,9 +120,7 @@ export const useStateMachine = () => {
           break;
         case "createLink":
           if (currentParams.fields.filetype.stringValue !== "resource") {
-            // createLink(currentParams.fields.filetype.stringValue, newMessage);
-            console.log("Gonna try creating directly: ", currentParams);
-            createLink(currentParams.teamId, currentParams.folderId, currentParams.fields.filetype.stringValue, newMessage, "").then(() => {
+            createLink(currentParams.teamId, currentParams.folderId, currentParams.fields.filetype.stringValue, newMessage).then(() => {
               resolve({key: "createdLink", val: newMessage});
             })
           } else {
@@ -130,12 +128,9 @@ export const useStateMachine = () => {
           }
           break;
         case "createLinkURL":
-          console.log("asking for URL")
-          console.log("Gonna try creating after URL: ", currentParams);
           createLink(currentParams.teamId, currentParams.folderId, currentParams.fields.filetype.stringValue, currentParams.linkName, newMessage).then(() => {
             resolve({key: "createdLinkWithURL", val: newMessage });
           })
-          // createLink("resource", newMessage);
           break;
         default:
           break;
