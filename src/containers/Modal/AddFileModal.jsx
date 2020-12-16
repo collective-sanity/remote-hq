@@ -12,7 +12,7 @@ export default function AddFileModal ({ setModalOpen, labelName, submitName }) {
   const { createLink } = useContext(ControlContext);
   const [name, setName] = useState("")
   const [webUrl, setWebUrl] = useState("")
-  const [fileType, setFileType] = useState(null)
+  const [fileType, setFileType] = useState("googleDoc")
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -69,7 +69,7 @@ export default function AddFileModal ({ setModalOpen, labelName, submitName }) {
         </IconRow>
         {(fileType === 'figma' || fileType === 'resource') &&
           <React.Fragment>
-            <SectionTitle>File Type:</SectionTitle>
+            <SectionTitle>URL:</SectionTitle>
             <Label>
               <Input 
                 type="text" 
