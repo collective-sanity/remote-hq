@@ -1,70 +1,46 @@
-# Getting Started with Create React App
+# RemoteHQ
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+RemoteHQ is a web application designed to help remote teams organize their workflows. With RemoteHQ, users can create teams and add other members to them. These teams can create dedicated workspaces within which they can create, store, and view Google Docs, Google Sheets, Google Slide decks, Figma links, and web links, all without leaving the application. In addition, we integrated a chatbot to help with all of these functions for voice, text, and speech-to-text inputs. The voice parts of the bot have real time speech to text and can be seen as the user is speaking. The voice chat also has text-to-speech for responses.
 
-## Available Scripts
+This is a final project for SSUI (05-631) at CMU.
 
-In the project directory, you can run:
+Team Members: Karthick Shankar, Connor Shannon, Nathan Jen, Victor Grajski
 
-### `npm start`
+The site is deployed at: https://remote-hq.web.app/
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Installation Guide
+Ensure you have node.js and npm installed (https://nodejs.org/en/) 
 
-### `npm test`
+1. Clone the git repository
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+    `git clone https://github.com/collective-sanity/remote-hq.git`
 
-### `npm run build`
+2. Navigate to the remote-hq folder
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    `cd remote-hq`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. Add the provided .env file to the root directory
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+4. Install all the required packages
 
-### `npm run eject`
+    `npm install`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+5. Start the application
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+    `npm start`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+6. Open `localhost:3000` on Chrome (Note: Voice Chat not supported on other browsers due to to the limitation of the Web Speech API on HTML5)
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Packages and Technologies Used
+* [Google Drive API](https://developers.google.com/drive) 
+* [Dialogflow](https://dialogflow.cloud.google.com/) 
+* [Firebase](https://firebase.google.com/) 
+* [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) 
+* [react-speech-recognition](https://www.npmjs.com/package/react-speech-recognition) 
+* [react-speech-kit](https://www.npmjs.com/package/react-speech-kit) 
+* [react-chat-widget](https://www.npmjs.com/package/react-chat-widget) 
+* [react-firebase-hooks](https://www.npmjs.com/package/react-firebase-hooks) 
+* [Styled Components](https://github.com/styled-components/styled-components) 
+* [node-sass](https://www.npmjs.com/package/node-sass)
+* [reactstrap](https://reactstrap.github.io/)
